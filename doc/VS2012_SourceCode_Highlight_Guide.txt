@@ -1,0 +1,11 @@
+
+
+blue			= C++ keywords and primitive types mostly
+yellow			= member variables or member functions.
+bright purple	= parameter variables or ?
+blue-ish green 	= custom types
+dark green		= static member variables and functions.
+dark red		= processor related
+skin color		= strings
+green			= comments
+dull purple		= static functions and #define's

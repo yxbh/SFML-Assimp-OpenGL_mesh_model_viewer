@@ -1,0 +1,36 @@
+var class_k_g_1_1_light =
+[
+    [ "Type", "class_k_g_1_1_light.html#a06ab76294a0dbc2f030629b30b803a95", [
+      [ "Directional", "class_k_g_1_1_light.html#a06ab76294a0dbc2f030629b30b803a95ab667af91d77d44cbf0251a1d3b71650a", null ],
+      [ "PointLight", "class_k_g_1_1_light.html#a06ab76294a0dbc2f030629b30b803a95a184dd6638549af9561ae087fdd5fa1d4", null ],
+      [ "SpotLight", "class_k_g_1_1_light.html#a06ab76294a0dbc2f030629b30b803a95a82d814a51b1f248462fd14817b9af2cb", null ]
+    ] ],
+    [ "Light", "class_k_g_1_1_light.html#a3cbfa84813c5f1bfa54982e2650b3fd8", null ],
+    [ "~Light", "class_k_g_1_1_light.html#adde34af6bd8f9316003383f8bcfd76d9", null ],
+    [ "GetAmbient", "class_k_g_1_1_light.html#a7bc3f566a9ede904cb678ec9c8043259", null ],
+    [ "GetAttenuationConstant", "class_k_g_1_1_light.html#a0577450df72e082e4b6ee5d9fcf1376c", null ],
+    [ "GetAttenuationLinear", "class_k_g_1_1_light.html#acd156290450603217d2bc7fb0d5b672c", null ],
+    [ "GetAttenuationQuadratic", "class_k_g_1_1_light.html#a22d9305efef15da5c472131270da0053", null ],
+    [ "GetColor", "class_k_g_1_1_light.html#a9d1315273283b20d0a05768885a744aa", null ],
+    [ "GetConeAngleEvaluated", "class_k_g_1_1_light.html#a0fd3642608a2781774fb430b1fc1cd45", null ],
+    [ "GetInnerConeAngle", "class_k_g_1_1_light.html#ad2c6eb12263ac02768763163ffa241b2", null ],
+    [ "GetInnerConeCosAngle", "class_k_g_1_1_light.html#a6376d40adf38cb93261993d4c4e69fd6", null ],
+    [ "GetOuterConeAngle", "class_k_g_1_1_light.html#ac28201e9ac97bc79ec4459dc6a868557", null ],
+    [ "GetOuterConeCosAngle", "class_k_g_1_1_light.html#af885afd248039e0c562893c63288060c", null ],
+    [ "GetType", "class_k_g_1_1_light.html#a1610080b2d2b42ee6315a9f281cfb32e", null ],
+    [ "IsOff", "class_k_g_1_1_light.html#a6d5af7a11496e98767b5b894a43d5613", null ],
+    [ "IsOn", "class_k_g_1_1_light.html#adbb6c1112331322a8892c4de68a318f3", null ],
+    [ "SetAmbient", "class_k_g_1_1_light.html#a6a4ef5ea9ba03dbdc917dc37e4e07aaa", null ],
+    [ "SetAttenuationConstant", "class_k_g_1_1_light.html#ae3a7e6eb6c8e26e384fbca4e99b3772c", null ],
+    [ "SetAttenuationLinear", "class_k_g_1_1_light.html#a22d89e1eb2b68183aae1b0b22287889b", null ],
+    [ "SetAttenuationQuadratic", "class_k_g_1_1_light.html#a920f991b1ef9bfe7e596e1bd01f13b74", null ],
+    [ "SetColor", "class_k_g_1_1_light.html#ab866f25dc6c544dc0d48de731a2eee7f", null ],
+    [ "SetConeAngleEvaluated", "class_k_g_1_1_light.html#a87cda077b1c4819c85cce3ca6b6f0dc3", null ],
+    [ "SetInnerConeAngle", "class_k_g_1_1_light.html#ad0b46548a49dbb252a2dc069109dc3a4", null ],
+    [ "SetInnerConeCosAngle", "class_k_g_1_1_light.html#a545eb3001f64beb44df03532eb1cc0cd", null ],
+    [ "SetOuterConeAngle", "class_k_g_1_1_light.html#ae03a8e9161ac69df687f282b96eac9e2", null ],
+    [ "SetOuterConeCosAngle", "class_k_g_1_1_light.html#ada0790649e5312fa0ecd2e9157688c73", null ],
+    [ "SetType", "class_k_g_1_1_light.html#af83b3a5c2b6a0ffd1bcbcd335675f83c", null ],
+    [ "TurnOff", "class_k_g_1_1_light.html#a0735459d10230cac54780a285afb8710", null ],
+    [ "TurnOn", "class_k_g_1_1_light.html#a691fc6a460964d614c6353d2428f3405", null ]
+];

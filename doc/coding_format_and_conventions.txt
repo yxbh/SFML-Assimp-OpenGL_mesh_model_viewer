@@ -1,0 +1,27 @@
+ Note:
+ 	Initially, you might find the follow conventions ridiculous or hard to follow, but they really help 
+ 	when you come back to read/modify the source later on. After who knows how long.
+
+
+ 1) -	Custom types and classes use camel case. (e.g. SceneManager)
+ 2) -	Function names use camel case.
+ 3) -	Local variables follow the std convention. (e.g. local_variable)
+ 4) -	Function parameters are prefixed with "p_" and then follow 1)
+== variable scope indicator ==
+ 5) -	Member variables are prefixed with "m_" and then follow 1)
+ 6) -	Static variables are prefixed with "s_" and then follow 1)
+ 7) -	global variables are prefixed with "g_" and then follow 1)
+== variable type indicator ==
+ 8) -	pointer variables have "p" after either 4), 5), 6), 7) or nothing.  (e.g. m_pTransformationMatrix )
+ 9) -	shared_ptr variables have "sp" and weak_ptr have "wp", where both are after 4), 5), 6), 7) or nothing.
+ 10) -	reference variables have r after 4), 5), 6), 7) or nothing.
+ 11) -	const variables have "k" right after the scope letter. (e.g. a global constant variable: gk_GlobalVariable )
+ 12) -	I will add more as I remember them.
+
+
+ Tips
+ ---
+  - try to be const correct. Remember to add the const keyword.
+  - always initialize your variables right away. Especially when they are pointers or class members.
+  - if you're going to left something half completed. Put down a debug print to remind yourself or use a assert(false) to remind yourself. Especially for error handling.
+  - when you're writting class member functions. Prepend "Get" for getter methods, and prepend "Set" for setter methods. Do it only when it's within reason. "SetIncrementBrightness(unit)" sounds rediculous. "IncrementBrightness(unit)" is more appropiate.

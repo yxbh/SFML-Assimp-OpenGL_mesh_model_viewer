@@ -1,0 +1,89 @@
+/*
+	Engine/system (range: 111100)
+*/
+	EntityDestoryed		= 111110 	// unimplemented
+	EntityCreated		= 111111	// unimplemented
+	SceneNodeDestoryed	= 111112 	// unimplemented
+	SceneNodeCreated	= 111113 	// unimplemented
+/* END */
+
+/*
+	RenderSystem/Renderer (range: 100)
+*/
+	LightOn		= 101	// unimplemented
+	LightOff	= 102	// unimplemented
+/* END */
+
+/*
+	InputSystem (range: 200)
+*/
+	MouseMoved 			= 201
+	MousePressed 		= 202
+	MouseReleased		= 203
+	KeyboardPressed		= 204
+	KeyboardReleased	= 205
+/* END */
+
+/*
+	RenderComponent (range: 1000)
+*/
+/* END */
+
+
+/*
+	InputComponent (range: 2000)
+*/
+	LookUp				= 2001,
+	LookDown			= 2002,
+	LookLeft			= 2003,
+	LookRight			= 2004,
+	TiltLeft			= 2005,
+	TiltRight			= 2006,
+	TranslateDeltaX		= 2007,	// unimplemented
+	TranslateDeltaY		= 2008,
+	TranslateDeltaZ		= 2009,	// unimplemented
+	StrafeForward		= 2010,
+	StrafeBackward		= 2011,
+	StrafeLeft			= 2012,
+	StrafeRight			= 2013,
+	StrafeForeRelCam	= 2014,
+	StrafeBackRelCam	= 2015,
+	StrafeLeftRelCam	= 2016,
+	StrafeRightRelCam	= 2017,
+	StrafeUpRelCam		= 2018,
+	StrafeDownRelCam	= 2019,
+	UniformScale		= 2020,	// unimplemented
+	ScaleDeltaX			= 2021,	// unimplemented
+	ScaleDeltaY			= 2022,	// unimplemented
+	ScaleDeltaZ			= 2023,	// unimplemented
+	RollLeft			= 2024,	// unimplemented. Think of rolling something from a bird's eye point of view.
+	RollRight			= 2025,	// unimplemented
+	RollUp				= 2026,	// unimplemented
+	RollDown			= 2027,	// unimplemented
+	IncreaseDistance    = 2030,
+	DecreaseDistance    = 2031,
+/* END */
+
+/*
+	LogicComponent (range: 3000)
+*/
+/* END */
+
+/*
+	CITS (range: 100000)
+*/
+	NewObject						= 100001,
+	NewObjectRequest				= 100002,
+	NewGUICreated					= 100003,
+	ChangeTextureRequest			= 100004,
+	ToggleControlPanelVisibility 	= 100005,
+	SetMatEmissive					= 100006,
+	SetMatAmbient					= 100007,
+	SetMatDiffuse					= 100008,
+	SetMatSpecular					= 100009,
+	SetMatShininess					= 100010,
+	SetFreeFlightMode				= 100011,
+	SetThirdPersonMode				= 100012,
+	SetObjectManMode				= 100013,
+	SetObjectMatMode				= 100014,
+/* END */
