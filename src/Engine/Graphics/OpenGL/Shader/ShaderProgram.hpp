@@ -1,8 +1,11 @@
 #pragma once
 #include "../../../common.hpp"
+#include <unordered_map>
 
 namespace KG
 {
+	typedef std::unordered_map<std::string, GLuint>	GLSLVariableHashMap;
+
 	/** \class ShaderProgram
 		Representation of a OpenGL shader program.
 	*/
@@ -11,8 +14,10 @@ namespace KG
 	public:
 
 	private:
-		GLint m_ShaderProgram_id;
-		bool m_Usable;
+		GLint						m_ProgramID;
+		bool						m_Usable;
+		KG::GLSLVariableHashMap		m_Uniforms;
+		KG::GLSLVariableHashMap		m_Attributes;
 	
 	public:
 		ShaderProgram(void);
@@ -22,8 +27,14 @@ namespace KG
 		ShaderProgram & Use(void);
 		ShaderProgram & Enable(void);
 		void Disable(void) const;
+		void SetGLHandle(const GLuint p_ShaderProgramID);
 
-		void SetID(const GLuint p_ShaderProgramID);
+		const bool HasUniform(const std::string & p_rUniform);
+		const bool HasParameter(const std::string & p_rUniform);
+		const bool HasAttribute(const std::string & p_rAttribute);
+
+		const GLint GetHandle(void) const;
+		const GLint GetAttributeLocation(const GLchar * const p_AttribName) const;
 
 		/* single variables. */
 		template<typename T>
@@ -79,9 +90,7 @@ namespace KG
 		template<> const bool SetParameter<GLint>
 		(const GLchar * const p_UniformVariable, const GLint & p_Value, const GLint & p_Value2, const GLint & p_Value3, const GLint & p_Value4);
 
-		const GLuint GetID(void) const;
-		const GLuint GetAttribLocation(const GLchar * const p_AttribName) const;
-	};
+	}; // ShaderProgram
 
 	typedef std::shared_ptr<KG::ShaderProgram>	ShaderProgram_SmartPtr;
 

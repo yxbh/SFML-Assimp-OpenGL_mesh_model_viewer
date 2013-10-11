@@ -37,10 +37,10 @@ namespace object
 		shader_resource_list.push_back(KG::ShaderResource(GL_VERTEX_SHADER, "shaders/generic.V.shader"));
 		shader_resource_list.push_back(KG::ShaderResource(GL_FRAGMENT_SHADER, "shaders/generic.F.shader"));
 		KG::ShaderProgram_SmartPtr shader_program(new KG::ShaderProgram());
-		shader_program->SetID(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
+		shader_program->SetGLHandle(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
 		this->SetShaderProgram(shader_program);
 
-		GLuint location = shader_program->Enable().GetAttribLocation("vPosition");
+		GLuint location = shader_program->Enable().GetAttributeLocation("vPosition");
 		glEnableVertexAttribArray(location);
 		glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, 0);
 

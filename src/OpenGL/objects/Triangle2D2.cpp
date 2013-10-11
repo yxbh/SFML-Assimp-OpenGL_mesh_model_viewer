@@ -11,7 +11,7 @@ namespace object
 		shader_resource_list.push_back(KG::ShaderResource(GL_VERTEX_SHADER, "shaders/generic.V.shader"));
 		shader_resource_list.push_back(KG::ShaderResource(GL_FRAGMENT_SHADER, "shaders/generic.F.shader"));
 		KG::ShaderProgram_SmartPtr new_shaderprogram(new KG::ShaderProgram());
-		new_shaderprogram->SetID(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
+		new_shaderprogram->SetGLHandle(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
 		this->SetShaderProgram(new_shaderprogram);
 
 		this->SetRenderPass(KG::RenderPass::Dynamic);

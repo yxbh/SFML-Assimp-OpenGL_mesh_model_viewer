@@ -77,7 +77,7 @@ namespace KG
 		new_shader_rlist.push_back(KG::ShaderResource(GL_VERTEX_SHADER, "shaders/generic.V.shader"));
 		new_shader_rlist.push_back(KG::ShaderResource(GL_FRAGMENT_SHADER, "shaders/generic.F.shader"));
 		KG::ShaderProgram_SmartPtr new_shader_program(new KG::ShaderProgram());
-		new_shader_program->SetID(KG::ShaderProgramFactory::MakeFromFiles(new_shader_rlist));
+		new_shader_program->SetGLHandle(KG::ShaderProgramFactory::MakeFromFiles(new_shader_rlist));
 		m_spShaderProgram = new_shader_program;
 	}
 

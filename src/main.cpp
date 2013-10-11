@@ -168,7 +168,7 @@ static void TestAsset(KE::Engine & p_rEngine)
 	shader_resource_list.push_back(KG::ShaderResource(GL_VERTEX_SHADER, "shaders/generic.V.shader"));
 	shader_resource_list.push_back(KG::ShaderResource(GL_FRAGMENT_SHADER, "shaders/generic.F.shader"));
 	KG::ShaderProgram_SmartPtr shader_program(new KG::ShaderProgram());
-	shader_program->SetID(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
+	shader_program->SetGLHandle(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
 	mesh->SetShaderProgram(shader_program);
 
 	mesh->SetRenderPass(KG::RenderPass::Static);

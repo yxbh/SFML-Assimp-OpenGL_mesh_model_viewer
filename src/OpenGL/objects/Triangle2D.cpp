@@ -10,7 +10,7 @@ namespace object
 		shader_resource_list.push_back(KG::ShaderResource(GL_VERTEX_SHADER, "shaders/generic.V.shader"));
 		shader_resource_list.push_back(KG::ShaderResource(GL_FRAGMENT_SHADER, "shaders/generic.F.shader"));
 		KG::ShaderProgram_SmartPtr new_shaderprogram(new KG::ShaderProgram());
-		new_shaderprogram->SetID(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
+		new_shaderprogram->SetGLHandle(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
 		this->SetShaderProgram(new_shaderprogram);
 
 		this->SetRenderPass(KG::RenderPass::Dynamic);
@@ -42,14 +42,14 @@ namespace object
 		glGenBuffers(1, &vertex_buffer); this->SetPosVBO(vertex_buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-		GLuint location = new_shaderprogram->GetAttribLocation("vPosition");
+		GLuint location = new_shaderprogram->GetAttributeLocation("vPosition");
 		glEnableVertexAttribArray(location);
 		glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		
 		glGenBuffers(1, &color_buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(colors), &colors, GL_STATIC_DRAW);
-		location = new_shaderprogram->GetAttribLocation("vColor");
+		location = new_shaderprogram->GetAttributeLocation("vColor");
 		new_shaderprogram->Enable().SetParameter<GLboolean>("HasColorVertices", GL_TRUE);
 		glEnableVertexAttribArray(location); 
 		glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
