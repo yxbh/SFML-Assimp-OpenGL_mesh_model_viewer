@@ -60,24 +60,31 @@ namespace KG
 		return this->SetRotation(p_AngleX, p_AngleY, p_AngleZ);
 	}
 
+	TransformMatrix & TransformMatrix::SetOrientationQuat(const glm::dquat & p_rquat)
+	{
+		m_OrientationQuat = p_rquat;
+		m_Evaluated = false;
+		return *this;
+	}
+
 	TransformMatrix & TransformMatrix::SetPitch(const double p_Angle)
 	{
 		m_Angles.x = p_Angle;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false; return *this;
 	}
 
 	TransformMatrix & TransformMatrix::SetYaw(const double p_Angle)
 	{
 		m_Angles.y = p_Angle;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false; return *this;
 	}
 
 	TransformMatrix & TransformMatrix::SetRoll(const double p_Angle)
 	{
 		m_Angles.z = p_Angle;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false;return *this;
 	}
 
@@ -93,7 +100,7 @@ namespace KG
 		glm::dvec3 direction = glm::normalize(p_Pos - m_Position);
 		m_Angles.y = KE::Math::RadianToDegree(asin(-direction.y));
 		m_Angles.x = KE::Math::RadianToDegree(atan2(-direction.x, -direction.z));
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false; return *this;
 	}
 
@@ -123,28 +130,28 @@ namespace KG
 	TransformMatrix & TransformMatrix::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		m_Angles.x += p_DeltaX; m_Angles.y += p_DeltaY; m_Angles.z += p_DeltaZ;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false; return *this;
 	}
 
 	TransformMatrix & TransformMatrix::OffsetPitch(const double p_Angle)
 	{
 		m_Angles.x += p_Angle;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false; return *this;
 	}
 
 	TransformMatrix & TransformMatrix::OffsetYaw(const double p_Angle)
 	{
 		m_Angles.y += p_Angle;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false;return *this;
 	}
 
 	TransformMatrix & TransformMatrix::OffsetRoll(const double p_Angle)
 	{
 		m_Angles.z += p_Angle;
-		UpdateOrientation();
+		this->UpdateOrientation();
 		m_Evaluated = false;return *this;
 	}
 
@@ -229,7 +236,7 @@ namespace KG
 
 	glm::dquat TransformMatrix::GetOrientationQuat()
 	{
-		return m_Orientation;
+		return m_OrientationQuat;
 	}
 
 	const glm::dvec3 & TransformMatrix::GetRotationAngles(void) const
@@ -239,7 +246,7 @@ namespace KG
 
 	const glm::dmat4 TransformMatrix::GetRotationMat(void) const
 	{
-		return glm::mat4_cast(m_Orientation);
+		return glm::mat4_cast(m_OrientationQuat);
 	}
 
 	const glm::dmat4 TransformMatrix::GetOrientationMat(void) const
@@ -249,9 +256,9 @@ namespace KG
 
 	void TransformMatrix::UpdateOrientation()
 	{
-		m_Orientation = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * glm::dquat());
-		m_Orientation = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * m_Orientation); // X come after Y
-		m_Orientation = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * m_Orientation);
+		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * glm::dquat());
+		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * m_OrientationQuat); // X come after Y
+		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * m_OrientationQuat);
 	}
 
 	const GLfloat * const TransformMatrix::GetRawPtrF(void)
@@ -309,13 +316,6 @@ namespace KG
 	const glm::dmat4 mat4_cast(KG::TransformMatrix & p_rTransformMatrix)
 	{
 		return glm::dmat4(p_rTransformMatrix.GetGLMMatd());
-	}
-
-	TransformMatrix & TransformMatrix::SetOrientationQuat(const glm::dquat & p_rquat)
-	{
-		m_Orientation = p_rquat;
-		m_Evaluated = false;
-		return *this;
 	}
 
 } // KG ns

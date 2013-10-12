@@ -12,6 +12,8 @@ namespace KG
 	class ShaderProgram
 	{
 	public:
+		static const GLint InvalidAttributeLocation = -1;
+		static const GLint InvalidUniformLocation = -1;
 
 	private:
 		GLint						m_ProgramID;
@@ -29,13 +31,26 @@ namespace KG
 		void Disable(void) const;
 		void SetGLHandle(const GLuint p_ShaderProgramID);
 
+		/* all has methods look in internal hash map first. If fails look in shader. */
 		const bool HasUniform(const std::string & p_rUniform);
 		const bool HasParameter(const std::string & p_rUniform);
 		const bool HasAttribute(const std::string & p_rAttribute);
 
 		const GLint GetHandle(void) const;
-		const GLint GetAttributeLocation(const GLchar * const p_AttribName) const;
+		/*! Return Uniform location. Returns InvalidUniformLocation if uniform does not exist. */
+		const GLint GetUniformLocation(const std::string & p_rUniform);
+		/*! Return attribute location. Returns InvalidAttributeLocation if attribute does not exist. */
+		const GLint GetAttributeLocation(const std::string & p_rAttribute);
 
+	private:
+		/*! Search for uniform in shader. add shader into map is found and return true. return false otherwise. */
+		const bool SearchAndAddUniform(const char * const p_cstrUniform);
+		const bool SearchAndAddUniform(const std::string & p_rUniform);
+		/*! Similar to the uniform version. */
+		const bool SearchAndAddAttribute(const char * const p_cstrAttribute);
+		const bool SearchAndAddAttribute(const std::string & p_rAttribute);
+
+	public:
 		/* single variables. */
 		template<typename T>
 		const bool SetParameter(const GLchar * const p_UniformVariable, const T & p_Value);

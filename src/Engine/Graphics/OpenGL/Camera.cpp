@@ -198,7 +198,7 @@ namespace KG
 				return glm::perspective(m_FOVY, m_AspectRatio, m_ZNear, m_ZFar);
 			case FOVType::FixedFovx:
 				{
-					double fov = 2.0 * std::atan(tan(KE::Math::DegreeToRadian(m_FOYX) / 2.0) / m_AspectRatio); 
+					const double fov = 2.0 * std::atan(tan(KE::Math::DegreeToRadian(m_FOYX) / 2.0) / m_AspectRatio); 
 					return glm::perspective(KE::Math::RadianToDegree(fov), m_AspectRatio, m_ZNear, m_ZFar);
 				}
 			case FOVType::Dynamic:

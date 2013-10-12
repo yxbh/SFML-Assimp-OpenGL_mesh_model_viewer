@@ -29,7 +29,7 @@ namespace KG
 		glm::dvec3			m_Position;			// camera location.
 		glm::dvec3			m_Target;			// target of the camera.(where it's pointing)
 		glm::dmat4			m_FinalTransformMatrix;
-		glm::dquat			m_Orientation;
+		glm::dquat			m_OrientationQuat;
 
 		bool				m_Evaluated;
 
@@ -45,6 +45,8 @@ namespace KG
 		virtual TransformMatrix & SetRotation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
 		/*! Set orientation. Wrapper over SetRotation. */
 		virtual TransformMatrix & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
+		/*! */
+		TransformMatrix & SetOrientationQuat(const glm::dquat & p_rquat);
 		/*! Rotate along x axis. */
 		virtual TransformMatrix & SetPitch(const double p_Angle);
 		/*! Rotate along y axis. */
@@ -107,8 +109,6 @@ namespace KG
 		const glm::mat4 GetGLMMatf(void);		
 		/*! Evaluate the final transformation matrix if it's not done already. */
 		TransformMatrix & Evaluate(void);
-
-		TransformMatrix & SetOrientationQuat(const glm::dquat & p_rquat);
 		
 	}; // TransformationMatrix class
 

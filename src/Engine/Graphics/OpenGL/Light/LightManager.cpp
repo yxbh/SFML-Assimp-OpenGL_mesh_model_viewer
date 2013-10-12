@@ -80,33 +80,33 @@ namespace KG
 			array_and_index.append(array_name); array_and_index.append(std::to_string(++i));
 
 			uniform.clear(); uniform.append(array_and_index); uniform.append(position);
-			assert(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetPositionVec())));
+			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetPositionVec()));
 
 			uniform.clear(); uniform += array_and_index; uniform += direction;
-			assert(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetDirectionVec())));
+			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetDirectionVec()));
 
 			uniform.clear(); uniform += array_and_index; uniform += ambient;
-			assert(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetAmbient())));
+			(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetAmbient())));
 
 			uniform.clear(); uniform += array_and_index; uniform += color;
-			assert(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetColor())));
+			(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetColor())));
 
 			uniform.clear(); uniform += array_and_index; uniform += type;
-			assert(p_spShaderProgram->SetParameter<GLint>(uniform.c_str(), light_ptr->GetType()));
+			(p_spShaderProgram->SetParameter<GLint>(uniform.c_str(), light_ptr->GetType()));
 
 			uniform.clear(); uniform += array_and_index; uniform += attenuateConstantCoeff;
-			assert(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetAttenuationConstant()));
+			(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetAttenuationConstant()));
 			uniform.clear(); uniform += array_and_index; uniform += attenuateLinearCoeff;
-			assert(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetAttenuationLinear()));
+			(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetAttenuationLinear()));
 			uniform.clear(); uniform += array_and_index; uniform += attenuateQuadraticCoeff;
-			assert(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetAttenuationQuadratic()));
+			(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetAttenuationQuadratic()));
 
 			uniform.clear(); uniform += array_and_index; uniform += outerConeCosAngle;
-			assert(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetOuterConeCosAngle()));
+			(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetOuterConeCosAngle()));
 			uniform.clear(); uniform += array_and_index; uniform += innerConeCosAngle;
-			assert(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetInnerConeCosAngle()));
+			(p_spShaderProgram->SetParameter<GLfloat>(uniform.c_str(), light_ptr->GetInnerConeCosAngle()));
 		}
-		assert(p_spShaderProgram->SetParameter<GLint>("NumLights", i+1));
+		(p_spShaderProgram->SetParameter<GLint>("NumLights", i+1));
 	}
 
 } // KG ns

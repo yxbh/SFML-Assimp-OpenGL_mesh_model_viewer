@@ -12,7 +12,7 @@ namespace KG
 	const bool ShaderProgram::SetParameter<GLfloat>
 		(const GLchar * const p_UniformVariable, const GLfloat & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -26,7 +26,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLdouble>
 		(const GLchar * const p_UniformVariable, const GLdouble & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -40,7 +40,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLint>
 		(const GLchar * const p_UniformVariable, const GLint & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -54,7 +54,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLuint>
 		(const GLchar * const p_UniformVariable, const GLuint & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -68,7 +68,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLboolean>
 		(const GLchar * const p_UniformVariable, const GLboolean & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -82,7 +82,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<glm::vec3>
 		(const GLchar * const p_UniformVariable, const glm::vec3 & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -96,7 +96,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<glm::vec4>
 		(const GLchar * const p_UniformVariable, const glm::vec4 & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -110,7 +110,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<glm::mat3>
 		(const GLchar * const p_UniformVariable, const glm::mat3 & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -124,7 +124,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<glm::mat4>
 		(const GLchar * const p_UniformVariable, const glm::mat4 & p_Value)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -144,7 +144,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLfloat>
 		(const GLchar * const p_UniformVariable, const GLfloat & p_Value, const GLfloat & p_Value2)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -158,7 +158,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLint>
 		(const GLchar * const p_UniformVariable, const GLint & p_Value, const GLint & p_Value2)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -178,7 +178,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLfloat>
 		(const GLchar * const p_UniformVariable, const GLfloat & p_Value, const GLfloat & p_Value2, const GLfloat & p_Value3, const GLfloat & p_Value4)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -192,7 +192,7 @@ namespace KG
 	template<> const bool ShaderProgram::SetParameter<GLdouble>
 		(const GLchar * const p_UniformVariable, const GLdouble & p_Value, const GLdouble & p_Value2, const GLdouble & p_Value3, const GLdouble & p_Value4)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
@@ -206,7 +206,7 @@ namespace KG
 	template<>	const bool ShaderProgram::SetParameter<GLint>
 		(const GLchar * const p_UniformVariable, const GLint & p_Value, const GLint & p_Value2, const GLint & p_Value3, const GLint & p_Value4)
 	{
-		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable);
+		GLint location = glGetUniformLocation(m_ProgramID, p_UniformVariable); // this->GetUniformLocation(p_UniformVariable);
 		if (location == -1)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
