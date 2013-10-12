@@ -96,34 +96,34 @@ namespace KG
 
 	TransformMatrix & Camera::SetPitch(const double p_Angle)
 	{
-		return this->TransformMatrix::SetPitch(p_Angle);
+		return this->SetOrientation(p_Angle, 0.0, 0.0);
 	}
 
 	TransformMatrix & Camera::SetYaw(const double p_Angle)
 	{
-		return this->TransformMatrix::SetYaw(p_Angle);
+		return this->SetOrientation(0.0, p_Angle, 0.0);
 	}
 
 	TransformMatrix & Camera::SetRoll(const double p_Angle)
 	{
-		return this->TransformMatrix::SetRoll(p_Angle);
+		return this->SetOrientation(0.0, 0.0, p_Angle);
 	}
 
 	TransformMatrix & Camera::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
 	{
-		double angle_x = p_AngleX;	double angle_y = p_AngleY;	double angle_z = p_AngleZ;
-		if (angle_x <= -90.0)	angle_x = -89.0;
-		if (angle_x >= 90.0)	angle_x = 89.0;
+		double angle_x(p_AngleX);	double angle_y(p_AngleY);	double angle_z(p_AngleZ);
+		if (angle_x <= -90.0)	angle_x = -89.5;
+		if (angle_x >= 90.0)	angle_x = 89.5;
 		return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
 	}
 
 	TransformMatrix & Camera::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
-		double angle_x = p_DeltaX;	double angle_y = p_DeltaY;	double angle_z = p_DeltaZ;
+		double angle_x(p_DeltaX);	double angle_y(p_DeltaY);	double angle_z(p_DeltaZ);
 		glm::dvec3 current_rotation = this->GetRotationAngles();
 		angle_x += current_rotation.x; angle_y += current_rotation.y; angle_z += current_rotation.z;
-		if (angle_x <= -90.0)	angle_x = -89.0;
-		if (angle_x >= 90.0)	angle_x = 89.0;
+		if (angle_x <= -90.0)	angle_x = -89.5;
+		if (angle_x >= 90.0)	angle_x = 89.5;
 		return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
 	}
 

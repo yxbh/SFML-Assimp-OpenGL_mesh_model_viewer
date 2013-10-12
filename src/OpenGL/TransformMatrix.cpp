@@ -245,8 +245,11 @@ namespace KG
 		//m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * m_OrientationQuat); // X come after Y
 		//m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * m_OrientationQuat);
 		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * glm::dquat());
-		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat); // X come after Y
+		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat);
 		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * m_OrientationQuat);
+		/*m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * glm::dquat());
+		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * m_OrientationQuat);
+		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat);*/
 	}
 
 	const GLfloat * const TransformMatrix::GetRawPtrF(void)
