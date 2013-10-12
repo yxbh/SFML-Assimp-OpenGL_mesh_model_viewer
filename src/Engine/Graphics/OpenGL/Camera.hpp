@@ -78,7 +78,6 @@ namespace KG
 		/*! Strafe delta units relative to given 4x4 matrix's rotation/orientation. */
 		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation) override;
 
-		virtual const glm::dmat4 GetRotationMat(void) const override;
 		virtual const glm::dmat4 GetOrientationMat(void) const override;
 
 		const glm::dmat4 GetViewMatrix(void);

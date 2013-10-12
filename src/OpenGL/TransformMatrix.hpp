@@ -92,8 +92,6 @@ namespace KG
 		const glm::dmat4 GetPositionMat(void);
 		/*! */
 		const glm::dvec3 & GetRotationAngles(void) const;
-		/*! Get the rotation matrix. */
-		virtual const glm::dmat4 GetRotationMat(void) const;
 		/*! Get */
 		virtual const glm::dmat4 GetOrientationMat(void) const;
 

@@ -186,7 +186,7 @@ namespace KG
 
 			// model
 			shader_program_ptr->SetParameter<glm::mat4>("modelMatrix", glm::mat4(model_matrix));
-			shader_program_ptr->SetParameter<glm::mat3>("ModelRotationMat3", glm::mat3(glm::dmat3(mesh_ptr->GetRotationMat())));// glm::mat3(glm::transpose(glm::inverse(glm::dmat3(model_matrix)))));
+			shader_program_ptr->SetParameter<glm::mat3>("ModelRotationMat3", glm::mat3(glm::dmat3(mesh_ptr->GetOrientationMat())));// glm::mat3(glm::transpose(glm::inverse(glm::dmat3(model_matrix)))));
 			// light
 			if (mesh_ptr->Has(KG::Mesh::Property::LightBackFace))
 				shader_program_ptr->SetParameter<GLboolean>("LightBackFace", GL_TRUE);

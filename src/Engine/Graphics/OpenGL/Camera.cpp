@@ -151,20 +151,13 @@ namespace KG
 		this->TransformMatrix::StrafeRelativeTo(p_DeltaX, p_DeltaY, p_DeltaZ, glm::inverse(p_rOrientation));
 	}
 
-	const glm::dmat4 Camera::GetRotationMat(void) const
+	const glm::dmat4 Camera::GetOrientationMat(void) const
 	{
 		const glm::dvec3 angles = this->GetRotationAngles();
 		glm::dquat orientation = glm::normalize(glm::angleAxis(-angles.y, glm::dvec3(0.0, 1.0, 0.0)) * glm::dquat());
 		orientation = glm::normalize(glm::angleAxis(-angles.x, glm::dvec3(1.0, 0.0, 0.0)) * orientation); // X come after Y
 		orientation = glm::normalize(glm::angleAxis(-angles.z, glm::dvec3(0.0, 0.0, 1.0)) * orientation);
-		
-		
 		return glm::mat4_cast(orientation);
-	}
-
-	const glm::dmat4 Camera::GetOrientationMat(void) const
-	{
-		return this->Camera::GetRotationMat();
 	}
 
 	const glm::dmat4 Camera::GetViewMatrix(void)

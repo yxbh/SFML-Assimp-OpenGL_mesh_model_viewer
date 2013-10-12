@@ -234,14 +234,9 @@ namespace KG
 		return m_Angles;
 	}
 
-	const glm::dmat4 TransformMatrix::GetRotationMat(void) const
-	{
-		return glm::mat4_cast(m_OrientationQuat);
-	}
-
 	const glm::dmat4 TransformMatrix::GetOrientationMat(void) const
 	{
-		return this->GetRotationMat();
+		return glm::mat4_cast(m_OrientationQuat);
 	}
 
 	void TransformMatrix::UpdateOrientation()
@@ -272,7 +267,7 @@ namespace KG
 	{
 		if (!m_Evaluated)
 		{
-			m_FinalTransformMatrix = glm::translate(m_Position) * this->GetRotationMat() * glm::scale(m_Scale);
+			m_FinalTransformMatrix = glm::translate(m_Position) * this->GetOrientationMat() * glm::scale(m_Scale);
 			m_Evaluated = true;
 		}
 		return *this;
