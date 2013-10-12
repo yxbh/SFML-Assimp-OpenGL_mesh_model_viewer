@@ -46,6 +46,7 @@ namespace KG
 		glm::dmat4			m_ViewMatrix;						// the camera view matrix
 		double				m_DistanceToTarget;
 		CamType				m_CameraType;						// defines rotation rules
+		bool				m_CameraChanged;
 
 	public:
 		Camera(void);
@@ -72,13 +73,6 @@ namespace KG
 		virtual TransformMatrix & OffsetYaw(const double p_Angle) override;
 		/*! Rotate along z axis. */
 		virtual TransformMatrix & OffsetRoll(const double p_Angle) override;
-
-		/*! Strafe delta units relative to the TransformMatrix's orientation. */
-		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const KG::TransformMatrix & p_rTransform) override;
-		/*! Strafe delta units relative to given 4x4 matrix's rotation/orientation. */
-		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation) override;
-
-		virtual const glm::dmat4 GetOrientationMat(void) const override;
 
 		const glm::dmat4 GetViewMatrix(void);
 		const glm::dmat4 GetProjectionMatrix(void);

@@ -15,6 +15,7 @@ namespace KG
 		, m_ZNear(0.1), m_ZFar(10000.0)
 		, m_ProjectionMode(ProjectionMode::Perspective)
 		, m_ProjectionMatrix(1.0) , m_ViewMatrix(1.0)
+		, m_CameraChanged(false)
 	{
 		this->SetPosition(0.0, 0.0, 5.0);
 		this->SetOrientation(0.0, 0.0, 0.0);
@@ -141,33 +142,16 @@ namespace KG
 		return this->TransformMatrix::OffsetRoll(p_Angle);
 	}
 
-	void Camera::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const KG::TransformMatrix & p_rTransform)
-	{
-		this->Camera::StrafeRelativeTo(p_DeltaX, p_DeltaY, p_DeltaZ, p_rTransform.GetOrientationMat());
-	}
-
-	void Camera::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation)
-	{
-		this->TransformMatrix::StrafeRelativeTo(p_DeltaX, p_DeltaY, p_DeltaZ, glm::inverse(p_rOrientation));
-	}
-
-	const glm::dmat4 Camera::GetOrientationMat(void) const
-	{
-		const glm::dvec3 angles = this->GetRotationAngles();
-		glm::dquat orientation = glm::normalize(glm::angleAxis(-angles.y, glm::dvec3(0.0, 1.0, 0.0)) * glm::dquat());
-		orientation = glm::normalize(glm::angleAxis(-angles.x, glm::dvec3(1.0, 0.0, 0.0)) * orientation); // X come after Y
-		orientation = glm::normalize(glm::angleAxis(-angles.z, glm::dvec3(0.0, 0.0, 1.0)) * orientation);
-		return glm::mat4_cast(orientation);
-	}
-
 	const glm::dmat4 Camera::GetViewMatrix(void)
 	{
+		const glm::dmat4 orientation_mat(glm::mat4_cast(glm::conjugate(this->GetOrientationQuat())));
+		const glm::dmat4 translation_mat(glm::translate(glm::dmat4(1.0), -this->GetPositionVec()));
 		if(m_CameraType == CamType::FreeFlight)
-			return this->GetOrientationMat() * glm::translate(glm::dmat4(1.0f), -this->GetPositionVec());
+			return orientation_mat * translation_mat;
 		else
 		{
-			glm::dmat4 offset(glm::translate(glm::dmat4(),glm::dvec3(0,0,-m_DistanceToTarget)));
-			return offset * this->GetOrientationMat() * glm::translate(glm::dmat4(1.0f), -this->GetPositionVec());
+			const glm::dmat4 offset(glm::translate(glm::dmat4(),glm::dvec3(0,0,-m_DistanceToTarget)));
+			return offset * orientation_mat * translation_mat;
 		}
 	}
 

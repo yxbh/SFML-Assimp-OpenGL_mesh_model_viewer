@@ -164,13 +164,13 @@ namespace ObjectManipulator
 			node->OffsetPosition(0.0, delta, 0.0);
 			break;
 		case CITS::EventType::StrafeRightRelCam:
-			node->StrafeRelativeTo(delta, 0.0, 0.0, glm::inverse(KG::Graphics::Get().GetScene().GetCamera().GetOrientationMat())); // inverse because Camera got involved and we're calling StrafeRelativeTo from a regular TransformMatrix
+			node->StrafeRelativeTo(delta, 0.0, 0.0, KG::Graphics::Get().GetScene().GetCamera().GetOrientationMat());
 			break;
 		case CITS::EventType::StrafeForeRelCam:
 			{
 				glm::dvec3 angles = KG::Graphics::Get().GetScene().GetCamera().GetRotationAngles();
 				glm::dmat4 horizontal_rotation_mat = glm::rotate(angles.y, glm::dvec3(0.0, 1.0, 0.0));
-				node->StrafeRelativeTo(0.0, 0.0, -delta, horizontal_rotation_mat);  // inverse because Camera got involved and we're calling StrafeRelativeTo from a regular TransformMatrix
+				node->StrafeRelativeTo(0.0, 0.0, -delta, horizontal_rotation_mat);
 				break;
 			}
 		case CITS::EventType::UniformScale:
