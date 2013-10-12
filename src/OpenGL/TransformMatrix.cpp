@@ -241,15 +241,55 @@ namespace KG
 
 	void TransformMatrix::UpdateOrientation()
 	{
-		//m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * glm::dquat());
-		//m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * m_OrientationQuat); // X come after Y
-		//m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * m_OrientationQuat);
-		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * glm::dquat());
-		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat);
-		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * m_OrientationQuat);
-		/*m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)) * glm::dquat());
-		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)) * m_OrientationQuat);
-		m_OrientationQuat = glm::normalize(glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat);*/
+		// yxz
+		//m_OrientationQuat = glm::dquat() * glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0));
+		//m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)); // X come after Y
+		//m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0));
+		// yzx
+		m_OrientationQuat = glm::dquat() * glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0));
+		// xyz
+		/*m_OrientationQuat = glm::normalize(glm::dquat() * glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0)));
+		m_OrientationQuat = glm::normalize(m_OrientationQuat * glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0)));
+		m_OrientationQuat = glm::normalize(m_OrientationQuat * glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0)));*/
+		// xzy
+		/*m_OrientationQuat = glm::dquat() * glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0));*/
+		// zxy
+		/*m_OrientationQuat = glm::dquat() * glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0));*/
+		// zyx
+		/*m_OrientationQuat = glm::dquat() * glm::angleAxis(m_Angles.z, glm::dvec3(0.0, 0.0, 1.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.y, glm::dvec3(0.0, 1.0, 0.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(m_Angles.x, glm::dvec3(1.0, 0.0, 0.0));*/
+		
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
+		/*m_OrientationQuat = glm::dquat();
+		m_OrientationQuat = glm::rotate(m_OrientationQuat, m_Angles.y, glm::dvec3(0.0, 1.0, 0.0));
+		m_OrientationQuat = glm::rotate(m_OrientationQuat, m_Angles.x, glm::dvec3(1.0, 0.0, 0.0));
+		m_OrientationQuat = glm::rotate(m_OrientationQuat, m_Angles.z, glm::dvec3(0.0, 0.0, 1.0));*/
+
+		/*using namespace KE::Math;
+		using namespace std;
+		double yaw = DegreeToRadian(m_Angles.y);
+		double pitch = DegreeToRadian(m_Angles.x);
+		double roll = DegreeToRadian(m_Angles.z);
+		double rollOver2 = roll * 0.5;
+		double sinRollOver2 = sin(rollOver2);
+		double cosRollOver2 = cos(rollOver2);
+		double pitchOver2 = pitch * 0.5;
+		double sinPitchOver2 = sin(pitchOver2);
+		double cosPitchOver2 = cos(pitchOver2);
+		double yawOver2 = yaw * 0.5;
+		double sinYawOver2 = sin(yawOver2);
+		double cosYawOver2 = cos(yawOver2);
+		m_OrientationQuat.w = cosYawOver2 * cosPitchOver2 * cosRollOver2 + sinYawOver2 * sinPitchOver2 * sinRollOver2;
+		m_OrientationQuat.x = cosYawOver2 * sinPitchOver2 * cosRollOver2 + sinYawOver2 * cosPitchOver2 * sinRollOver2;
+		m_OrientationQuat.y = sinYawOver2 * cosPitchOver2 * cosRollOver2 - cosYawOver2 * sinPitchOver2 * sinRollOver2;
+		m_OrientationQuat.z = cosYawOver2 * cosPitchOver2 * sinRollOver2 - sinYawOver2 * sinPitchOver2 * cosRollOver2;*/
 	}
 
 	const GLfloat * const TransformMatrix::GetRawPtrF(void)
