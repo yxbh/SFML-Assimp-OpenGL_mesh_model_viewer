@@ -42,8 +42,6 @@ namespace KG
 		TransformMatrix & SetTarget(const double p_ValX, const double p_ValY, const double p_ValZ);
 		TransformMatrix & SetScale(const double p_ScaleX, const double p_ScaleY, const double p_ScaleZ);
 		/*! Rotate angles in degrees. In order X, Z, Y axis. */
-		virtual TransformMatrix & SetRotation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
-		/*! Set orientation. Wrapper over SetRotation. */
 		virtual TransformMatrix & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
 		/*! */
 		TransformMatrix & SetOrientationQuat(const glm::dquat & p_rquat);
@@ -59,7 +57,6 @@ namespace KG
 		TransformMatrix & OffsetScale(const double p_ScaleX, const double p_ScaleY, const double p_ScaleZ);
 		TransformMatrix & OffsetPosition(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ);
 		TransformMatrix & OffsetTarget(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ);
-		virtual TransformMatrix & OffsetRotation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
 		virtual TransformMatrix & OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ);
 		/*! Rotate along x axis. */
 		virtual TransformMatrix & OffsetPitch(const double p_Angle);

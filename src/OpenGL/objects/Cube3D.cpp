@@ -93,7 +93,7 @@ namespace object
 	{
 		SceneNode::Update(p_rScene, p_DeltaTime);
 		static KE::Duration elapsed; elapsed += p_DeltaTime;
-		this->SetRotation
+		this->SetOrientation
 		(
 			elapsed.AsSeconds() * 90
 			, elapsed.AsSeconds() * 90

@@ -13,7 +13,7 @@ namespace KG
 		, m_ConeAnglesEvaluated(true)
 		, m_On(true)
 	{
-		this->SetRotation(-90.0, 0.0, 0.0);
+		this->SetOrientation(-90.0, 0.0, 0.0);
 	}
 
 	Light::~Light(void)

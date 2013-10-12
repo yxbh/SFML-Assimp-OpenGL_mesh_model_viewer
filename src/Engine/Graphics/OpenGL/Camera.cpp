@@ -17,7 +17,7 @@ namespace KG
 		, m_ProjectionMatrix(1.0) , m_ViewMatrix(1.0)
 	{
 		this->SetPosition(0.0, 0.0, 5.0);
-		this->SetRotation(0.0, 0.0, 0.0);
+		this->SetOrientation(0.0, 0.0, 0.0);
 		m_FOYX = KE::Math::RadianToDegree(2*std::atan(std::tan(KE::Math::DegreeToRadian(m_FOVY)/2)*m_AspectRatio));
 		m_ProjectionMatrix = GetProjectionMatrix();
 		m_ViewMatrix = GetViewMatrix();
@@ -108,32 +108,22 @@ namespace KG
 		return this->TransformMatrix::SetRoll(p_Angle);
 	}
 
-	TransformMatrix & Camera::SetRotation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
+	TransformMatrix & Camera::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
 	{
 		double angle_x = p_AngleX;	double angle_y = p_AngleY;	double angle_z = p_AngleZ;
 		if (angle_x <= -90.0)	angle_x = -89.0;
 		if (angle_x >= 90.0)	angle_x = 89.0;
-		return this->TransformMatrix::SetRotation(angle_x, angle_y, angle_z);
+		return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
 	}
 
-	TransformMatrix & Camera::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
-	{
-		return this->Camera::SetRotation(p_AngleX, p_AngleY, p_AngleZ);
-	}
-
-	TransformMatrix & Camera::OffsetRotation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	TransformMatrix & Camera::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		double angle_x = p_DeltaX;	double angle_y = p_DeltaY;	double angle_z = p_DeltaZ;
 		glm::dvec3 current_rotation = this->GetRotationAngles();
 		angle_x += current_rotation.x; angle_y += current_rotation.y; angle_z += current_rotation.z;
 		if (angle_x <= -90.0)	angle_x = -89.0;
 		if (angle_x >= 90.0)	angle_x = 89.0;
-		return this->TransformMatrix::SetRotation(angle_x, angle_y, angle_z);
-	}
-
-	TransformMatrix & Camera::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
-	{
-		return this->Camera::OffsetRotation(p_DeltaX, p_DeltaY, p_DeltaZ);
+		return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
 	}
 
 	TransformMatrix & Camera::OffsetPitch(const double p_Angle)

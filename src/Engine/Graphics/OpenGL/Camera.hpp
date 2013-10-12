@@ -64,9 +64,7 @@ namespace KG
 		virtual TransformMatrix & SetYaw(const double p_Angle) override;
 		/*! Rotate along z axis. */
 		virtual TransformMatrix & SetRoll(const double p_Angle) override;
-		virtual TransformMatrix & SetRotation(const double p_AngleX, const double p_AngleY, const double p_AngleZ) override;
 		virtual TransformMatrix & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ) override;
-		virtual TransformMatrix & OffsetRotation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ) override;
 		virtual TransformMatrix & OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ) override;
 		/*! Rotate along x axis. */
 		virtual TransformMatrix & OffsetPitch(const double p_Angle) override;

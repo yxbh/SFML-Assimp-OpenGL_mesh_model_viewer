@@ -42,9 +42,9 @@ namespace KG
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetRotation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	TransformMatrix & TransformMatrix::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
 	{
-		m_Angles.x = p_DeltaX; m_Angles.y = p_DeltaY; m_Angles.z = p_DeltaZ;
+		m_Angles.x = p_AngleX; m_Angles.y = p_AngleY; m_Angles.z = p_AngleZ;
 		if (m_Angles.x < -180.0)	m_Angles.x += 360.0;
 		if (m_Angles.x > 180.0)		m_Angles.x -= 360.0;
 		if (m_Angles.y < -180.0)	m_Angles.y += 360.0;
@@ -53,11 +53,6 @@ namespace KG
 		if (m_Angles.z > 180.0)		m_Angles.z -= 360.0;
 		UpdateOrientation();
 		m_Evaluated = false; return *this;
-	}
-
-	TransformMatrix & TransformMatrix::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
-	{
-		return this->SetRotation(p_AngleX, p_AngleY, p_AngleZ);
 	}
 
 	TransformMatrix & TransformMatrix::SetOrientationQuat(const glm::dquat & p_rquat)
@@ -120,11 +115,6 @@ namespace KG
 	{
 		m_Target.x += p_DeltaX; m_Target.y += p_DeltaY; m_Target.z += p_DeltaZ;
 		m_Evaluated = false; return *this;
-	}
-
-	TransformMatrix & TransformMatrix::OffsetRotation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
-	{
-		return this->OffsetOrientation(p_DeltaX, p_DeltaY, p_DeltaZ);
 	}
 
 	TransformMatrix & TransformMatrix::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
