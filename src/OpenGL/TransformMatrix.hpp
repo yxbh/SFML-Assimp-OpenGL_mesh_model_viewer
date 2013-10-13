@@ -23,9 +23,9 @@ namespace KG
 	*/
 	class TransformMatrix
 	{
-	private:		
+	protected:		
 		glm::dvec3			m_Scale;
-		glm::dvec3			m_Angles;
+		//glm::dvec3			m_Angles;
 		glm::dvec3			m_Position;			// camera location.
 		glm::dvec3			m_Target;			// target of the camera.(where it's pointing)
 		glm::dmat4			m_FinalTransformMatrix;
@@ -95,7 +95,6 @@ namespace KG
 		/*! Get */
 		virtual const glm::dmat4 GetOrientationMat(void) const;
 
-		void UpdateOrientation(void);
 		/*! Return the raw pointer to the matrix. Evaluates final transformation matrix if it hasn't already. */
 		const GLfloat * const GetRawPtrF(void);
 		/*! */

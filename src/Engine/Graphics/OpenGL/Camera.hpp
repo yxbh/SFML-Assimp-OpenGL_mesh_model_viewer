@@ -59,20 +59,21 @@ namespace KG
 		Camera & SetZFar(const double p_Val);
 		Camera & SetZNear(const double p_Val);
 
+
 		/*! Rotate along x axis. */
-		virtual TransformMatrix & SetPitch(const double p_Angle) override;
+		//virtual TransformMatrix & SetPitch(const double p_Angle) override;
 		/*! Rotate along y axis. */
-		virtual TransformMatrix & SetYaw(const double p_Angle) override;
+		//virtual TransformMatrix & SetYaw(const double p_Angle) override;
 		/*! Rotate along z axis. */
-		virtual TransformMatrix & SetRoll(const double p_Angle) override;
-		virtual TransformMatrix & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ) override;
-		virtual TransformMatrix & OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ) override;
+		//virtual TransformMatrix & SetRoll(const double p_Angle) override;
+		//virtual TransformMatrix & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ) override;
+		//virtual TransformMatrix & OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ) override;
 		/*! Rotate along x axis. */
-		virtual TransformMatrix & OffsetPitch(const double p_Angle) override;
+		//virtual TransformMatrix & OffsetPitch(const double p_Angle) override;
 		/*! Rotate along y axis. */
 		virtual TransformMatrix & OffsetYaw(const double p_Angle) override;
 		/*! Rotate along z axis. */
-		virtual TransformMatrix & OffsetRoll(const double p_Angle) override;
+		//virtual TransformMatrix & OffsetRoll(const double p_Angle) override;
 
 		const glm::dmat4 GetViewMatrix(void);
 		const glm::dmat4 GetProjectionMatrix(void);

@@ -9,7 +9,7 @@ namespace KG
 		: m_CameraTop(0.0, 1.0, 0.0)
 		, m_AspectRatio(1.77777777778)
 		, m_FovMode(FOVType::Dynamic), m_AspectRatioLimit(1.0)
-		, m_FOVY(DefaultFov::Fovy), m_FOYX(0 /*below*/), m_FOVDynamic(DefaultFov::Fovy)
+		, m_FOVY(60), m_FOYX(0 /*below*/), m_FOVDynamic(DefaultFov::Fovy)
 		, m_CameraType(CamType::FreeFlight)
 		, m_DistanceToTarget( 0.0 )
 		, m_ZNear(0.1), m_ZFar(10000.0)
@@ -94,7 +94,7 @@ namespace KG
 		m_ZNear = p_Val; return *this;
 	}
 
-	TransformMatrix & Camera::SetPitch(const double p_Angle)
+	/*TransformMatrix & Camera::SetPitch(const double p_Angle)
 	{
 		return this->SetOrientation(p_Angle, 0.0, 0.0);
 	}
@@ -107,40 +107,42 @@ namespace KG
 	TransformMatrix & Camera::SetRoll(const double p_Angle)
 	{
 		return this->SetOrientation(0.0, 0.0, p_Angle);
-	}
+	}*/
 
-	TransformMatrix & Camera::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
-	{
-		double angle_x(p_AngleX);	double angle_y(p_AngleY);	double angle_z(p_AngleZ);
-		if (angle_x <= -90.0)	angle_x = -89.5;
-		if (angle_x >= 90.0)	angle_x = 89.5;
-		return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
-	}
+	//TransformMatrix & Camera::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
+	//{
+	//	double angle_x(p_AngleX);	double angle_y(p_AngleY);	double angle_z(p_AngleZ);
+	//	if (angle_x <= -90.0)	angle_x = -89.5;
+	//	if (angle_x >= 90.0)	angle_x = 89.5;
+	//	return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
+	//}
 
-	TransformMatrix & Camera::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
-	{
-		double angle_x(p_DeltaX);	double angle_y(p_DeltaY);	double angle_z(p_DeltaZ);
-		glm::dvec3 current_rotation = this->GetRotationAngles();
-		angle_x += current_rotation.x; angle_y += current_rotation.y; angle_z += current_rotation.z;
-		if (angle_x <= -90.0)	angle_x = -89.5;
-		if (angle_x >= 90.0)	angle_x = 89.5;
-		return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
-	}
+	//TransformMatrix & Camera::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	//{
+	//	double angle_x(p_DeltaX);	double angle_y(p_DeltaY);	double angle_z(p_DeltaZ);
+	//	glm::dvec3 current_rotation = this->GetRotationAngles();
+	//	angle_x += current_rotation.x; angle_y += current_rotation.y; angle_z += current_rotation.z;
+	//	if (angle_x <= -90.0)	angle_x = -89.5;
+	//	if (angle_x >= 90.0)	angle_x = 89.5;
+	//	return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
+	//}
 
-	TransformMatrix & Camera::OffsetPitch(const double p_Angle)
+	/*TransformMatrix & Camera::OffsetPitch(const double p_Angle)
 	{
 		return this->TransformMatrix::OffsetPitch(p_Angle);
-	}
+	}*/
 
 	TransformMatrix & Camera::OffsetYaw(const double p_Angle)
 	{
-		return this->TransformMatrix::OffsetYaw(p_Angle);
+		if (p_Angle == 0.0) return *this;
+		m_OrientationQuat = glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat;
+		m_Evaluated = false;return *this;
 	}
 
-	TransformMatrix & Camera::OffsetRoll(const double p_Angle)
+	/*TransformMatrix & Camera::OffsetRoll(const double p_Angle)
 	{
 		return this->TransformMatrix::OffsetRoll(p_Angle);
-	}
+	}*/
 
 	const glm::dmat4 Camera::GetViewMatrix(void)
 	{
