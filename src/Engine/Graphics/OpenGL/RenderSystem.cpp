@@ -63,7 +63,7 @@ namespace KG
 		m_spRenderer->m_spShaderProgram->Enable();
 
 		// view: camera position.
-		glm::vec3 camera_pos(m_Scene.GetCamera().GetPositionVec());
+		glm::vec3 camera_pos(m_Scene.GetCamera().GetPositionVec3());
 		m_spRenderer->m_spShaderProgram->SetParameter<glm::vec3>("CameraPosition", camera_pos);
 
 		// TODO TEMP HERE UNTIL SUMMER BREAK REFACTOR.

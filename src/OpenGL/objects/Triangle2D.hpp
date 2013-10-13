@@ -1,7 +1,6 @@
 #pragma once
 #include "../../Engine/common.hpp"
 #include "../../Engine/Graphics/OpenGL_Graphics.hpp"
-#include "../TransformMatrix.hpp"
 
 namespace object
 {
@@ -10,9 +9,6 @@ namespace object
 	{
 
 	private:
-		// transformation matrix
-		KG::TransformMatrix m_TransformationMatrix;
-
 	public:
 		Triangle(void);
 		virtual ~Triangle(void);

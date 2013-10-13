@@ -168,7 +168,8 @@ namespace ObjectManipulator
 			break;
 		case CITS::EventType::StrafeForeRelCam:
 			{
-				glm::dvec3 angles = KG::Graphics::Get().GetScene().GetCamera().GetRotationAngles();
+				glm::dvec3 angles = KG::Graphics::Get().GetScene().GetCamera().GetEulerAngles();
+				KE::Debug::print(std::to_string(angles.x) + " " + std::to_string(angles.y) + " " + std::to_string(angles.z));
 				glm::dmat4 horizontal_rotation_mat = glm::rotate(angles.y, glm::dvec3(0.0, 1.0, 0.0));
 				node->StrafeRelativeTo(0.0, 0.0, -delta, horizontal_rotation_mat);
 				break;
@@ -178,25 +179,21 @@ namespace ObjectManipulator
 			break;
 		case CITS::EventType::RollUp:
 			{
-			glm::dquat Del =  (KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat())
-							  * glm::angleAxis( delta, glm::dvec3(1.0, 0.0, 0.0))
-							  * glm::conjugate(KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat());
-			Del = glm::normalize(Del);
-			Del = Del * node->GetOrientationQuat();
-			Del = glm::normalize(Del);
-			node->SetOrientationQuat(Del); 
-			break;
+				const glm::dquat camera_quat = KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat();
+				const glm::dquat offset = glm::angleAxis(delta, glm::dvec3(1.0, 0.0, 0.0));
+				glm::dquat Delta =  camera_quat * offset * glm::conjugate(camera_quat);
+				Delta = Delta * node->GetOrientationQuat();
+				node->SetOrientationQuat(glm::normalize(Delta)); 
+				break;
 			}
 		case CITS::EventType::RollRight:
 			{
-			glm::dquat Del = (KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat())
-						  * glm::angleAxis( delta, glm::dvec3(0.0, 1.0, 0.0))
-						  * glm::conjugate(KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat());
-			Del = glm::normalize(Del);
-			Del = Del * node->GetOrientationQuat();
-			Del = glm::normalize(Del);
-			node->SetOrientationQuat(Del); 
-			break;
+				const glm::dquat camera_quat = KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat();
+				const glm::dquat offset = glm::angleAxis(delta, glm::dvec3(0.0, 1.0, 0.0));
+				glm::dquat Delta =  camera_quat * offset * glm::conjugate(camera_quat);
+				Delta = Delta * node->GetOrientationQuat();
+				node->SetOrientationQuat(glm::normalize(Delta)); 
+				break;
 			}
 		case CITS::EventType::NewGUICreated:
 			{

@@ -1,7 +1,6 @@
 #pragma once
 #include "../../Engine/common.hpp"
 #include "../../Engine/Graphics/OpenGL_Graphics.hpp"
-#include "../TransformMatrix.hpp"
 
 namespace object
 {
@@ -9,8 +8,6 @@ namespace object
 		: public KG::Mesh
 	{
 	private:
-		KG::TransformMatrix m_TransformationMatrix;
-
 	public:
 		Cube3D(void);
 		virtual ~Cube3D(void);

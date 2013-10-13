@@ -1,7 +1,6 @@
 #pragma once
 #include "../../common.hpp"
 #include "../../Graphics/OpenGL/SceneNode.hpp"
-#include "../../../OpenGL/TransformMatrix.hpp"
 
 namespace KE
 {
@@ -71,7 +70,7 @@ namespace KG
 		/*! Rotate along x axis. */
 		//virtual TransformMatrix & OffsetPitch(const double p_Angle) override;
 		/*! Rotate along y axis. */
-		virtual TransformMatrix & OffsetYaw(const double p_Angle) override;
+		virtual Transform & OffsetYaw(const double p_Angle) override;
 		/*! Rotate along z axis. */
 		//virtual TransformMatrix & OffsetRoll(const double p_Angle) override;
 

@@ -2,7 +2,7 @@
 #include "../../common.hpp"
 #include "RenderPass.hpp"
 #include "../../Entity/EntityID.hpp"
-#include "../../../OpenGL/TransformMatrix.hpp"
+#include "Transform.hpp"
 
 
 namespace KE
@@ -23,7 +23,7 @@ namespace KG
 		Not meant to be used directly.
 	*/
 	class SceneNode
-		:public KG::TransformMatrix
+		:public KG::Transform
 	{
 		friend class SceneNodeProperties;
 		friend class Scene;

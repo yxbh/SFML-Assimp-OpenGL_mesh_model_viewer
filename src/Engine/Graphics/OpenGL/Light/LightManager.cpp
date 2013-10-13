@@ -80,10 +80,10 @@ namespace KG
 			array_and_index.append(array_name); array_and_index.append(std::to_string(++i));
 
 			uniform.clear(); uniform.append(array_and_index); uniform.append(position);
-			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetPositionVec()));
+			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetPositionVec3()));
 
 			uniform.clear(); uniform += array_and_index; uniform += direction;
-			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetDirectionVec()));
+			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetDirectionVec3()));
 
 			uniform.clear(); uniform += array_and_index; uniform += ambient;
 			(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetAmbient())));

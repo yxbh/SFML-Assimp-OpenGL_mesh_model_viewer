@@ -132,7 +132,7 @@ namespace KG
 		return this->TransformMatrix::OffsetPitch(p_Angle);
 	}*/
 
-	TransformMatrix & Camera::OffsetYaw(const double p_Angle)
+	Transform & Camera::OffsetYaw(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
 		m_OrientationQuat = glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat;
@@ -147,7 +147,7 @@ namespace KG
 	const glm::dmat4 Camera::GetViewMatrix(void)
 	{
 		const glm::dmat4 orientation_mat(glm::mat4_cast(glm::conjugate(this->GetOrientationQuat())));
-		const glm::dmat4 translation_mat(glm::translate(glm::dmat4(1.0), -this->GetPositionVec()));
+		const glm::dmat4 translation_mat(glm::translate(glm::dmat4(1.0), -this->GetPositionVec3()));
 		if(m_CameraType == CamType::FreeFlight)
 			return orientation_mat * translation_mat;
 		else

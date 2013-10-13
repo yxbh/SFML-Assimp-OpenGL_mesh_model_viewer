@@ -1,47 +1,47 @@
-#include "TransformMatrix.hpp"
+#include "Transform.hpp"
 
 namespace KG
 {
-	TransformMatrix::TransformMatrix(void)
+	Transform::Transform(void)
 		: m_Scale(1.0, 1.0, 1.0)
 		, m_Position(0.0, 0.0, 0.0)
 		, m_FinalTransformMatrix(1.0)
 		, m_Evaluated(true)
 	{}
 
-	TransformMatrix::TransformMatrix(const glm::mat4 p_Mat4f)
+	Transform::Transform(const glm::mat4 p_Mat4f)
 		: m_Scale(1.0)
 		, m_Position(0.0)
 		, m_FinalTransformMatrix(p_Mat4f)
 		, m_Evaluated(true)
 	{}
 
-	TransformMatrix::TransformMatrix(const glm::dmat4 p_Mat4d)
+	Transform::Transform(const glm::dmat4 p_Mat4d)
 		: m_Scale(1.0)
 		, m_Position(0.0)
 		, m_FinalTransformMatrix(p_Mat4d)
 		, m_Evaluated(true)
 	{}
 
-	TransformMatrix & TransformMatrix::SetPosition(const double p_PosX, const double p_PosY, const double p_PosZ)
+	Transform & Transform::SetPosition(const double p_PosX, const double p_PosY, const double p_PosZ)
 	{
 		m_Position.x = p_PosX; m_Position.y = p_PosY; m_Position.z = p_PosZ;
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetTarget(const double p_ValX, const double p_ValY, const double p_ValZ)
+	Transform & Transform::SetTarget(const double p_ValX, const double p_ValY, const double p_ValZ)
 	{
 		m_Target.x = p_ValX; m_Target.y = p_ValY; m_Target.z = p_ValZ;
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetScale(const double p_ScaleX, const double p_ScaleY, const double p_ScaleZ)
+	Transform & Transform::SetScale(const double p_ScaleX, const double p_ScaleY, const double p_ScaleZ)
 	{
 		m_Scale.x = p_ScaleX; m_Scale.y = p_ScaleY; m_Scale.z = p_ScaleZ;
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
+	Transform & Transform::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
 	{
 		m_OrientationQuat = glm::dquat() * glm::angleAxis(p_AngleY, glm::dvec3(0.0, 1.0, 0.0));
 		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleZ, glm::dvec3(0.0, 0.0, 1.0));
@@ -49,37 +49,37 @@ namespace KG
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetOrientationQuat(const glm::dquat & p_rquat)
+	Transform & Transform::SetOrientationQuat(const glm::dquat & p_rquat)
 	{
 		m_OrientationQuat = p_rquat;
 		m_Evaluated = false;
 		return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetPitch(const double p_Angle)
+	Transform & Transform::SetPitch(const double p_Angle)
 	{
 		//
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetYaw(const double p_Angle)
+	Transform & Transform::SetYaw(const double p_Angle)
 	{
 		//
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetRoll(const double p_Angle)
+	Transform & Transform::SetRoll(const double p_Angle)
 	{
 		//
 		m_Evaluated = false;return *this;
 	}
 
-	TransformMatrix & TransformMatrix::SetOrientationToPosition(const double p_PosX, const double p_PosY, const double p_PosZ)
+	Transform & Transform::SetOrientationToPosition(const double p_PosX, const double p_PosY, const double p_PosZ)
 	{
 		return this->SetOrientationToPosition(glm::dvec3(p_PosX, p_PosY, p_PosZ));
 	}
 
-	TransformMatrix & TransformMatrix::SetOrientationToPosition(const glm::dvec3 & p_Pos)
+	Transform & Transform::SetOrientationToPosition(const glm::dvec3 & p_Pos)
 	{
 		// untested
 		assert(p_Pos != m_Position);
@@ -90,57 +90,57 @@ namespace KG
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetScale(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	Transform & Transform::OffsetScale(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		m_Scale.x += p_DeltaX; m_Scale.y += p_DeltaY; m_Scale.z += p_DeltaZ;
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetPosition(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	Transform & Transform::OffsetPosition(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		m_Position.x += p_DeltaX; m_Position.y += p_DeltaY;	m_Position.z += p_DeltaZ;
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetTarget(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	Transform & Transform::OffsetTarget(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		m_Target.x += p_DeltaX; m_Target.y += p_DeltaY; m_Target.z += p_DeltaZ;
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
+	Transform & Transform::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		this->OffsetPitch(p_DeltaX).OffsetYaw(p_DeltaY).OffsetRoll(p_DeltaZ);
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetPitch(const double p_Angle)
+	Transform & Transform::OffsetPitch(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
 		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, glm::dvec3(1.0, 0.0, 0.0));
 		m_Evaluated = false; return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetYaw(const double p_Angle)
+	Transform & Transform::OffsetYaw(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
 		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0));
 		m_Evaluated = false;return *this;
 	}
 
-	TransformMatrix & TransformMatrix::OffsetRoll(const double p_Angle)
+	Transform & Transform::OffsetRoll(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
 		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, glm::dvec3(0.0, 0.0, 1.0));
 		m_Evaluated = false;return *this;
 	}
 
-	void TransformMatrix::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const KG::TransformMatrix & p_rTransform)
+	void Transform::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const KG::Transform & p_rTransform)
 	{
 		this->StrafeRelativeTo(p_DeltaX, p_DeltaY, p_DeltaZ, p_rTransform.GetOrientationMat());
 	}
 
-	void TransformMatrix::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation)
+	void Transform::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation)
 	{
 		using namespace glm;
 		const dvec4 result = p_rOrientation * dvec4(p_DeltaX, p_DeltaY, p_DeltaZ, 1.0);
@@ -153,54 +153,54 @@ namespace KG
 
 	//}
 
-	void TransformMatrix::StrafeUp(const double p_Delta)
+	void Transform::StrafeUp(const double p_Delta)
 	{
 		this->StrafeRelativeTo(0.0,p_Delta, 0.0, this->GetOrientationMat());
 	}
 
-	void TransformMatrix::StrafeDown(const double p_Delta)
+	void Transform::StrafeDown(const double p_Delta)
 	{
 		this->StrafeRelativeTo(0.0,-p_Delta, 0.0, this->GetOrientationMat());
 	}
 
-	void TransformMatrix::StrafeLeft(const double p_Delta)
+	void Transform::StrafeLeft(const double p_Delta)
 	{
 		this->StrafeRelativeTo(-p_Delta, 0.0, 0.0, this->GetOrientationMat());
 	}
 
-	void TransformMatrix::StrafeRight(const double p_Delta)
+	void Transform::StrafeRight(const double p_Delta)
 	{		
 		this->StrafeRelativeTo(p_Delta, 0.0, 0.0, this->GetOrientationMat());			
 	}
 
-	void TransformMatrix::StrafeForward(const double p_Delta)
+	void Transform::StrafeForward(const double p_Delta)
 	{
 		this->StrafeRelativeTo(0.0, 0.0, -p_Delta, this->GetOrientationMat());
 	}
 
-	void TransformMatrix::StrafeBackward(const double p_Delta)
+	void Transform::StrafeBackward(const double p_Delta)
 	{
 		this->StrafeRelativeTo(0.0, 0.0, p_Delta, this->GetOrientationMat());
 	}
 
-	const glm::dvec3 & TransformMatrix::GetPositionVec(void) const
+	const glm::dvec3 & Transform::GetPositionVec3(void) const
 	{
 		return m_Position;
 	}
 
-	const glm::dvec3 TransformMatrix::GetDirectionVec(void) const
+	const glm::dvec3 Transform::GetDirectionVec3(void) const
 	{
 		const glm::dmat4 rotation_mat(this->GetOrientationMat());
 		const glm::dvec4 direction = rotation_mat * glm::dvec4(0.0, 0.0, -1.0, 0.0);
 		return glm::normalize(glm::dvec3(direction));
 	}
 
-	const glm::dvec3 TransformMatrix::GetTargetVec(void) const
+	const glm::dvec3 Transform::GetTargetVec3(void) const
 	{
 		return m_Target;
 	}
 
-	const glm::dmat4 TransformMatrix::GetPositionMat(void)
+	const glm::dmat4 Transform::GetPositionMat(void)
 	{
 		return glm::translate(m_Position);
 	}
@@ -214,39 +214,39 @@ namespace KG
 	//	m_Angles = glm::eulerAngles(m_Orientation) + m_Angles;
 	//}
 
-	glm::dquat TransformMatrix::GetOrientationQuat()
+	glm::dquat Transform::GetOrientationQuat()
 	{
 		return m_OrientationQuat;
 	}
 
-	const glm::dvec3 & TransformMatrix::GetRotationAngles(void) const
+	const glm::dvec3 Transform::GetEulerAngles(void)
 	{
 		return glm::eulerAngles(m_OrientationQuat);
 	}
 
-	const glm::dmat4 TransformMatrix::GetOrientationMat(void) const
+	const glm::dmat4 Transform::GetOrientationMat(void) const
 	{
 		return glm::mat4_cast(m_OrientationQuat);
 	}
 
-	const GLfloat * const TransformMatrix::GetRawPtrF(void)
+	const GLfloat * const Transform::GetRawPtrF(void)
 	{
 		this->Evaluate();
 		return glm::value_ptr(glm::fmat4(m_FinalTransformMatrix));
 	}
 
-	const glm::dmat4 & TransformMatrix::GetGLMMatd(void)
+	const glm::dmat4 & Transform::GetGLMMatd(void)
 	{
 		this->Evaluate();
 		return m_FinalTransformMatrix;
 	}
 
-	const glm::mat4 TransformMatrix::GetGLMMatf(void)
+	const glm::mat4 Transform::GetGLMMatf(void)
 	{
 		return glm::fmat4(this->GetGLMMatd());
 	}
 
-	TransformMatrix & TransformMatrix::Evaluate(void)
+	Transform & Transform::Evaluate(void)
 	{
 		if (!m_Evaluated)
 		{
@@ -257,32 +257,32 @@ namespace KG
 		return *this;
 	}
 
-	TransformMatrix operator*(TransformMatrix & p_rTM, const glm::dmat4 p_GLMMat4)
+	Transform operator*(Transform & p_rTM, const glm::dmat4 p_GLMMat4)
 	{
 		return p_rTM.GetGLMMatd() * p_GLMMat4;
 	}
 	
-	TransformMatrix operator*(const glm::dmat4 p_GLMMat4, TransformMatrix & p_rTM)
+	Transform operator*(const glm::dmat4 p_GLMMat4, Transform & p_rTM)
 	{
 		return p_GLMMat4 * p_rTM.GetGLMMatd();
 	}
 
-	TransformMatrix operator*(TransformMatrix & p_TM,const glm::mat4 & p_rGLMMat4)
+	Transform operator*(Transform & p_TM,const glm::mat4 & p_rGLMMat4)
 	{
 		return p_TM * glm::dmat4(p_rGLMMat4);
 	}
 
-	TransformMatrix operator*(const glm::mat4 p_GLMMat4, TransformMatrix & p_rTM)
+	Transform operator*(const glm::mat4 p_GLMMat4, Transform & p_rTM)
 	{
 		return glm::dmat4(p_GLMMat4) * p_rTM.GetGLMMatd();
 	}
 
-	TransformMatrix operator*(TransformMatrix & p_rTMLeft, TransformMatrix & p_rTMRight)
+	Transform operator*(Transform & p_rTMLeft, Transform & p_rTMRight)
 	{
 		return p_rTMLeft.GetGLMMatd() * p_rTMRight.GetGLMMatd();
 	}
 
-	const glm::dmat4 mat4_cast(KG::TransformMatrix & p_rTransformMatrix)
+	const glm::dmat4 mat4_cast(KG::Transform & p_rTransformMatrix)
 	{
 		return glm::dmat4(p_rTransformMatrix.GetGLMMatd());
 	}
