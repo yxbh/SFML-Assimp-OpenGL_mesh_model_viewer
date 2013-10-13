@@ -83,7 +83,11 @@ namespace KG
 		/*! Return position of camera. */
 		const glm::dvec3 & GetPositionVec3(void) const;
 		/*! Return normalized direction vector of camera. */
-		const glm::dvec3 GetDirectionVec3(void);
+		const glm::dvec3 GetForwardVec3(void);
+		/*! */
+		const glm::dvec3 GetUpVec3(void);
+		/*! */
+		const glm::dvec3 GetRightVec3(void);
 		/*! Return direction of camera. */
 		const glm::dvec3 GetTargetVec3(void) const;
 		/*! Get the translation matrix. */

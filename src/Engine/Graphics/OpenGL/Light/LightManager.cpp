@@ -83,7 +83,7 @@ namespace KG
 			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetPositionVec3()));
 
 			uniform.clear(); uniform += array_and_index; uniform += direction;
-			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetDirectionVec3()));
+			p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetForwardVec3()));
 
 			uniform.clear(); uniform += array_and_index; uniform += ambient;
 			(p_spShaderProgram->SetParameter<glm::vec3>(uniform.c_str(), glm::vec3(light_ptr->GetAmbient())));

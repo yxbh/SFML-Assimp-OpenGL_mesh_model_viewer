@@ -88,13 +88,25 @@ namespace KG
 	}
 
 	Transform & Transform::SetOrientationToPosition(const glm::dvec3 & p_Pos)
-	{
-		// untested
-		assert(p_Pos != m_Position);
-		glm::dvec3 direction = glm::normalize(p_Pos - m_Position);
-		/*m_Angles.y = KE::Math::RadianToDegree(asin(-direction.y));
-		m_Angles.x = KE::Math::RadianToDegree(atan2(-direction.x, -direction.z));
-		this->UpdateOrientation();*/
+	{// untested
+		const glm::dvec3 target(p_Pos);
+		if (target == this->GetPositionVec3()) // both in same position
+			return *this;
+		const glm::dvec3 direction = glm::normalize(target - this->GetPositionVec3());
+		const double dot = glm::dot(glm::dvec3(0.0, 0.0, 1.0), direction); // the 1.0 should probably be -1.0
+		if (std::abs(dot - (-1.0)) < 0.00001)
+		{
+			m_OrientationQuat = glm::angleAxis(180.0, glm::dvec3(0.0, 1.0, 0.0));
+			m_Evaluated = false; return *this;
+		}
+		else if (std::abs(dot - (1.0)) < 0.00001)
+		{
+			m_OrientationQuat = glm::dquat();
+			m_Evaluated = false; return *this;
+		}
+		double angle = -1.0 * KE::Math::RadianToDegree(std::acos(dot));
+		const glm::dvec3 cross(glm::normalize(glm::cross(direction, glm::dvec3(0.0, 0.0, 1.0))));
+		m_OrientationQuat = glm::angleAxis(angle, cross);
 		m_Evaluated = false; return *this;
 	}
 
@@ -196,11 +208,40 @@ namespace KG
 		return m_Position;
 	}
 
-	const glm::dvec3 Transform::GetDirectionVec3(void)
+	const glm::dvec3 Transform::GetForwardVec3(void)
 	{
-		const glm::dmat4 rotation_mat(this->GetOrientationMat());
+		/*const glm::dmat4 rotation_mat(this->GetOrientationMat());
 		const glm::dvec4 direction = rotation_mat * glm::dvec4(0.0, 0.0, -1.0, 0.0);
-		return glm::normalize(glm::dvec3(direction));
+		return glm::normalize(glm::dvec3(direction));*/
+		const glm::dquat & q(m_OrientationQuat);
+		return glm::normalize( glm::dvec3
+		(
+			-2.0 * (q.x * q.z + q.w * q.y), 
+			-2.0 * (q.y * q.z - q.w * q.x),
+			-1.0 + 2.0 * (q.x * q.x + q.y * q.y))
+		);
+	}
+
+	const glm::dvec3 Transform::GetUpVec3(void)
+	{
+		const glm::dquat & q(m_OrientationQuat);
+		return glm::normalize( glm::dvec3
+		(
+			2.0 * (q.x * q.y - q.w * q.z), 
+			1.0 - 2.0 * (q.x * q.x + q.z * q.z),
+			2.0 * (q.y * q.z + q.w * q.x))
+		);
+	}
+
+	const glm::dvec3 Transform::GetRightVec3(void)
+	{
+		const glm::dquat & q(m_OrientationQuat);
+		return glm::normalize( glm::dvec3
+		(
+			1.0 - 2.0 * (q.y * q.y + q.z * q.z),
+			2.0 * (q.x * q.y + q.w * q.z),
+			2.0 * (q.x * q.z - q.w * q.y))
+		);
 	}
 
 	const glm::dvec3 Transform::GetTargetVec3(void) const
