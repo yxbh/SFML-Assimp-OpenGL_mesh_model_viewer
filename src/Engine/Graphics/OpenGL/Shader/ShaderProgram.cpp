@@ -118,4 +118,15 @@ namespace KG
 		return true;
 	}
 
+	const bool ShaderProgram::SearchAndGetUniform(GLint & p_rLocation, const char * const p_cstrUniform)
+	{
+		p_rLocation = glGetUniformLocation(m_ProgramID, p_cstrUniform); // this->GetUniformLocation(p_UniformVariable);
+		if (p_rLocation == -1)
+		{
+			KE::Debug::print(KE::Debug::DBG_ERROR, "ShaderProgram : no such uniform.");
+			return false;
+		}
+		return true;
+	}
+
 } // KG ns

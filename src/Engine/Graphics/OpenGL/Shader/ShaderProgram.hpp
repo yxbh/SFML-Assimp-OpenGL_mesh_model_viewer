@@ -49,6 +49,8 @@ namespace KG
 		/*! Similar to the uniform version. */
 		const bool SearchAndAddAttribute(const char * const p_cstrAttribute);
 		const bool SearchAndAddAttribute(const std::string & p_rAttribute);
+		/*! */
+		const bool SearchAndGetUniform(GLint & p_rLocation, const char * const p_cstrUniform);
 
 	public:
 		/* single variables. */
