@@ -4,31 +4,36 @@
 
 namespace KG
 {
-
+	// TODO : OrientTo/LookAt method
 	/*! \class Transform
-		Following the general OpenGL and glm convention. Matrices are done in column major form.
-		This means that right multiplication is used.
+
+		Transform is a representation/container of the scale, position and orientation of some arbitrary
+		object. Internally, orientation is defined by a quaternion.
 
 		Of all the methods. The "Strafe" methods are the most interseting. They will translate the
-		Transform some given delta units in the TransformMatrix's orientation. For example: If
+		Transform some given delta units in the Transform's orientation. For example: If
 		a Transform is current oriented forward in the +ve Z direction with 15 degrees of angle
-		of elevation. StrafeForward will translate the TransformMatrix delta units that direction.
+		of elevation. StrafeForward will translate the Transform delta units that direction.
 		Accounting for the orientation. So besides moving forward in +ve Z direction. The Transform
-		will also translate up sin(angle) units.
+		will also translate up sin(angle) units. There are also more general versions the strafe methods
+		called StrafeRelativeTo which is used by the Strafe* methods internally. It works by Strafing relative
+		to a given orientation matrix or Transform object.
 
 		refer to 
 		http://glm.g-truc.net/0.9.4/api/a00151.html#gaacb9cbe8f93a8fef9dc3e25559df19c0 
 		and http://glm.g-truc.net/0.9.4/api/a00206.html#gad9b1d9ea9a64ba5e76dbe807abf8362c
 		for glm functions used.
+
+		reference on obtaining the forward, right and up vectors
+		http://www.gamedev.net/topic/348394-quaternion---how-to-extact-at-and-up-vectors/
 	*/
 	class Transform
 	{
 	protected:		
 		glm::dvec3			m_Scale;
-		glm::dvec3			m_Position;			// camera location.
-		glm::dvec3			m_Target;			// target of the camera.(where it's pointing)
-		glm::dmat4			m_FinalTransformMatrix;
+		glm::dvec3			m_Position;
 		glm::dquat			m_OrientationQuat;
+		glm::dmat4			m_FinalTransformMatrix;
 		bool				m_Evaluated;
 
 	public:
@@ -36,25 +41,23 @@ namespace KG
 		Transform(const glm::mat4 p_Mat4f);
 		Transform(const glm::dmat4 p_Mat4d);
 	
-		Transform & SetPosition(const double p_PosX, const double p_PosY, const double p_PosZ);
-		Transform & SetTarget(const double p_ValX, const double p_ValY, const double p_ValZ);
 		Transform & SetScale(const double p_ScaleX, const double p_ScaleY, const double p_ScaleZ);
-		/*! Rotate angles in degrees. In order X, Z, Y axis. */
+		Transform & SetPosition(const double p_PosX, const double p_PosY, const double p_PosZ);
+		/*! Set orientation angles(degrees) in order X, Z, Y axis. */
 		virtual Transform & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
-		/*! */
+		/*! Replace the current orientation quaternion with the given one. */
 		Transform & SetOrientationQuat(const glm::dquat & p_rquat);
-		/*! Rotate along x axis. */
+		/*! Angle around x axis. */
 		virtual Transform & SetPitch(const double p_Angle);
-		/*! Rotate along y axis. */
+		/*! Angle around y axis. */
 		virtual Transform & SetYaw(const double p_Angle);
-		/*! Rotate along z axis. */
+		/*! Angle around z axis. */
 		virtual Transform & SetRoll(const double p_Angle);
 		virtual Transform & SetOrientationToPosition(const double p_PosX, const double p_PosY, const double p_PosZ);
 		virtual Transform & SetOrientationToPosition(const glm::dvec3 & p_Pos);
 
 		Transform & OffsetScale(const double p_ScaleX, const double p_ScaleY, const double p_ScaleZ);
 		Transform & OffsetPosition(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ);
-		Transform & OffsetTarget(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ);
 		virtual Transform & OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ);
 		/*! Rotate along x axis. */
 		virtual Transform & OffsetPitch(const double p_Angle);
@@ -68,7 +71,7 @@ namespace KG
 		/*! Strafe delta units relative to given 4x4 matrix's rotation/orientation. */
 		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation);
 		/*! Translate up using the TransformMatrix as point of reference. */
-	/*	void RotateRelativeTo(const double p_AngleX, const double p_AngleY, const double p_AngleZ, const KG::TransformMatrix & p_rTransform);
+		/*	void RotateRelativeTo(const double p_AngleX, const double p_AngleY, const double p_AngleZ, const KG::TransformMatrix & p_rTransform);
 		void RotateRelativeTo(const double p_AngleX, const double p_AngleY, const double p_AngleZ, const glm::dvec3 p_Axis);*/
 		const glm::dquat GetOrientationQuat(void);
 
@@ -82,17 +85,15 @@ namespace KG
 
 		/*! Return position of camera. */
 		const glm::dvec3 & GetPositionVec3(void) const;
-		/*! Return normalized direction vector of camera. */
+		/*! Return unit forward/view vector. */
 		const glm::dvec3 GetForwardVec3(void);
-		/*! */
+		/*! Return unit up vector. */
 		const glm::dvec3 GetUpVec3(void);
-		/*! */
+		/*! Return unit right vector. */
 		const glm::dvec3 GetRightVec3(void);
-		/*! Return direction of camera. */
-		const glm::dvec3 GetTargetVec3(void) const;
 		/*! Get the translation matrix. */
 		const glm::dmat4 GetPositionMat(void) const;
-		/*! Return angles for Pitch, Yaw and Roll. */
+		/*! Return angles for Pitch, Yaw and Roll. Beware these angles are unreliable due to singularity issues. */
 		const glm::dvec3 GetEulerAngles(void) const;
 		/*! Return oritentation in 4x4 matrix form. */
 		const glm::dmat4 GetOrientationMat(void);
@@ -108,7 +109,7 @@ namespace KG
 		/*! Evaluate the final transformation matrix if it's not done already. */
 		Transform & Evaluate(void);
 		
-	}; // TransformationMatrix class
+	}; // Transform class
 
 	Transform operator*(Transform & p_rTM, const glm::dmat4 p_GLMMat4);
 	Transform operator*(const glm::dmat4 p_GLMMat4, Transform & p_rTM);

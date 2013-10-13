@@ -168,9 +168,15 @@ namespace ObjectManipulator
 			break;
 		case CITS::EventType::StrafeForeRelCam:
 			{
-				glm::dvec3 angles = KG::Graphics::Get().GetScene().GetCamera().GetEulerAngles();
-				glm::dmat4 horizontal_rotation_mat = glm::rotate(angles.y, glm::dvec3(0.0, 1.0, 0.0));
-				node->StrafeRelativeTo(0.0, 0.0, -delta, horizontal_rotation_mat);
+				glm::dvec4 forward(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3(), 0.0);
+				forward.y = 0.0; // remove rotation around y-axis.
+				forward = glm::normalize(forward);
+				glm::dmat4 orientation;
+				orientation[0] = glm::dvec4(1.0, 0.0, 0.0, 0.0);//right;
+				orientation[1] = glm::dvec4(0.0, 1.0, 0.0, 0.0);//up;
+				orientation[2] = forward; //forward;
+				orientation[3] = glm::dvec4(0.0, 0.0, 0.0, 0.0);
+				node->StrafeRelativeTo(0.0, 0.0, delta, orientation);
 				break;
 			}
 		case CITS::EventType::UniformScale:
@@ -189,6 +195,8 @@ namespace ObjectManipulator
 			{
 				const glm::dquat camera_quat = KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat();
 				//KG::Graphics::Get().GetScene().GetCamera().SetPitch(0.0);
+				glm::dvec3 vec(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3());
+				KE::Debug::print(std::to_string(vec.x) + " " + std::to_string(vec.y) + " " + std::to_string(vec.z));
 				const glm::dquat offset = glm::angleAxis(delta, glm::dvec3(0.0, 1.0, 0.0));
 				glm::dquat Delta =  camera_quat * offset * glm::conjugate(camera_quat);
 				Delta = Delta * node->GetOrientationQuat();

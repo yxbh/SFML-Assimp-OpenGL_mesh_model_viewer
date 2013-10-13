@@ -10,15 +10,17 @@ namespace KG
 	{}
 
 	Transform::Transform(const glm::mat4 p_Mat4f)
-		: m_Scale(1.0)
-		, m_Position(0.0)
+		: m_Scale(glm::length(p_Mat4f[0]), glm::length(p_Mat4f[1]), glm::length(p_Mat4f[2]))
+		, m_Position(p_Mat4f[3])
+		, m_OrientationQuat(glm::toQuat(glm::dmat4(p_Mat4f)))
 		, m_FinalTransformMatrix(p_Mat4f)
 		, m_Evaluated(true)
 	{}
 
 	Transform::Transform(const glm::dmat4 p_Mat4d)
-		: m_Scale(1.0)
-		, m_Position(0.0)
+		: m_Scale(glm::length(p_Mat4d[0]), glm::length(p_Mat4d[1]), glm::length(p_Mat4d[2]))
+		, m_Position(p_Mat4d[3])
+		, m_OrientationQuat(glm::toQuat(p_Mat4d))
 		, m_FinalTransformMatrix(p_Mat4d)
 		, m_Evaluated(true)
 	{}
@@ -26,12 +28,6 @@ namespace KG
 	Transform & Transform::SetPosition(const double p_PosX, const double p_PosY, const double p_PosZ)
 	{
 		m_Position.x = p_PosX; m_Position.y = p_PosY; m_Position.z = p_PosZ;
-		m_Evaluated = false; return *this;
-	}
-
-	Transform & Transform::SetTarget(const double p_ValX, const double p_ValY, const double p_ValZ)
-	{
-		m_Target.x = p_ValX; m_Target.y = p_ValY; m_Target.z = p_ValZ;
 		m_Evaluated = false; return *this;
 	}
 
@@ -119,12 +115,6 @@ namespace KG
 	Transform & Transform::OffsetPosition(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
 	{
 		m_Position.x += p_DeltaX; m_Position.y += p_DeltaY;	m_Position.z += p_DeltaZ;
-		m_Evaluated = false; return *this;
-	}
-
-	Transform & Transform::OffsetTarget(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
-	{
-		m_Target.x += p_DeltaX; m_Target.y += p_DeltaY; m_Target.z += p_DeltaZ;
 		m_Evaluated = false; return *this;
 	}
 
@@ -242,11 +232,6 @@ namespace KG
 			2.0 * (q.x * q.y + q.w * q.z),
 			2.0 * (q.x * q.z - q.w * q.y))
 		);
-	}
-
-	const glm::dvec3 Transform::GetTargetVec3(void) const
-	{
-		return m_Target;
 	}
 
 	const glm::dmat4 Transform::GetPositionMat(void) const
