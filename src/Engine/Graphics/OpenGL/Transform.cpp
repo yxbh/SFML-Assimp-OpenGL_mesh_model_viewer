@@ -46,6 +46,7 @@ namespace KG
 		m_OrientationQuat = glm::dquat() * glm::angleAxis(p_AngleY, glm::dvec3(0.0, 1.0, 0.0));
 		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleZ, glm::dvec3(0.0, 0.0, 1.0));
 		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleX, glm::dvec3(1.0, 0.0, 0.0));
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
 		m_Evaluated = false; return *this;
 	}
 
@@ -57,21 +58,28 @@ namespace KG
 	}
 
 	Transform & Transform::SetPitch(const double p_Angle)
-	{
-		//
-		m_Evaluated = false; return *this;
+	{ // TODO : does not work correctly due ot singularity issues?
+		//m_OrientationQuat.x = 0.0;
+		glm::dquat negate = m_OrientationQuat; negate.x *= -1.0;
+		glm::dvec3 angles = this->GetEulerAngles();
+		KE::Debug::print(std::to_string(angles.x) + " " + std::to_string(angles.y) + " " + std::to_string(angles.z));
+		if (angles.x < 0.001 && angles.x > -0.001) return *this;
+		m_OrientationQuat = glm::dquat();
+		return this->OffsetPitch(p_Angle).OffsetYaw(angles.y).OffsetRoll(angles.z);
 	}
 
 	Transform & Transform::SetYaw(const double p_Angle)
-	{
-		//
-		m_Evaluated = false; return *this;
+	{ // TODO : does not work correctly due ot singularity issues?
+		m_OrientationQuat.y = 0.0;
+		glm::normalize(m_OrientationQuat);
+		return this->OffsetYaw(p_Angle);
 	}
 
 	Transform & Transform::SetRoll(const double p_Angle)
-	{
-		//
-		m_Evaluated = false;return *this;
+	{ // TODO : does not work correctly due ot singularity issues?
+		m_OrientationQuat.z = 0.0;
+		glm::normalize(m_OrientationQuat);
+		return this->OffsetRoll(p_Angle);
 	}
 
 	Transform & Transform::SetOrientationToPosition(const double p_PosX, const double p_PosY, const double p_PosZ)
@@ -135,7 +143,7 @@ namespace KG
 		m_Evaluated = false;return *this;
 	}
 
-	void Transform::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const KG::Transform & p_rTransform)
+	void Transform::StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, KG::Transform & p_rTransform)
 	{
 		this->StrafeRelativeTo(p_DeltaX, p_DeltaY, p_DeltaZ, p_rTransform.GetOrientationMat());
 	}
@@ -188,7 +196,7 @@ namespace KG
 		return m_Position;
 	}
 
-	const glm::dvec3 Transform::GetDirectionVec3(void) const
+	const glm::dvec3 Transform::GetDirectionVec3(void)
 	{
 		const glm::dmat4 rotation_mat(this->GetOrientationMat());
 		const glm::dvec4 direction = rotation_mat * glm::dvec4(0.0, 0.0, -1.0, 0.0);
@@ -200,7 +208,7 @@ namespace KG
 		return m_Target;
 	}
 
-	const glm::dmat4 Transform::GetPositionMat(void)
+	const glm::dmat4 Transform::GetPositionMat(void) const
 	{
 		return glm::translate(m_Position);
 	}
@@ -214,19 +222,19 @@ namespace KG
 	//	m_Angles = glm::eulerAngles(m_Orientation) + m_Angles;
 	//}
 
-	glm::dquat Transform::GetOrientationQuat()
+	const glm::dquat Transform::GetOrientationQuat()
 	{
-		return m_OrientationQuat;
+		return m_OrientationQuat = glm::normalize(m_OrientationQuat);
 	}
 
-	const glm::dvec3 Transform::GetEulerAngles(void)
+	const glm::dvec3 Transform::GetEulerAngles(void) const
 	{
 		return glm::eulerAngles(m_OrientationQuat);
 	}
 
-	const glm::dmat4 Transform::GetOrientationMat(void) const
+	const glm::dmat4 Transform::GetOrientationMat(void)
 	{
-		return glm::mat4_cast(m_OrientationQuat);
+		return glm::mat4_cast(m_OrientationQuat = glm::normalize(m_OrientationQuat));
 	}
 
 	const GLfloat * const Transform::GetRawPtrF(void)
@@ -250,7 +258,6 @@ namespace KG
 	{
 		if (!m_Evaluated)
 		{
-			m_OrientationQuat = glm::normalize(m_OrientationQuat);
 			m_FinalTransformMatrix = glm::translate(m_Position) * this->GetOrientationMat() * glm::scale(m_Scale);
 			m_Evaluated = true;
 		}

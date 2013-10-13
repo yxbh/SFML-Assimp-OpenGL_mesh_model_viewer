@@ -8,20 +8,17 @@ namespace KG
 	Camera::Camera(void)
 		: m_CameraTop(0.0, 1.0, 0.0)
 		, m_AspectRatio(1.77777777778)
-		, m_FovMode(FOVType::Dynamic), m_AspectRatioLimit(1.0)
+		, m_FOVMode(FOVType::Dynamic), m_AspectRatioLimit(1.0)
 		, m_FOVY(60), m_FOYX(0 /*below*/), m_FOVDynamic(DefaultFov::Fovy)
 		, m_CameraType(CamType::FreeFlight)
 		, m_DistanceToTarget( 0.0 )
 		, m_ZNear(0.1), m_ZFar(10000.0)
 		, m_ProjectionMode(ProjectionMode::Perspective)
-		, m_ProjectionMatrix(1.0) , m_ViewMatrix(1.0)
 		, m_CameraChanged(false)
 	{
 		this->SetPosition(0.0, 0.0, 5.0);
 		this->SetOrientation(0.0, 0.0, 0.0);
 		m_FOYX = KE::Math::RadianToDegree(2*std::atan(std::tan(KE::Math::DegreeToRadian(m_FOVY)/2)*m_AspectRatio));
-		m_ProjectionMatrix = GetProjectionMatrix();
-		m_ViewMatrix = GetViewMatrix();
 		KE::Event::Get().AddListener
 			(this->GetEntityID(), std::bind(&KG::Camera::WindowResizeDelegate, this, std::placeholders::_1), KG::Event::Resize);
 
@@ -30,14 +27,14 @@ namespace KG
 
 	Camera & Camera::SetFOVType(const FOVType p_Type)
 	{
-		m_FovMode = p_Type; return *this;
+		m_FOVMode = p_Type; return *this;
 	}
 
 	Camera & Camera::SetAspectRatio(const double p_ARatio)
 	{
 		using namespace KE::Math;
 		assert(p_ARatio > 0);
-		switch (m_FovMode)
+		switch (m_FOVMode)
 		{
 		case FOVType::Dynamic:
 			{
@@ -94,43 +91,26 @@ namespace KG
 		m_ZNear = p_Val; return *this;
 	}
 
-	/*TransformMatrix & Camera::SetPitch(const double p_Angle)
+	Camera::CamType Camera::GetCameraType()
 	{
-		return this->SetOrientation(p_Angle, 0.0, 0.0);
+		return m_CameraType;
 	}
 
-	TransformMatrix & Camera::SetYaw(const double p_Angle)
+	void Camera::SetCameraMode(Camera::CamType p_newType)
 	{
-		return this->SetOrientation(0.0, p_Angle, 0.0);
+		m_CameraType = p_newType;
 	}
 
-	TransformMatrix & Camera::SetRoll(const double p_Angle)
+	void Camera::SetDistanceToTarget(double p_distance)
 	{
-		return this->SetOrientation(0.0, 0.0, p_Angle);
-	}*/
-
-	//TransformMatrix & Camera::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
-	//{
-	//	double angle_x(p_AngleX);	double angle_y(p_AngleY);	double angle_z(p_AngleZ);
-	//	if (angle_x <= -90.0)	angle_x = -89.5;
-	//	if (angle_x >= 90.0)	angle_x = 89.5;
-	//	return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
-	//}
-
-	//TransformMatrix & Camera::OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ)
-	//{
-	//	double angle_x(p_DeltaX);	double angle_y(p_DeltaY);	double angle_z(p_DeltaZ);
-	//	glm::dvec3 current_rotation = this->GetRotationAngles();
-	//	angle_x += current_rotation.x; angle_y += current_rotation.y; angle_z += current_rotation.z;
-	//	if (angle_x <= -90.0)	angle_x = -89.5;
-	//	if (angle_x >= 90.0)	angle_x = 89.5;
-	//	return this->TransformMatrix::SetOrientation(angle_x, angle_y, angle_z);
-	//}
-
-	/*TransformMatrix & Camera::OffsetPitch(const double p_Angle)
+		m_DistanceToTarget = p_distance;
+	}
+	
+	void Camera::OffsetTargetDistance(double p_DeltaDistance)
 	{
-		return this->TransformMatrix::OffsetPitch(p_Angle);
-	}*/
+		m_DistanceToTarget += p_DeltaDistance;
+		if(m_DistanceToTarget < 0) m_DistanceToTarget = 0;		
+	}
 
 	Transform & Camera::OffsetYaw(const double p_Angle)
 	{
@@ -138,11 +118,6 @@ namespace KG
 		m_OrientationQuat = glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat;
 		m_Evaluated = false;return *this;
 	}
-
-	/*TransformMatrix & Camera::OffsetRoll(const double p_Angle)
-	{
-		return this->TransformMatrix::OffsetRoll(p_Angle);
-	}*/
 
 	const glm::dmat4 Camera::GetViewMatrix(void)
 	{
@@ -161,7 +136,7 @@ namespace KG
 	{
 		if (m_ProjectionMode == ProjectionMode::Perspective)
 		{
-			switch (m_FovMode)
+			switch (m_FOVMode)
 			{
 			case FOVType::FixedFovy:
 				return glm::perspective(m_FOVY, m_AspectRatio, m_ZNear, m_ZFar);
@@ -182,9 +157,7 @@ namespace KG
 
 	const glm::dmat4 Camera::GetViewProjectionMatrixd(void)
 	{
-		m_ProjectionMatrix = this->GetProjectionMatrix();
-		m_ViewMatrix = this->GetViewMatrix();
-		return m_ProjectionMatrix * m_ViewMatrix;
+		return this->GetProjectionMatrix() * this->GetViewMatrix();
 	}
 
 	const glm::mat4 Camera::GetViewProjectionMatrixf(void)
@@ -204,25 +177,4 @@ namespace KG
 		return true;
 	}
 
-	Camera::CamType Camera::GetCameraType()
-	{
-		return m_CameraType;
-	}
-
-	void Camera::SetCameraMode(Camera::CamType p_newType)
-	{
-		m_CameraType = p_newType;
-	}
-
-	void Camera::SetDistanceToTarget(double p_distance)
-	{
-		m_DistanceToTarget = p_distance;
-	}
-	
-	void Camera::OffsetTargetDistance(double p_DeltaDistance)
-	{
-
-		m_DistanceToTarget += p_DeltaDistance;
-		if(m_DistanceToTarget < 0) m_DistanceToTarget = 0;		
-	}
 } // KE ns

@@ -35,14 +35,12 @@ namespace KG
 
 	private:
 		glm::dvec3			m_CameraTop;						// direction of the camera's top
-		FOVType				m_FovMode;
+		FOVType				m_FOVMode;
 		double				m_AspectRatioLimit;					// CITS
 		double				m_FOVY, m_FOYX, m_FOVDynamic;		// in degrees
 		double				m_AspectRatio;
 		double				m_ZFar, m_ZNear;
 		ProjectionMode		m_ProjectionMode;
-		glm::dmat4			m_ProjectionMatrix;					//
-		glm::dmat4			m_ViewMatrix;						// the camera view matrix
 		double				m_DistanceToTarget;
 		CamType				m_CameraType;						// defines rotation rules
 		bool				m_CameraChanged;
@@ -58,21 +56,12 @@ namespace KG
 		Camera & SetZFar(const double p_Val);
 		Camera & SetZNear(const double p_Val);
 
-
-		/*! Rotate along x axis. */
-		//virtual TransformMatrix & SetPitch(const double p_Angle) override;
-		/*! Rotate along y axis. */
-		//virtual TransformMatrix & SetYaw(const double p_Angle) override;
-		/*! Rotate along z axis. */
-		//virtual TransformMatrix & SetRoll(const double p_Angle) override;
-		//virtual TransformMatrix & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ) override;
-		//virtual TransformMatrix & OffsetOrientation(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ) override;
-		/*! Rotate along x axis. */
-		//virtual TransformMatrix & OffsetPitch(const double p_Angle) override;
-		/*! Rotate along y axis. */
+		CamType GetCameraType(void);
+		void SetCameraMode(CamType p_newType);
+		void SetDistanceToTarget(double p_distance);
+		void OffsetTargetDistance(double p_DeltaDistance);
+		/*! Rotate along y axis. Overloads to rotate along the global y-axis only. */
 		virtual Transform & OffsetYaw(const double p_Angle) override;
-		/*! Rotate along z axis. */
-		//virtual TransformMatrix & OffsetRoll(const double p_Angle) override;
 
 		const glm::dmat4 GetViewMatrix(void);
 		const glm::dmat4 GetProjectionMatrix(void);
@@ -81,11 +70,6 @@ namespace KG
 		const glm::mat4 GetViewProjectionMatrixf(void);
 
 		bool WindowResizeDelegate(KE::Event_SmartPtr p_spEvent);
-
-		CamType GetCameraType(void);
-		void SetCameraMode(CamType p_newType);
-		void SetDistanceToTarget(double p_distance);
-		void OffsetTargetDistance(double p_DeltaDistance);
 
 	private:
 		Camera(const Camera & p_rCamera);

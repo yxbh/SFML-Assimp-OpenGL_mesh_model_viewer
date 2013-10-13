@@ -64,13 +64,13 @@ namespace KG
 		virtual Transform & OffsetRoll(const double p_Angle);
 
 		/*! Strafe delta units relative to the TransformMatrix's orientation. */
-		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const KG::Transform & p_rTransform);
+		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, KG::Transform & p_rTransform);
 		/*! Strafe delta units relative to given 4x4 matrix's rotation/orientation. */
 		virtual void StrafeRelativeTo(const double p_DeltaX, const double p_DeltaY, const double p_DeltaZ, const glm::dmat4 & p_rOrientation);
 		/*! Translate up using the TransformMatrix as point of reference. */
 	/*	void RotateRelativeTo(const double p_AngleX, const double p_AngleY, const double p_AngleZ, const KG::TransformMatrix & p_rTransform);
 		void RotateRelativeTo(const double p_AngleX, const double p_AngleY, const double p_AngleZ, const glm::dvec3 p_Axis);*/
-		glm::dquat GetOrientationQuat(void);
+		const glm::dquat GetOrientationQuat(void);
 
 		virtual void StrafeUp(const double p_Delta);
 		virtual void StrafeDown(const double p_Delta);
@@ -83,22 +83,24 @@ namespace KG
 		/*! Return position of camera. */
 		const glm::dvec3 & GetPositionVec3(void) const;
 		/*! Return normalized direction vector of camera. */
-		const glm::dvec3 GetDirectionVec3(void) const;
+		const glm::dvec3 GetDirectionVec3(void);
 		/*! Return direction of camera. */
 		const glm::dvec3 GetTargetVec3(void) const;
 		/*! Get the translation matrix. */
-		const glm::dmat4 GetPositionMat(void);
+		const glm::dmat4 GetPositionMat(void) const;
 		/*! Return angles for Pitch, Yaw and Roll. */
-		const glm::dvec3 GetEulerAngles(void);
-		/*! Get */
-		virtual const glm::dmat4 GetOrientationMat(void) const;
+		const glm::dvec3 GetEulerAngles(void) const;
+		/*! Return oritentation in 4x4 matrix form. */
+		const glm::dmat4 GetOrientationMat(void);
 
 		/*! Return the raw pointer to the matrix. Evaluates final transformation matrix if it hasn't already. */
 		const GLfloat * const GetRawPtrF(void);
 		/*! */
 		const glm::dmat4 & GetGLMMatd(void);
 		/*! */
-		const glm::mat4 GetGLMMatf(void);		
+		const glm::mat4 GetGLMMatf(void);
+
+	protected:
 		/*! Evaluate the final transformation matrix if it's not done already. */
 		Transform & Evaluate(void);
 		
