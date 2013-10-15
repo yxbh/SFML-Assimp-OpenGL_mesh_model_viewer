@@ -10,6 +10,9 @@ namespace KG
 		Transform is a representation/container of the scale, position and orientation of some arbitrary
 		object. Internally, orientation is defined by a quaternion.
 
+		operator* is overloaded to work with Transform itself, glm::dmat4 and glm::mat4. Mutiplications use
+		the right hand conventions and are similar to matrix mutiplications.
+
 		Of all the methods. The "Strafe" methods are the most interseting. They will translate the
 		Transform some given delta units in the Transform's orientation. For example: If
 		a Transform is current oriented forward in the +ve Z direction with 15 degrees of angle
