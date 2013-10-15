@@ -114,7 +114,7 @@ namespace KG
 	{
 		
 		for (auto & list : m_RenderMap)
-			list.second.reserve(200);
+			list.second.reserve(300);
 	}
 
 	void Renderer::Render(KG::Scene & p_rScene, KG::SceneNode * const p_pSceneNode)
@@ -139,8 +139,8 @@ namespace KG
 		
 			// mvp matrix
 			KG::Scene & scene_ref = KG::Graphics::Get().GetScene();
-			glm::dmat4 camera_view_matrix = scene_ref.GetCamera().GetViewProjectionMatrixd();
-			glm::dmat4 model_matrix = node_ptr->GetModelMatrix();
+			const glm::dmat4 camera_view_matrix = scene_ref.GetCamera().GetViewProjectionMatrixd();
+			const glm::dmat4 model_matrix = node_ptr->GetModelMatrix();
 			auto shader_program_ptr = m_spShaderProgram;
 			//auto shader_program_ptr = mesh_ptr->GetShaderProgram();
 			shader_program_ptr->Use(); // already called in PreRender(). but will leave it here for now.
@@ -190,8 +190,12 @@ namespace KG
 			// light
 			if (mesh_ptr->Has(KG::Mesh::Property::LightBackFace))
 				shader_program_ptr->SetParameter<GLboolean>("LightBackFace", GL_TRUE);
+			else
+				shader_program_ptr->SetParameter<GLboolean>("LightBackFace", GL_FALSE);
 			if (mesh_ptr->Has(KG::Mesh::Property::Normals))
 				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_TRUE);
+			else
+				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_FALSE);
 			KE::Debug::check_for_GL_error();
 
 

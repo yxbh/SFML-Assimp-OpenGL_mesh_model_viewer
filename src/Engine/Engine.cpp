@@ -190,6 +190,8 @@ namespace KE
 			this->ProcessMessages();			
 
 			CallBack1(*this);
+			if (m_Status == Engine::EngineStatus::Exit)
+				break;
 
 			// Input
 			InputTickAccumulator += accumulatedTick;
