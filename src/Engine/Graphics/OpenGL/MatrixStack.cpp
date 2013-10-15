@@ -25,7 +25,7 @@ namespace KG
 		m_MatrixStack.pop();
 	}
 
-	const glm::dmat4 & MatrixStack::Top(void) const
+	const glm::dmat4 & MatrixStack::GetTop(void) const
 	{
 		return m_TopMatrix;
 	}

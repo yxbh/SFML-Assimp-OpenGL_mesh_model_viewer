@@ -50,7 +50,7 @@ namespace KG
 		KG::MatrixStack & stack_ref = p_rScene.GetMatrixStack(); 
 		stack_ref.Push();
 		stack_ref.SetMatrix(this->GetGLMMatd());
-		this->SetModelMatrix(stack_ref.Top());
+		this->SetModelMatrix(stack_ref.GetTop());
 	}
 
 	void SceneNode::Render(KG::Scene & p_rScene)

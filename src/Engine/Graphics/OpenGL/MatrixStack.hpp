@@ -6,6 +6,8 @@ namespace KG
 
 
 	/*! \class MatrixStack
+
+		
 	*/
 	class MatrixStack
 	{
@@ -14,6 +16,7 @@ namespace KG
 		glm::dmat4					m_TopMatrix;
 
 	public:
+		/*! Ctor. */
 		MatrixStack(void);
 
 		/*! Right multiple the current matrix with the given one. Result matrix becomes the current one. */
@@ -23,7 +26,7 @@ namespace KG
 		/*! Remove the top matrix. Unicorn will poop atomic bombs if there isn't matrix already on the stack. */
 		void Pop(void);
 		/*! Get const reference to top matrix. */
-		const glm::dmat4 & Top(void) const;
+		const glm::dmat4 & GetTop(void) const;
 
 		/*! Set the current/top matrix to the given matrix. */
 		void SetMatrix(const glm::dmat4 & p_Mat4);
