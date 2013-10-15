@@ -160,7 +160,11 @@ namespace Input
 			KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::RollUp_Event(-rotate_delta)));
 		if (KE::Input::KeyPressed(KE::Keyboard::Key::Down))
 			KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::RollUp_Event(rotate_delta)));
-		// TODO aslkdjhfbaldcvfblsehrbg
+		if (KE::Input::KeyPressed(KE::Keyboard::Key::X))
+		{
+			KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::NewObjectRequest_Event())); // request random.
+			KE::Debug::print("InputController : New object requested.");
+		}
 	}
 
 	const bool InputController::EventDelegate(KE::Event_SmartPtr p_spEvent)
