@@ -12,11 +12,11 @@ namespace KE
 		InputTick				= KE::Duration::Milliseconds(5); 
 		InputTickCountThres		= 1; 
 		PhysicsTick				= KE::Duration::Milliseconds(30);
-		PhysicsTickCountThres	= 5;
+		PhysicsTickCountThres	= 3;
 		RenderTick				= KE::Duration::Milliseconds(10);
-		RenderTickCountThres	= 5;
+		RenderTickCountThres	= 2;
 		LogicTick				= KE::Duration::Milliseconds(20);
-		LogicTickCountThres		= 5;
+		LogicTickCountThres		= 3;
 	}
 
 	Engine * Engine::s_pEngine = nullptr;
@@ -76,8 +76,6 @@ namespace KE
 				accumulatedTick = m_EngineConfig.LoopMaxTickThres;
 
 			m_SysEventManager.Update(m_EngineConfig.EventTick);
-
-			sf::sleep(sf::microseconds(1000));
 		}
 	}
 
@@ -158,8 +156,6 @@ namespace KE
 				+ std::to_string(m_RenderSystem.GetRenderer().GetSize().window_width)
 				+ "X"+std::to_string(m_RenderSystem.GetRenderer().GetSize().window_height)
 			);
-		
-			sf::sleep(sf::microseconds(1000));
 		}
 
 		if (m_Status == EngineStatus::Exit)
