@@ -112,7 +112,34 @@ namespace KG
 		if(m_DistanceToTarget < 0) m_DistanceToTarget = 0;		
 	}
 
-	Transform & Camera::OffsetYaw(const double p_Angle)
+	Camera & Camera::SetPitch(const double p_Angle)
+	{ // these are actually quite FPS camera specific at the moment.
+		m_OrientationQuat.x = 0.0;
+		m_OrientationQuat.z = 0.0;
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
+		this->OffsetPitch(p_Angle);
+		return *this;
+	}
+
+	Camera & Camera::SetYaw(const double p_Angle)
+	{ // these are actually quite FPS camera specific at the moment.
+		m_OrientationQuat.y = 0.0;
+		m_OrientationQuat.z = 0.0;
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
+		this->OffsetYaw(p_Angle);
+		return *this;
+	}
+
+	Camera & Camera::SetRoll(const double p_Angle)
+	{ // these are actually quite FPS camera specific at the moment.
+		m_OrientationQuat.z = 0.0;
+		//m_OrientationQuat.x = 0.0;
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
+		this->OffsetRoll(p_Angle);
+		return *this;
+	}
+
+	Camera & Camera::OffsetYaw(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
 		m_OrientationQuat = glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat;

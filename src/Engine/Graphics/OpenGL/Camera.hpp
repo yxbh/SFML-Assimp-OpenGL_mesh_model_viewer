@@ -60,8 +60,15 @@ namespace KG
 		void SetCameraMode(CamType p_newType);
 		void SetDistanceToTarget(double p_distance);
 		void OffsetTargetDistance(double p_DeltaDistance);
+
+		/*! Angle around x axis. */
+		virtual Camera & SetPitch(const double p_Angle) override;
+		/*! Angle around y axis. */
+		virtual Camera & SetYaw(const double p_Angle) override;
+		/*! Angle around z axis. */
+		virtual Camera & SetRoll(const double p_Angle) override;
 		/*! Rotate along y axis. Overloads to rotate along the global y-axis only. */
-		virtual Transform & OffsetYaw(const double p_Angle) override;
+		virtual Camera & OffsetYaw(const double p_Angle) override;
 
 		const glm::dmat4 GetViewMatrix(void);
 		const glm::dmat4 GetProjectionMatrix(void);

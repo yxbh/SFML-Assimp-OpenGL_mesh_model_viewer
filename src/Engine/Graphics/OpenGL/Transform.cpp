@@ -53,28 +53,31 @@ namespace KG
 		return *this;
 	}
 
+	Transform & Transform::SetOrientation(const glm::dmat3 & m_rMat)
+	{
+		m_OrientationQuat = std::move(glm::quat_cast(m_rMat));
+		m_Evaluated = false;
+		return *this;
+	}
+
 	Transform & Transform::SetPitch(const double p_Angle)
-	{ // TODO : does not work correctly due ot singularity issues?
-		//m_OrientationQuat.x = 0.0;
-		glm::dquat negate = m_OrientationQuat; negate.x *= -1.0;
-		glm::dvec3 angles = this->GetEulerAngles();
-		KE::Debug::print(std::to_string(angles.x) + " " + std::to_string(angles.y) + " " + std::to_string(angles.z));
-		if (angles.x < 0.001 && angles.x > -0.001) return *this;
-		m_OrientationQuat = glm::dquat();
-		return this->OffsetPitch(p_Angle).OffsetYaw(angles.y).OffsetRoll(angles.z);
+	{ // untested
+		m_OrientationQuat.x = 0.0;
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
+		return this->OffsetPitch(p_Angle);
 	}
 
 	Transform & Transform::SetYaw(const double p_Angle)
-	{ // TODO : does not work correctly due ot singularity issues?
+	{ // untested
 		m_OrientationQuat.y = 0.0;
-		glm::normalize(m_OrientationQuat);
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
 		return this->OffsetYaw(p_Angle);
 	}
 
 	Transform & Transform::SetRoll(const double p_Angle)
-	{ // TODO : does not work correctly due ot singularity issues?
+	{ // untested
 		m_OrientationQuat.z = 0.0;
-		glm::normalize(m_OrientationQuat);
+		m_OrientationQuat = glm::normalize(m_OrientationQuat);
 		return this->OffsetRoll(p_Angle);
 	}
 
@@ -199,10 +202,7 @@ namespace KG
 	}
 
 	const glm::dvec3 Transform::GetForwardVec3(void)
-	{
-		/*const glm::dmat4 rotation_mat(this->GetOrientationMat());
-		const glm::dvec4 direction = rotation_mat * glm::dvec4(0.0, 0.0, -1.0, 0.0);
-		return glm::normalize(glm::dvec3(direction));*/
+	{ // note: this algorithm is much faster than mutipling a default vector with the orientation quaternion (in DEBUG).
 		const glm::dquat & q(m_OrientationQuat);
 		return glm::normalize( glm::dvec3
 		(
@@ -213,7 +213,7 @@ namespace KG
 	}
 
 	const glm::dvec3 Transform::GetUpVec3(void)
-	{
+	{ // note: this algorithm is much faster than mutipling a default vector with the orientation quaternion (in DEBUG).
 		const glm::dquat & q(m_OrientationQuat);
 		return glm::normalize( glm::dvec3
 		(
@@ -224,7 +224,7 @@ namespace KG
 	}
 
 	const glm::dvec3 Transform::GetRightVec3(void)
-	{
+	{ // note: this algorithm is much faster than mutipling a default vector with the orientation quaternion (in DEBUG).
 		const glm::dquat & q(m_OrientationQuat);
 		return glm::normalize( glm::dvec3
 		(

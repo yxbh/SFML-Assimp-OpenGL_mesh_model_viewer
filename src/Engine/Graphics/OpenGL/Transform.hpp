@@ -50,6 +50,8 @@ namespace KG
 		virtual Transform & SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ);
 		/*! Replace the current orientation quaternion with the given one. */
 		Transform & SetOrientationQuat(const glm::dquat & p_rquat);
+		/*! Replace the current orientatinquaternion by casting the given matrix into the new one. Note: it takes only a mat3. */
+		Transform & SetOrientation(const glm::dmat3 & m_rMat);
 		/*! Angle around x axis. */
 		virtual Transform & SetPitch(const double p_Angle);
 		/*! Angle around y axis. */
