@@ -32,7 +32,10 @@ namespace KG
 	*/
 	class Transform
 	{
-	protected:		
+	public:
+		static const glm::dvec3 UnitUpVec3, UnitForwardVec3, UnitRightVec3;
+
+	protected:
 		glm::dvec3			m_Scale;
 		glm::dvec3			m_Position;
 		glm::dquat			m_OrientationQuat;

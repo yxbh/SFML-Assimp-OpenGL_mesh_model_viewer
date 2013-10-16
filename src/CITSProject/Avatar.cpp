@@ -133,10 +133,10 @@ namespace Avatar
 			camera_ptr->OffsetOrientation(0.0, -delta, 0.0);
 			break;
 		case CITS::EventType::TiltLeft:
-			camera_ptr->OffsetOrientation(0.0, 0.0, delta);
+			camera_ptr->OffsetOrientation(0.0, 0.0, -delta);
 			break;
 		case CITS::EventType::TiltRight:
-			camera_ptr->OffsetOrientation(0.0, 0.0, -delta);
+			camera_ptr->OffsetOrientation(0.0, 0.0, delta);
 			break;
 		case CITS::EventType::IncreaseDistance:
 			camera_ptr->OffsetTargetDistance(delta);

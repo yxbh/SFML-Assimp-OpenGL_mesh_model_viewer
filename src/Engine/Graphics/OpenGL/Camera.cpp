@@ -113,29 +113,59 @@ namespace KG
 	}
 
 	Camera & Camera::SetPitch(const double p_Angle)
-	{ // these are actually quite FPS camera specific at the moment.
-		m_OrientationQuat.x = 0.0;
-		m_OrientationQuat.z = 0.0;
-		m_OrientationQuat = glm::normalize(m_OrientationQuat);
-		this->OffsetPitch(p_Angle);
+	{
+		const glm::dvec3 & axis(UnitRightVec3);	// rotation axis to nullify.
+		const glm::dvec3 & p1(UnitUpVec3);	// up vector. perpendicular to r.
+		const glm::dvec3 p2(m_OrientationQuat * p1);
+		const glm::dvec3 p3 = glm::normalize(glm::proj(p1, p2)); // project p2 on to p1.
+		double angle = KE::Math::RadianToDegree(std::acos(glm::dot(p1, p3)));
+		bool signed_angle = false; // set to false for now. if true. When camera points more towards +ve z. There will be an additoinal 180 degrees.
+		if (signed_angle) // Get signed angle from p1 to p3 around axis
+		{
+			assert(glm::length(axis) != 0.0);
+			const glm::dvec3 cross = glm::cross(p1, p2);
+			const double sign = glm::dot(axis, cross);
+			if (sign < 0.0)	angle *= -1.0;
+		}
+		this->OffsetPitch(-angle + p_Angle);
 		return *this;
 	}
 
 	Camera & Camera::SetYaw(const double p_Angle)
 	{ // these are actually quite FPS camera specific at the moment.
-		m_OrientationQuat.y = 0.0;
-		m_OrientationQuat.z = 0.0;
-		m_OrientationQuat = glm::normalize(m_OrientationQuat);
-		this->OffsetYaw(p_Angle);
+		const glm::dvec3 & axis(UnitUpVec3);	// rotation axis to nullify.
+		const glm::dvec3 & p1(UnitRightVec3);	// perpendicular to r.
+		const glm::dvec3 p2(m_OrientationQuat * p1);
+		const glm::dvec3 p3 = glm::normalize(glm::proj(p1, p2)); // project p2 on to p1.
+		double angle = KE::Math::RadianToDegree(std::acos(glm::dot(p1, p3)));
+		bool signed_angle = true; // have to set to true to make 0.0 degree face -z.
+		if (signed_angle) // Get signed angle from p1 to p3 around axis
+		{
+			assert(glm::length(axis) != 0.0);
+			const glm::dvec3 cross = glm::cross(p1, p2);
+			const double sign = glm::dot(axis, cross);
+			if (sign < 0.0)	angle *= -1.0;
+		}
+		this->OffsetYaw(-angle + p_Angle);
 		return *this;
 	}
 
 	Camera & Camera::SetRoll(const double p_Angle)
 	{ // these are actually quite FPS camera specific at the moment.
-		m_OrientationQuat.z = 0.0;
-		//m_OrientationQuat.x = 0.0;
-		m_OrientationQuat = glm::normalize(m_OrientationQuat);
-		this->OffsetRoll(p_Angle);
+		const glm::dvec3 & axis(UnitForwardVec3);	// rotation axis to nullify.
+		const glm::dvec3 & p1(UnitUpVec3);	// perpendicular to r.
+		const glm::dvec3 p2(m_OrientationQuat * p1);
+		const glm::dvec3 p3 = glm::normalize(glm::proj(p1, p2)); // project p2 on to p1.
+		double angle = KE::Math::RadianToDegree(std::acos(glm::dot(p1, p3)));
+		bool signed_angle = true; // have to set to true to make 0.0 degree face -z.
+		if (signed_angle) // Get signed angle from p1 to p3 around axis
+		{
+			assert(glm::length(axis) != 0.0);
+			const glm::dvec3 cross = glm::cross(p1, p2);
+			const double sign = glm::dot(axis, cross);
+			//if (sign < 0.0)	angle *= -1.0;
+		}
+		this->OffsetRoll(-angle + p_Angle);
 		return *this;
 	}
 

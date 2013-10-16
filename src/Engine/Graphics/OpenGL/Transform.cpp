@@ -2,6 +2,10 @@
 
 namespace KG
 {
+	const glm::dvec3 Transform::UnitUpVec3(0.0, 1.0, 0.0);
+	const glm::dvec3 Transform::UnitForwardVec3(0.0, 0.0, -1.0); // OpenGL +ve z is coming out of the screen.
+	const glm::dvec3 Transform::UnitRightVec3(1.0, 0.0, 0.0);
+
 	Transform::Transform(void)
 		: m_Scale(1.0, 1.0, 1.0)
 		, m_Position(0.0, 0.0, 0.0)
@@ -39,9 +43,9 @@ namespace KG
 
 	Transform & Transform::SetOrientation(const double p_AngleX, const double p_AngleY, const double p_AngleZ)
 	{
-		m_OrientationQuat = glm::dquat() * glm::angleAxis(p_AngleY, glm::dvec3(0.0, 1.0, 0.0));
-		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleZ, glm::dvec3(0.0, 0.0, 1.0));
-		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleX, glm::dvec3(1.0, 0.0, 0.0));
+		m_OrientationQuat = glm::dquat() * glm::angleAxis(p_AngleY, UnitUpVec3);
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleZ, UnitForwardVec3);
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_AngleX, UnitRightVec3);
 		m_OrientationQuat = glm::normalize(m_OrientationQuat);
 		m_Evaluated = false; return *this;
 	}
@@ -130,21 +134,21 @@ namespace KG
 	Transform & Transform::OffsetPitch(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
-		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, glm::dvec3(1.0, 0.0, 0.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, UnitRightVec3);
 		m_Evaluated = false; return *this;
 	}
 
 	Transform & Transform::OffsetYaw(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
-		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, UnitUpVec3);
 		m_Evaluated = false;return *this;
 	}
 
 	Transform & Transform::OffsetRoll(const double p_Angle)
 	{
 		if (p_Angle == 0.0) return *this;
-		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, glm::dvec3(0.0, 0.0, 1.0));
+		m_OrientationQuat = m_OrientationQuat * glm::angleAxis(p_Angle, UnitForwardVec3);
 		m_Evaluated = false;return *this;
 	}
 
