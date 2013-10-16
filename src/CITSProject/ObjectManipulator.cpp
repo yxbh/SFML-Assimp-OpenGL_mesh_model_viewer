@@ -194,9 +194,12 @@ namespace ObjectManipulator
 		case CITS::EventType::RollRight:
 			{
 				/*! Test setpitch on Transform.  */
-				//KG::Graphics::Get().GetScene().GetCamera().SetPitch(0.0);
-				//glm::dvec3 vec(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3());
-				//KE::Debug::print(std::to_string(vec.x) + " " + std::to_string(vec.y) + " " + std::to_string(vec.z));
+				const glm::dvec3 vec(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3());
+				KE::Debug::print("BEFORE: " + std::to_string(vec.x) + " " + std::to_string(vec.y) + " " + std::to_string(vec.z));
+				KG::Graphics::Get().GetScene().GetCamera().SetPitch(0.0);
+				const glm::dvec3 vec2(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3());
+				KE::Debug::print("AFTER: " + std::to_string(vec2.x) + " " + std::to_string(vec2.y) + " " + std::to_string(vec2.z));
+				/*! */
 
 				const glm::dquat camera_quat = KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat();
 				const glm::dquat offset = glm::angleAxis(delta, glm::dvec3(0.0, 1.0, 0.0));
