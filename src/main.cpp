@@ -40,10 +40,11 @@ static void AddLight(KE::Engine & p_rEngine)
 
 	KG::Light_SmartPtr spot(new KG::Light());
 	spot->SetType(KG::Light::Type::SpotLight)
-		.SetAmbient(glm::dvec3(0.1, 0.1, 0.05))
+		.SetAmbient(glm::dvec3(0.1, 0.1, 0.5))
 		.SetAttenuationQuadratic(0.01f)
-		.SetOuterConeAngle(55).SetInnerConeAngle(35)
-		.SetColor(glm::dvec3(1.0, 0.0, 0.5));
+		.SetOuterConeAngle(45).SetInnerConeAngle(15)
+		.SetColor(glm::dvec3(1.0, 0.0, 0.5))
+		.OffsetPitch(-35.0);
 	spot->SetPosition(3.0, 7.0, -4.0);
 	KG::Graphics::Get().GetScene().AddSceneNode(spot);
 	KG::Graphics::Get().GetLightManager().AddLight(spot);
@@ -224,6 +225,6 @@ int main()
 		kengine.ShutDown();
 	}
 
-	system("pause");
+	//system("pause");
 	return 0;
 }
