@@ -17,6 +17,7 @@ namespace KG
 	Texture::Texture(const DType p_DType, const std::string & p_Path)
 		: m_Type(DType::Tex2D), m_GLTextureHandle(0), m_DevILHandle(0)
 		, m_FilePath(p_Path)
+		, m_Valid(true)
 	{
 		if (p_Path.length() == 0)
 			KE::Debug::print(KE::Debug::DBG_ERROR, "Texture : ctor given empty string.");
@@ -30,11 +31,13 @@ namespace KG
 			KE::Debug::print(KE::Debug::DBG_ERROR, "Texture : DevIL ilLoadImage(string) loading failed.");
 			KE::Debug::print(KE::Debug::DBG_ERROR, " - > File path = " + p_Path);
 			KG::check_for_DevIL_error();
+			m_Valid = false;
 			return;
 		}
 		if (!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "Texture : DevIL ilConvertImage(,) failed.");
+			m_Valid = false;
 			return;
 		}
 
@@ -70,6 +73,11 @@ namespace KG
 	{
 		glActiveTexture(p_GLTextureUnit);
 		glBindTexture(m_TextureTarget, m_GLTextureHandle);
+	}
+
+	const bool Texture::IsValid(void) const
+	{
+		return m_Valid;
 	}
 
 	const KG::Texture::DType Texture::GetType(void) const

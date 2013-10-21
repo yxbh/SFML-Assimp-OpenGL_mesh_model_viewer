@@ -11,6 +11,9 @@ namespace KG
 	typedef std::shared_ptr<KG::TextureLoader>	TextureLoader_SmartPtr;
 
 	/*! \class Texture
+
+		A Texture can be both null and valid.
+
 	*/
 	class Texture
 	{
@@ -30,6 +33,7 @@ namespace KG
 		GLuint					m_GLTextureHandle;
 		ILuint					m_DevILHandle;
 		std::string				m_FilePath;
+		bool					m_Valid;
 
 	public:
 		static TextureLoader & GetLoader(void);
@@ -38,6 +42,8 @@ namespace KG
 		virtual ~Texture(void);
 
 		void Bind(GLenum p_GLTextureUnit);
+		/*! checks whether texture is valid/usable. */
+		const bool IsValid(void) const;
 		const KG::Texture::DType GetType(void) const;
 		const GLuint GetGLHandle(void) const;
 

@@ -248,7 +248,7 @@ namespace Input
 			}
 			if (KE::Input::Get().GetMouseStates().RButton)
 			{
-				const double movement_factor = 0.05;
+				const double movement_factor = 0.03;
 				KE::Event::Get()
 					.QueueEvent(KE::Event_SmartPtr(new CITS::UniformScale_Event(movement_factor*(double)-delta_y)));
 			}

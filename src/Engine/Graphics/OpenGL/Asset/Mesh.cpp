@@ -401,6 +401,13 @@ namespace KG
 		if (p_spTexture == nullptr)
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : applying null Texture.");
+			m_HasTexture = false;
+			return;
+		}
+		else if (!p_spTexture->IsValid())
+		{
+			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : invalid Texture.");
+			m_HasTexture = false;
 			return;
 		}
 		m_HasTexture = true;

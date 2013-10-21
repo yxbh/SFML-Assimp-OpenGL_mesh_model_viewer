@@ -169,6 +169,7 @@ static void TestAsset(KE::Engine & p_rEngine)
 	assert(mesh);
 	if(mesh->Loaded())
 		mesh->BufferAll();
+	KE::Debug::check_for_GL_error();
 
 	KG::ShaderResourceList shader_resource_list;
 	shader_resource_list.push_back(KG::ShaderResource(GL_VERTEX_SHADER, "shaders/generic.V.shader"));

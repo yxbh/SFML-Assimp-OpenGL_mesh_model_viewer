@@ -170,6 +170,10 @@ namespace KG
 				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_TRUE);
 				shader_program_ptr->SetParameter<GLint>("Tex2D", 0);
 			}
+			else
+			{
+				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_FALSE);
+			}
 
 			// material
 			const KG::Material & mat = mesh_ptr->GetMaterial();
