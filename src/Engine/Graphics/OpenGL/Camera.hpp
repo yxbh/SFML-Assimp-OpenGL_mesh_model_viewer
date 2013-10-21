@@ -23,6 +23,9 @@ namespace KG
 		Orientation related methods have to be overloaded and have parameters negated because we don't move the camera,
 		but we move the world. The same does not have to be done for position related methods because this is done when
 		we calculate the project (we used -m_Position).
+
+		TODO : Overload SetOrientation() from Transform to set Yaw rotation properly.
+
 	*/
 	class Camera
 		: public KG::SceneNode
