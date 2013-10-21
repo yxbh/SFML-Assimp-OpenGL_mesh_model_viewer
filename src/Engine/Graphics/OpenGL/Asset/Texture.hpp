@@ -17,7 +17,7 @@ namespace KG
 		friend TextureLoader;
 
 	public:
-		enum class Type
+		enum class DType // dimension type
 		{
 			Null, Tex1D, Tex2D, Tex3D, Cube, Size
 		};
@@ -25,24 +25,23 @@ namespace KG
 	private:
 		static KG::TextureLoader_SmartPtr 	s_spTextureLoader;
 
-		KG::Texture::Type		m_Type;
+		KG::Texture::DType		m_Type;
 		GLuint					m_GLTextureHandle;
 		ILuint					m_DevILHandle;
 		std::string				m_FilePath;
-
+		GLenum					m_Target;
 
 	public:
 		static TextureLoader & GetLoader(void);
 
-		Texture(void);
-		Texture(const std::string & p_Path);
+		Texture(const GLenum p_TextureTarget = GL_TEXTURE_2D, const DType p_DType = DType::Tex2D, const std::string & p_Path = "");
 		virtual ~Texture(void);
 
-		const KG::Texture::Type GetType(void) const;
+		const KG::Texture::DType GetType(void) const;
 		const GLuint GetGLHandle(void) const;
 
 	private:
-		void SetType(const KG::Texture::Type p_Type);
+		void SetType(const KG::Texture::DType p_Type);
 		void SetFilePath(const std::string & p_Path);
 		void SetGLHandle(const GLuint p_Handle);
 		void SetDevILHandle(const ILuint p_Handle);

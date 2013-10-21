@@ -47,7 +47,7 @@ namespace KG
 		texture_ptr->SetGLHandle(gl_handle);
 		switch (texture_ptr->GetType())
 		{
-		case KG::Texture::Type::Tex2D:
+		case KG::Texture::DType::Tex2D:
 			glBindTexture(GL_TEXTURE_2D, gl_handle);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // TODO : provide option to change this.
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

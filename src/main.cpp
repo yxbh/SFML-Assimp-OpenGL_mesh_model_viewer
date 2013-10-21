@@ -182,8 +182,8 @@ static void TestAsset(KE::Engine & p_rEngine)
 	std::ifstream texture_fin("CurrentTexture.txt");
 	if (texture_fin)
 		texture_fin >> texture_path;
-	KG::Texture_SmartPtr texture(new KG::Texture(model_tex_dir+texture_path));
-	mesh->SetTexture(texture);
+	KG::Texture_SmartPtr texture(new KG::Texture(GL_TEXTURE_2D, KG::Texture::DType::Tex2D, model_tex_dir+texture_path));
+	//mesh->SetTexture(texture);
 	mesh->SetMaterial(KG::Material());
 	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(mesh);/**/
 

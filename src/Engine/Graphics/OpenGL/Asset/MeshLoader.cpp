@@ -1,5 +1,8 @@
 #include "MeshLoader.hpp"
 #include "Mesh.hpp"
+#include "Meshes.hpp"
+#include "TextureLoader.hpp"
+#include "Texture.hpp"
 
 namespace KG
 {
@@ -16,7 +19,7 @@ namespace KG
 			return *this;
 		}
 		assert(m_pScene != nullptr);
-		InitFromScene(m_pScene);
+		InitFromScene(m_pScene, p_rPath);
 		return *this;
 	}
 
@@ -44,17 +47,27 @@ namespace KG
 
 		if (!m_pScene)
 		{
-			KE::Debug::print(KE::Debug::DBG_ERROR, "AssetLoader : failed to load mesh = " + std::string(m_Importer.GetErrorString()));
+			KE::Debug::print
+			(
+				KE::Debug::DBG_ERROR, "Meshes LoadMeshes scene import failed. Importer error string = "
+				+ std::string(m_Importer.GetErrorString())
+			);
 			return false;
 		}
 		return true;
 	}
 
-	void MeshLoader::InitFromScene(const aiScene * p_pScene)
+	void MeshLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
 	{
 		m_MeshList.reserve(p_pScene->mNumMeshes);
 		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
-			m_MeshList.push_back(this->InitMesh(p_pScene->mMeshes[i]));
+		{
+			// load mesh
+			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
+			// load texture
+			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
+			m_MeshList.push_back(mesh);
+		}
 
 		m_Importer.FreeScene(); m_pScene = nullptr;
 	}
@@ -160,6 +173,49 @@ namespace KG
 
 		mesh->m_Loaded = true;
 		return mesh;
+	}
+
+	const bool MeshLoader::InitMaterial
+		(
+			Mesh_SmartPtr p_spMesh
+			, const aiMesh * const p_pAiMesh
+			, const aiScene * const p_pAiScene
+			, const std::string & p_Path
+		)
+	{
+		bool result(true);
+
+		// Extract the directory part from the file name
+		std::string::size_type slash_index = p_Path.find_last_of("/");
+		std::string dir;
+
+		if (slash_index == std::string::npos)
+			dir = ".";
+		else if (slash_index == 0) 
+			dir = "/";
+		else 
+			dir = p_Path.substr(0, slash_index);
+
+		const int material_index = p_pAiMesh->mMaterialIndex;
+		const aiMaterial * const material_ptr = p_pAiScene->mMaterials[material_index];
+		if (!material_ptr)
+			return false;
+
+		if (material_ptr->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		{
+			aiString Path;
+
+			if ( material_ptr->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL)
+					== AI_SUCCESS
+				)
+			{
+				const std::string FullPath = dir + "/" + Path.data;
+				KG::Texture_SmartPtr texture(new KG::Texture(GL_TEXTURE_2D, KG::Texture::DType::Tex2D, FullPath));
+				p_spMesh->SetTexture(texture);
+			}
+		}	
+
+		return result; // TODO
 	}
 
 } // KG ns

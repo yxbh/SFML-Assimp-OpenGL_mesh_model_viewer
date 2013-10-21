@@ -150,6 +150,8 @@ namespace KG
 		void SetLightBackFace(const bool p_LightBackFace);
 		void SetTexture(KG::Texture_SmartPtr p_spTexture);
 	};
+
 	typedef std::shared_ptr<KG::Mesh> Mesh_SmartPtr;
+	typedef std::weak_ptr<KG::Mesh> Mesh_WeakPtr;
 
 } // KG ns

@@ -14,17 +14,9 @@ namespace KG
 		return *s_spTextureLoader;
 	}
 
-	Texture::Texture()
-		: m_Type(Type::Tex2D), m_GLTextureHandle(0), m_DevILHandle(0)
-	{}
-
-	Texture::~Texture(void)
-	{
-		glDeleteTextures(1, &m_GLTextureHandle);
-	}
-
-	Texture::Texture(const std::string & p_Path)
-		: m_Type(Type::Tex2D), m_GLTextureHandle(0), m_DevILHandle(0)
+	Texture::Texture(const GLenum p_TextureTarget, const DType p_DType, const std::string & p_Path)
+		: m_Type(DType::Tex2D), m_GLTextureHandle(0), m_DevILHandle(0)
+		, m_Target(p_TextureTarget)
 		, m_FilePath(p_Path)
 	{
 		if (p_Path.length() == 0)
@@ -50,7 +42,7 @@ namespace KG
 		glGenTextures(1, &m_GLTextureHandle);
 		switch (m_Type)
 		{
-		case KG::Texture::Type::Tex2D:
+		case KG::Texture::DType::Tex2D:
 			glBindTexture(GL_TEXTURE_2D, m_GLTextureHandle);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // TODO : provide option to change this.
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -75,8 +67,12 @@ namespace KG
 		ilBindImage(0);
 		ilDeleteImage(m_DevILHandle);
 	}
+	Texture::~Texture(void)
+	{
+		glDeleteTextures(1, &m_GLTextureHandle);
+	}
 
-	const KG::Texture::Type Texture::GetType(void) const
+	const KG::Texture::DType Texture::GetType(void) const
 	{
 		return m_Type;
 	}
@@ -86,7 +82,7 @@ namespace KG
 		return m_GLTextureHandle;
 	}
 
-	void Texture::SetType(const KG::Texture::Type p_Type)
+	void Texture::SetType(const KG::Texture::DType p_Type)
 	{
 		m_Type = p_Type;
 	}
