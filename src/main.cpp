@@ -91,7 +91,7 @@ static void AddGround(KE::Engine & p_rEngine)
 
 	const char * path = "models-textures/model0.x";
 	KG::MeshLoader loader;
-	auto mesh_list = loader.Load(path).GetMeshList();
+	auto mesh_list = loader.Load(path)->GetList();
 	if (mesh_list.size() == 0)
 	{
 		KE::Debug::print("nothing in mesh list.");
@@ -153,8 +153,13 @@ static void TestAsset(KE::Engine & p_rEngine)
 	std::ifstream fin("CurrentMesh.txt");
 	if (fin) fin >> mesh_file;
 	KG::MeshLoader loader;
-	auto mesh_list = loader.Load(model_tex_dir+mesh_file).GetMeshList();
-	if (mesh_list.size() == 0)
+	KG::Meshes_SmartPtr meshes = loader.Load(model_tex_dir+mesh_file);
+	KG::Mesh_SP_List mesh_list;
+	if (meshes)
+	{
+		mesh_list = meshes->GetList();
+	}
+	else
 	{
 		KE::Debug::print("nothing in mesh list.");
 		return;

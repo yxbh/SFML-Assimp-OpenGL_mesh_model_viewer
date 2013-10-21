@@ -4,11 +4,7 @@
 
 namespace KG
 {
-	class Texture;
-	typedef std::shared_ptr<KG::Texture>	Texture_SmartPtr;
-	typedef std::vector<KG::Texture_SmartPtr> TextureList;
-
-
+	
 	/*! \class Meshes
 
 		A simple container containing some Meshes in a tree structure.
@@ -20,18 +16,21 @@ namespace KG
 		friend class MeshLoader;
 
 	private:
-		TextureList		m_Textures;
 
 	public:
 		Meshes(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Null);
-	
-		const bool LoadMeshes(const std::string & p_rPath);
-		void ClearTextures(void);
-		/*! Clear all textures and child meshes. */
+
+		/*! Return the first Mesh smart pointer or nullptr if there isn't any. */
+		Mesh_SmartPtr GetFirst(void);
+		/*! This is an expensive call. It returns a copy of the internal SceneNode vector with the nodes casted to Mesh_SmartPtr.*/
+		KG::Mesh_SP_List GetList(void);
+		Mesh_SmartPtr At(unsigned p_Index);
+		const unsigned GetNumMesh(void) const;
+
 		void Clear(void);
 
 	private:
-		const bool InitFromScene(const aiScene * const p_pScene, const std::string & p_rPath);
+
 	};
 
 	typedef std::shared_ptr<KG::Meshes> Meshes_SmartPtr;

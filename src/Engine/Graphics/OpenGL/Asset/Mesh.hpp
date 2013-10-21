@@ -153,5 +153,5 @@ namespace KG
 
 	typedef std::shared_ptr<KG::Mesh> Mesh_SmartPtr;
 	typedef std::weak_ptr<KG::Mesh> Mesh_WeakPtr;
-
+	typedef std::vector<KG::Mesh_SmartPtr>	Mesh_SP_List;
 } // KG ns

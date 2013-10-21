@@ -11,6 +11,7 @@
 
 // asset related.
 #include "OpenGL/Asset/Mesh.hpp"
+#include "OpenGL/Asset/Meshes.hpp"
 #include "OpenGL/Asset/MeshLoader.hpp"
 #include "OpenGL/Asset/Texture.hpp"
 #include "OpenGL/Asset/TextureLoader.hpp"

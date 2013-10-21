@@ -11,21 +11,15 @@ namespace KG
 		: m_pScene(nullptr)
 	{}
 
-	MeshLoader & MeshLoader::Load(const std::string & p_rPath)
+	Meshes_SmartPtr MeshLoader::Load(const std::string & p_rPath)
 	{
 		if (!this->LoadScene(p_rPath))
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "Mesh load failure.");
-			return *this;
+			return nullptr;
 		}
 		assert(m_pScene != nullptr);
-		InitFromScene(m_pScene, p_rPath);
-		return *this;
-	}
-
-	std::vector<KG::Mesh_SmartPtr> MeshLoader::GetMeshList(void) const
-	{
-		return m_MeshList;
+		return InitFromScene(m_pScene, p_rPath);
 	}
 
 	bool MeshLoader::LoadScene(const std::string & p_rPath)
@@ -57,19 +51,20 @@ namespace KG
 		return true;
 	}
 
-	void MeshLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
+	Meshes_SmartPtr MeshLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
 	{
-		m_MeshList.reserve(p_pScene->mNumMeshes);
+		Meshes_SmartPtr meshes(new KG::Meshes);
 		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
 		{
 			// load mesh
 			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
 			// load texture
 			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
-			m_MeshList.push_back(mesh);
+			meshes->AddChild(mesh);
 		}
 
 		m_Importer.FreeScene(); m_pScene = nullptr;
+		return meshes;
 	}
 
 	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_AiMesh)
