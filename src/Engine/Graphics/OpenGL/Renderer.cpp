@@ -166,8 +166,7 @@ namespace KG
 			// texture
 			if (mesh_ptr->Has(KG::Mesh::Property::Textures))
 			{
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, mesh_ptr->GetTexture()->GetGLHandle());
+				mesh_ptr->GetTexture()->Bind(GL_TEXTURE0);
 				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_TRUE);
 				shader_program_ptr->SetParameter<GLint>("Tex2D", 0);
 			}

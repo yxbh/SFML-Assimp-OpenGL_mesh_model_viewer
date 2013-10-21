@@ -14,9 +14,8 @@ namespace KG
 		return *s_spTextureLoader;
 	}
 
-	Texture::Texture(const GLenum p_TextureTarget, const DType p_DType, const std::string & p_Path)
+	Texture::Texture(const DType p_DType, const std::string & p_Path)
 		: m_Type(DType::Tex2D), m_GLTextureHandle(0), m_DevILHandle(0)
-		, m_Target(p_TextureTarget)
 		, m_FilePath(p_Path)
 	{
 		if (p_Path.length() == 0)
@@ -40,29 +39,24 @@ namespace KG
 		}
 
 		glGenTextures(1, &m_GLTextureHandle);
-		switch (m_Type)
-		{
-		case KG::Texture::DType::Tex2D:
-			glBindTexture(GL_TEXTURE_2D, m_GLTextureHandle);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // TODO : provide option to change this.
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexImage2D
-			(
-				GL_TEXTURE_2D								// Texture target.
-				, 0										
-				, GL_SRGB_ALPHA //ilGetInteger(IL_IMAGE_FORMAT)  # Use GL_SRGB_ALPHA to accomdate Gamma correction in shader. This converts image to linear space?
-				, ilGetInteger(IL_IMAGE_WIDTH)
-				, ilGetInteger(IL_IMAGE_HEIGHT)
-				, 0
-				, GL_RGBA //ilGetInteger(IL_IMAGE_FORMAT)
-				, ilGetInteger(IL_IMAGE_TYPE)
-				, ilGetData()
-			);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			break;
-		default:
-			KE::Debug::print(KE::Debug::DBG_ERROR, "Texture : unsupported Texture type.");
-		}
+		m_TextureTarget = TranslateTargetType(p_DType);
+		glBindTexture(m_TextureTarget, m_GLTextureHandle);
+		glTexParameteri(m_TextureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // TODO : provide option to change this.
+		glTexParameteri(m_TextureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D
+		(
+			m_TextureTarget								// Texture target.
+			, 0										
+			, GL_SRGB_ALPHA //ilGetInteger(IL_IMAGE_FORMAT)  # Use GL_SRGB_ALPHA to accomdate Gamma correction in shader. This converts image to linear space?
+			, ilGetInteger(IL_IMAGE_WIDTH)
+			, ilGetInteger(IL_IMAGE_HEIGHT)
+			, 0
+			, GL_RGBA //ilGetInteger(IL_IMAGE_FORMAT)
+			, ilGetInteger(IL_IMAGE_TYPE)
+			, ilGetData()
+		);
+		glBindTexture(m_TextureTarget, 0);
+
 		KE::Debug::check_for_GL_error();
 		ilBindImage(0);
 		ilDeleteImage(m_DevILHandle);
@@ -70,6 +64,12 @@ namespace KG
 	Texture::~Texture(void)
 	{
 		glDeleteTextures(1, &m_GLTextureHandle);
+	}
+
+	void Texture::Bind(GLenum p_GLTextureUnit)
+	{
+		glActiveTexture(p_GLTextureUnit);
+		glBindTexture(m_TextureTarget, m_GLTextureHandle);
 	}
 
 	const KG::Texture::DType Texture::GetType(void) const
@@ -102,5 +102,16 @@ namespace KG
 		m_DevILHandle = p_Handle;
 	}
 
+	const GLenum Texture::TranslateTargetType(const DType p_DimensionType)
+	{
+		switch (p_DimensionType)
+		{
+		case KG::Texture::DType::Tex2D:
+			return GL_TEXTURE_2D;
+		default:
+			KE::Debug::print(KE::Debug::DBG_ERROR, "Texture : unsupported Texture type.");
+			return GL_INVALID_ENUM;
+		}
+	}
 
 }

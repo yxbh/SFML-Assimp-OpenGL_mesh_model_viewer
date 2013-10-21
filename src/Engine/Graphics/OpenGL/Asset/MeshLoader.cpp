@@ -210,7 +210,7 @@ namespace KG
 				)
 			{
 				const std::string FullPath = dir + "/" + Path.data;
-				KG::Texture_SmartPtr texture(new KG::Texture(GL_TEXTURE_2D, KG::Texture::DType::Tex2D, FullPath));
+				KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, FullPath));
 				p_spMesh->SetTexture(texture);
 			}
 		}	

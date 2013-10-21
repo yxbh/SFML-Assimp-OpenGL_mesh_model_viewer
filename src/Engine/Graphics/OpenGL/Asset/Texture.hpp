@@ -25,18 +25,19 @@ namespace KG
 	private:
 		static KG::TextureLoader_SmartPtr 	s_spTextureLoader;
 
-		KG::Texture::DType		m_Type;
+		KG::Texture::DType		m_Type; // target
+		GLenum					m_TextureTarget;
 		GLuint					m_GLTextureHandle;
 		ILuint					m_DevILHandle;
 		std::string				m_FilePath;
-		GLenum					m_Target;
 
 	public:
 		static TextureLoader & GetLoader(void);
 
-		Texture(const GLenum p_TextureTarget = GL_TEXTURE_2D, const DType p_DType = DType::Tex2D, const std::string & p_Path = "");
+		Texture(const DType p_DType = DType::Tex2D, const std::string & p_Path = "");
 		virtual ~Texture(void);
 
+		void Bind(GLenum p_GLTextureUnit);
 		const KG::Texture::DType GetType(void) const;
 		const GLuint GetGLHandle(void) const;
 
@@ -45,6 +46,8 @@ namespace KG
 		void SetFilePath(const std::string & p_Path);
 		void SetGLHandle(const GLuint p_Handle);
 		void SetDevILHandle(const ILuint p_Handle);
+
+		const GLenum TranslateTargetType(const DType p_DimensionType);
 
 	}; // class Texture
 
