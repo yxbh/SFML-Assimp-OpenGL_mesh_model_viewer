@@ -121,22 +121,22 @@ namespace Avatar
 			camera_ptr->OffsetPosition(0.0, -delta, 0.0);
 			break;
 		case CITS::EventType::LookUp:
-			camera_ptr->OffsetOrientation(delta, 0.0, 0.0);
+			camera_ptr->OffsetPitch(delta);
 			break;
 		case CITS::EventType::LookDown:
-			camera_ptr->OffsetOrientation(-delta, 0.0, 0.0);
+			camera_ptr->OffsetPitch(-delta);
 			break;
 		case CITS::EventType::LookLeft:
-			camera_ptr->OffsetOrientation(0.0, delta, 0.0);
+			camera_ptr->OffsetYaw(delta);
 			break;
 		case CITS::EventType::LookRight:
-			camera_ptr->OffsetOrientation(0.0, -delta, 0.0);
+			camera_ptr->OffsetYaw(-delta);
 			break;
 		case CITS::EventType::TiltLeft:
-			camera_ptr->OffsetOrientation(0.0, 0.0, -delta);
+			camera_ptr->OffsetRoll(-delta);
 			break;
 		case CITS::EventType::TiltRight:
-			camera_ptr->OffsetOrientation(0.0, 0.0, delta);
+			camera_ptr->OffsetRoll(delta);
 			break;
 		case CITS::EventType::IncreaseDistance:
 			camera_ptr->OffsetTargetDistance(delta);
