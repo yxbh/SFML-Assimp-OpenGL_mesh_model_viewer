@@ -152,28 +152,51 @@ namespace KG
 
 	Camera & Camera::SetRoll(const double p_Angle)
 	{ // these are actually quite FPS camera specific at the moment.
-		const glm::dvec3 & axis(UnitForwardVec3);	// rotation axis to nullify.
-		const glm::dvec3 & p1(UnitUpVec3);	// perpendicular to r.
-		const glm::dvec3 p2(m_OrientationQuat * p1);
-		const glm::dvec3 p3 = glm::normalize(glm::proj(p1, p2)); // project p2 on to p1.
-		double angle = KE::Math::RadianToDegree(std::acos(glm::dot(p1, p3)));
-		bool signed_angle = true; // have to set to true to make 0.0 degree face -z.
-		if (signed_angle) // Get signed angle from p1 to p3 around axis
+		//const glm::dvec3 & axis(UnitForwardVec3);	// rotation axis to nullify.
+		//const glm::dvec3 & p1(UnitUpVec3);	// perpendicular to r.
+		//const glm::dvec3 p2(m_OrientationQuat * p1);
+		//const glm::dvec3 p3 = glm::normalize(glm::proj(p1, p2)); // project p2 on to p1.
+		//double angle = KE::Math::RadianToDegree(std::acos(glm::dot(p1, p3)));
+		//bool signed_angle = true; // have to set to true to make 0.0 degree face -z.
+		//if (signed_angle) // Get signed angle from p1 to p3 around axis
+		//{
+		//	assert(glm::length(axis) != 0.0);
+		//	const glm::dvec3 cross = glm::cross(p1, p2);
+		//	const double sign = glm::dot(axis, cross);
+		//	//if (sign < 0.0)	angle *= -1.0;
+		//}
+		//this->OffsetRoll(-angle + p_Angle);
+		//return *this;
+		const double current_roll_angle = glm::roll(m_OrientationQuat);
+		const double yaw_angle = glm::yaw(m_OrientationQuat);
+		double new_roll_angle = current_roll_angle;
+		KE::Debug::print("\n");
+		KE::Debug::print("? =  " + std::to_string(current_roll_angle));
+		if (current_roll_angle >= 180.0 || current_roll_angle <= -180.0)
 		{
-			assert(glm::length(axis) != 0.0);
-			const glm::dvec3 cross = glm::cross(p1, p2);
-			const double sign = glm::dot(axis, cross);
-			//if (sign < 0.0)	angle *= -1.0;
+			KE::Debug::print("YES");
+			new_roll_angle *= -1.0;
+			//new_roll_angle += 180.0;
 		}
-		this->OffsetRoll(-angle + p_Angle);
+		new_roll_angle += p_Angle;
+		/*KE::Debug::clear_console();
+		KE::Debug::print("Yaw Angle =  " + std::to_string(yaw_angle));
+		KE::Debug::print("Roll Angle =  " + std::to_string(current_roll_angle));
+		KE::Debug::print("Offset =  " + std::to_string(current_roll_angle));*/
+		this->OffsetRoll(new_roll_angle);
 		return *this;
 	}
 
 	Camera & Camera::OffsetYaw(const double p_Angle)
 	{
+		/*KE::Debug::print("\n");
+		KE::Debug::clear_console();
+		KE::Debug::print("Pitch Angle =  " + std::to_string(glm::pitch(m_OrientationQuat)));
+		KE::Debug::print("Yaw Angle =  " + std::to_string(glm::yaw(m_OrientationQuat)));
+		KE::Debug::print("Roll Angle =  " + std::to_string(glm::roll(m_OrientationQuat)));*/
 		if (p_Angle == 0.0) return *this;
 		m_OrientationQuat = glm::angleAxis(p_Angle, glm::dvec3(0.0, 1.0, 0.0)) * m_OrientationQuat;
-		m_Evaluated = false;return *this;
+		Transform::m_Evaluated = false;return *this;
 	}
 
 	const glm::dmat4 Camera::GetViewMatrix(void)
