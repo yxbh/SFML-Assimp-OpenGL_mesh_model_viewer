@@ -196,10 +196,10 @@ namespace KG
 		if (!material_ptr)
 			return false;
 
+		// load material texture. Only diffuse ATM.
 		if (material_ptr->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 		{
 			aiString Path;
-
 			if ( material_ptr->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL)
 					== AI_SUCCESS
 				)
