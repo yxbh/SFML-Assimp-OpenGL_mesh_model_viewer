@@ -196,10 +196,8 @@ namespace ObjectManipulator
 				/*! Test setpitch on Transform.  */
 				/*const glm::dvec3 vec(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3());
 				KE::Debug::print("BEFORE: " + std::to_string(vec.x) + " " + std::to_string(vec.y) + " " + std::to_string(vec.z));
-				KG::Graphics::Get().GetScene().GetCamera().SetRoll(0.0);
-				const glm::dvec3 vec2(KG::Graphics::Get().GetScene().GetCamera().GetForwardVec3());
-				KE::Debug::print("AFTER: " + std::to_string(vec2.x) + " " + std::to_string(vec2.y) + " " + std::to_string(vec2.z));
-				*//*! */
+				KG::Graphics::Get().GetScene().GetCamera().SetRoll(0.0);*/
+				/*! */
 
 				const glm::dquat camera_quat = KG::Graphics::Get().GetScene().GetCamera().GetOrientationQuat();
 				const glm::dquat offset = glm::angleAxis(delta, glm::dvec3(0.0, 1.0, 0.0));
@@ -226,7 +224,7 @@ namespace ObjectManipulator
 				if (eve->GetTextureFileName() == "NONE")
 					mesh_node->SetHasTexture(false);
 				else
-					mesh_node->SetTexture(KG::Texture_SmartPtr(new KG::Texture("models-textures/" + eve->GetTextureFileName())));
+					mesh_node->SetTexture(KG::Texture_SmartPtr(new KG::Texture(KG::Texture::DType::Tex2D, "models-textures/" + eve->GetTextureFileName())));
 			}
 			break;
 		}
@@ -362,7 +360,7 @@ namespace ObjectManipulator
 		std::string model_tex_dir = "models-textures/";
 		KG::MeshLoader model;
 		model.Load(model_tex_dir+m_MeshName);
-		auto mesh_list = model.GetMeshList();
+		auto mesh_list = model.Load(model_tex_dir+m_MeshName)->GetList();
 		if (mesh_list.size() == 0)
 		{
 			KE::Debug::print("ObjectManipulator : nothing in mesh list.");
@@ -379,7 +377,7 @@ namespace ObjectManipulator
 
 		if (use_texture)
 		{
-			KG::Texture_SmartPtr texture(new KG::Texture(model_tex_dir+m_TextureName));
+			KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, model_tex_dir+m_TextureName));
 			mesh->SetTexture(texture);
 		}
 
