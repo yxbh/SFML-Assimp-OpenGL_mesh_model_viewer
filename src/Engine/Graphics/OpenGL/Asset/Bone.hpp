@@ -27,7 +27,8 @@ namespace KG
 	{
 	public:
 		std::vector<std::string>	names;				// bone names
-		std::vector<float>			weights;			// positon would be index to vertex. value is the weight.
+		std::vector<BoneIDs>		IDs;				// positon would be index to vertex. value is the IDs.
+		std::vector<BoneWeights>	weights;			// positon would be index to vertex. value is the weights.
 		std::vector<BoneTransform>	bone_transforms;	// offset and final transform for each bone.
 		
 	public:
@@ -43,6 +44,7 @@ namespace KG
 		void Reserve(const unsigned p_Size)
 		{
 			names.reserve(p_Size);
+			IDs.reserve(p_Size);
 			weights.reserve(p_Size);
 			bone_transforms.reserve(p_Size);
 		}

@@ -7,7 +7,8 @@ namespace KG
 	Mesh::Mesh(const KE::EntityID p_EntityID, const RenderPass p_RenderPass)
 		: KG::SceneNode(p_EntityID, p_RenderPass)
 		, m_HasPosVertices(false), m_HasFaces(false), m_HasNormals(false), m_HasTexCoords(false), m_HasColors(false)
-		, m_VAO(0), m_VertexVBO(0), m_IndexVBO(0), m_NormalVBO(0), m_TexCoordVBO(0), m_ColorVBO(0), m_BoneIDVBO(0)
+		, m_VAO(0), m_VertexVBO(0), m_IndexVBO(0), m_NormalVBO(0), m_TexCoordVBO(0), m_ColorVBO(0)
+		, m_BoneIDVBO(0), m_BoneWeightVBO(0)
 		, m_HasMaterial(false)
 		, m_spTexture(nullptr), m_HasTexture(false)
 		, m_HasBones(false), m_NumBones(0)
@@ -29,6 +30,10 @@ namespace KG
 			glDeleteBuffers(1, &m_TexCoordVBO);
 		if (this->Has(Property::Colors))
 			glDeleteBuffers(1, &m_ColorVBO);
+		// TODO : add check.
+		glDeleteBuffers(1, &m_BoneIDVBO);
+		// TODO : add check.
+		glDeleteBuffers(1, &m_BoneWeightVBO);
 	}
 
 	const GLenum Mesh::GetPrimitiveType(void) const
@@ -305,11 +310,12 @@ namespace KG
 			KE::Debug::check_for_GL_error();
 		}
 
-		// material
+		// material m_BoneWeightVBO
 		
 		// bone IDs
 		if (this->HasBones())
 		{
+			// bone IDs
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			this->SetBoneIDVBO(vbo);
@@ -317,6 +323,11 @@ namespace KG
 				(GL_ARRAY_BUFFER, sizeof(m_BoneIDs[0]) * m_BoneIDs.size(), m_BoneIDs.data(), GL_STATIC_DRAW);
 			glEnableVertexAttribArray(4);
 			glVertexAttribIPointer(4, 4, GL_INT, 0, (const GLvoid*)0);
+			// bone weights
+			glGenBuffers(1, &m_BoneWeightVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, m_BoneWeightVBO);
+			glBufferData
+				(GL_ARRAY_BUFFER, sizeof(m_BoneWeights[0]) * m_BoneWeights.size(), m_BoneWeights.data(), GL_STATIC_DRAW);
 			glEnableVertexAttribArray(5);
 			glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
 			KE::Debug::check_for_GL_error();

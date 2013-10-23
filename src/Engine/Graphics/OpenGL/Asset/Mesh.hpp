@@ -79,6 +79,7 @@ namespace KG
 		GLuint					m_TexCoordVBO;
 		GLuint					m_ColorVBO;
 		GLuint					m_BoneIDVBO;
+		GLuint					m_BoneWeightVBO;
 		/* texture related. */
 		KG::Texture_SmartPtr	m_spTexture;
 		bool					m_HasTexture;

@@ -191,9 +191,27 @@ namespace KG
 			const unsigned num_bones = p_AiMesh->mNumBones;
 			mesh->m_NumBones = num_bones;
 			skeleton_ptr->Reserve(num_bones);
+			// convert Bone to Vertices relation to Vertex to bones relation.
+			std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
+			for (unsigned vertex_index = 0; vertex_index < mesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
+			{
+				vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
+			}
+			for (auto & pair_it  : vertex_to_bones_map) // needs map to be pre-filled to work properly.
+			{
+				while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
+				{
+					pair_it.second.erase(pair_it.second.begin());
+				}
+				while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
+				{
+					pair_it.second.insert(std::make_pair(0.0f, std::string(p_AiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
+					// TODO : normalize total weight so it equals 1.
+				}
+			}
+			// process each bone
 			for (unsigned i = 0; i < num_bones; ++i)
 			{
-				unsigned bone_index(0);
 				const aiBone * const ai_bone_ptr = p_AiMesh->mBones[i];
 				// get bone name
 				const std::string bone_name(ai_bone_ptr->mName.data);
@@ -207,34 +225,58 @@ namespace KG
 				KG::BoneTransform bone_transform;
 				bone_transform.offset = glm::inverse(glm::dmat4(col1, col2, col3, col4));
 				skeleton_ptr->bone_transforms.push_back(bone_transform);
-				// convert Bone to Vertices relation to Vertex to bones relation. 
-				std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // bone is weight -> bone name.
-				for (unsigned weight_i = 0; i < ai_bone_ptr->mNumWeights; ++weight_i)
+				// insert bone weights into map.
+				for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
 				{
 					const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
 					vertex_to_bones_map[ai_vweight.mVertexId]
 						.insert(std::make_pair(ai_vweight.mWeight, bone_name));
 				}
-
-				// load weights and ids
-				//const unsigned num_weights = ai_bone_ptr->mNumWeights;
-				//KG::BoneIDs bone_ids;
-				//KG::BoneWeights bone_weights;
-				//for (unsigned bi = 0; bi < 4; ++bi) // max 4 bones.
-				//{
-				//	if (bi < num_weights)
-				//	{
-				//		const aiVertexWeight & ai_vertex_weight = ai_bone_ptr->mWeights[bi]; 
-				//		bone_ids[bi] = ai_vertex_weight.mVertexId;
-				//		bone_weights[bi] = ai_vertex_weight.mWeight;
-				//	}
-				//	else
-				//		bone_weights[bi] = 0.0;
-				//}
-				//skeleton_ptr->IDs.push_back(bone_ids);
-				//skeleton_ptr->weights.push_back(bone_weights);
 			}
-
+			// fill in Skeleton's ID's and weights vectors
+			unsigned vertex_index = 0;
+			skeleton_ptr->IDs.resize(p_AiMesh->mNumVertices);
+			skeleton_ptr->weights.resize(p_AiMesh->mNumVertices);
+			for (auto & vertex_to_names : vertex_to_bones_map)
+			{ // for vertex to 4 x Weights pair
+				auto bone_weight_pair = vertex_to_names.second.begin();
+				// 1st weight
+				auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+				if (it == skeleton_ptr->names.end())
+					assert(false); // should never fail.
+				unsigned bone_index = std::distance(skeleton_ptr->names.begin(), it);
+				if (bone_index < 0 || bone_index > 4) assert(false);
+				skeleton_ptr->IDs[vertex_index].x = bone_index;
+				skeleton_ptr->weights[vertex_index].x = bone_weight_pair->first;
+				// 2nd weight
+				++bone_weight_pair;
+				it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+				if (it == skeleton_ptr->names.end())
+					assert(false); // should never fail.
+				bone_index = std::distance(skeleton_ptr->names.begin(), it);
+				if (bone_index < 0 || bone_index > 4) assert(false);
+				skeleton_ptr->IDs[vertex_index].y = bone_index;
+				skeleton_ptr->weights[vertex_index].y = bone_weight_pair->first;
+				// 3rd weight
+				++bone_weight_pair;
+				it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+				if (it == skeleton_ptr->names.end())
+					assert(false); // should never fail.
+				bone_index = std::distance(skeleton_ptr->names.begin(), it);
+				if (bone_index < 0 || bone_index > 4) assert(false);
+				skeleton_ptr->IDs[vertex_index].z = bone_index;
+				skeleton_ptr->weights[vertex_index].z = bone_weight_pair->first;
+				// 4th weight
+				++bone_weight_pair;
+				it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+				if (it == skeleton_ptr->names.end())
+					assert(false); // should never fail.
+				bone_index = std::distance(skeleton_ptr->names.begin(), it);
+				if (bone_index < 0 || bone_index > 4) assert(false);
+				skeleton_ptr->IDs[vertex_index].w = bone_index;
+				skeleton_ptr->weights[vertex_index].w = bone_weight_pair->first;
+				++vertex_index;
+			}
 			
 		}
 
