@@ -206,6 +206,15 @@ namespace KG
 				KG::BoneTransform bone_transform;
 				bone_transform.offset = glm::inverse(glm::dmat4(col1, col2, col3, col4));
 				skeleton_ptr->bone_transforms.push_back(bone_transform);
+				// convert Bone to Vertices relation to Vertex to bones relation. 
+				std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // bone is weight -> bone name.
+				for (unsigned weight_i = 0; i < ai_bone_ptr->mNumWeights; ++weight_i)
+				{
+					const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
+					vertex_to_bones_map[ai_vweight.mVertexId]
+						.insert(std::make_pair(ai_vweight.mWeight, bone_name));
+				}
+
 				// load weights and ids
 				//const unsigned num_weights = ai_bone_ptr->mNumWeights;
 				//KG::BoneIDs bone_ids;

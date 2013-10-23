@@ -223,6 +223,11 @@ namespace KG
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : already buffered everything.");
 			return false;
 		}
+		if (!this->Loaded())
+		{
+			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : Nothing loaded. Ignore call. ");
+			return false;
+		}
 
 		// gen and bind VAO.
 		GLuint vao, vbo;
