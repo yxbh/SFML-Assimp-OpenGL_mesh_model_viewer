@@ -16,6 +16,8 @@ namespace KG
 		friend class MeshLoader;
 
 	private:
+		/*! animation related. */
+		glm::dmat4		m_GlobalInverse;
 
 	public:
 		Meshes(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Null);

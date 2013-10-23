@@ -12,6 +12,8 @@ namespace KG
 
 	/*! \class Texture
 
+		Only 2D texture is supported at the moment.
+
 		A Texture can be both null and valid.
 
 	*/

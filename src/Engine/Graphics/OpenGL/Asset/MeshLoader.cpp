@@ -3,6 +3,7 @@
 #include "Meshes.hpp"
 #include "TextureLoader.hpp"
 #include "Texture.hpp"
+#include "Bone.hpp"
 
 namespace KG
 {
@@ -32,11 +33,11 @@ namespace KG
 			&& p_rPath.at(index-1) == '.'
 			)// flip winding for CITS .x file. (normally .x has CW winding, but the CITS ones have CCW.
 		{
-			m_pScene = m_Importer.ReadFile(p_rPath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality|aiProcess_FlipWindingOrder);
+			m_pScene = m_Importer.ReadFile(p_rPath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality|aiProcess_FlipWindingOrder|aiProcess_FlipUVs);
 		}
 		else
 		{
-			m_pScene = m_Importer.ReadFile(p_rPath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+			m_pScene = m_Importer.ReadFile(p_rPath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality|aiProcess_FlipUVs);
 		}
 
 		if (!m_pScene)
@@ -56,6 +57,16 @@ namespace KG
 		Meshes_SmartPtr meshes(new KG::Meshes);
 		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
 		{
+			// global inverse transform for animation if there's any.
+			if (p_pScene->HasAnimations())
+			{
+				const aiMatrix4x4 & ai_mat = p_pScene->mRootNode->mTransformation.Transpose();
+				const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
+				const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
+				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
+				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+				meshes->m_GlobalInverse = glm::inverse(glm::dmat4(col1, col2, col3, col4));
+			}
 			// load mesh
 			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
 			// load texture
@@ -70,6 +81,7 @@ namespace KG
 	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_AiMesh)
 	{
 		KE::Debug::print("Model : Init mesh.");
+		assert(p_AiMesh); // cannot be null
 		KG::Mesh_SmartPtr mesh(new KG::Mesh());
 		
 		// pos vertex
@@ -83,6 +95,11 @@ namespace KG
 				const aiVector3D & ai_pos = p_AiMesh->mVertices[i];
 				mesh->m_PosVertices.push_back(glm::vec3(ai_pos.x, ai_pos.y, ai_pos.z));
 			}
+		}
+		else
+		{
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitMesh mesh has no position vertices!");
+			assert(false);
 		}
 
 		// index
@@ -153,17 +170,62 @@ namespace KG
 		}
 
 		// texture coords
-		const unsigned tc_id = 0;
-		if (p_AiMesh->HasTextureCoords(tc_id))
+		const unsigned texcoord_id = 0;
+		if (p_AiMesh->HasTextureCoords(texcoord_id))
 		{
 			mesh->m_HasTexCoords = true;
 			const unsigned num_tex_coord = mesh->GetVertices().size();
 			mesh->m_TexCoordVertices.reserve(num_tex_coord);
 			for (int i = 0; i < static_cast<int>(num_tex_coord); ++i)
 			{				
-				const aiVector3D & tex_coord = p_AiMesh->mTextureCoords[tc_id][i];
+				const aiVector3D & tex_coord = p_AiMesh->mTextureCoords[texcoord_id][i];
 				mesh->m_TexCoordVertices.push_back(glm::vec3(tex_coord.x, tex_coord.y, tex_coord.z));
 			}
+		}
+
+		// load bones
+		if (p_AiMesh->HasBones())
+		{
+			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
+			const unsigned num_bones = p_AiMesh->mNumBones;
+			mesh->m_NumBones = num_bones;
+			skeleton_ptr->Reserve(num_bones);
+			for (unsigned i = 0; i < num_bones; ++i)
+			{
+				unsigned bone_index(0);
+				const aiBone * const ai_bone_ptr = p_AiMesh->mBones[i];
+				// get bone name
+				const std::string bone_name(ai_bone_ptr->mName.data);
+				skeleton_ptr->names.push_back(bone_name);
+				// get transform
+				const aiMatrix4x4 & ai_mat = ai_bone_ptr->mOffsetMatrix;
+				const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
+				const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
+				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
+				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+				KG::BoneTransform bone_transform;
+				bone_transform.offset = glm::inverse(glm::dmat4(col1, col2, col3, col4));
+				skeleton_ptr->bone_transforms.push_back(bone_transform);
+				// load weights and ids
+				//const unsigned num_weights = ai_bone_ptr->mNumWeights;
+				//KG::BoneIDs bone_ids;
+				//KG::BoneWeights bone_weights;
+				//for (unsigned bi = 0; bi < 4; ++bi) // max 4 bones.
+				//{
+				//	if (bi < num_weights)
+				//	{
+				//		const aiVertexWeight & ai_vertex_weight = ai_bone_ptr->mWeights[bi]; 
+				//		bone_ids[bi] = ai_vertex_weight.mVertexId;
+				//		bone_weights[bi] = ai_vertex_weight.mWeight;
+				//	}
+				//	else
+				//		bone_weights[bi] = 0.0;
+				//}
+				//skeleton_ptr->IDs.push_back(bone_ids);
+				//skeleton_ptr->weights.push_back(bone_weights);
+			}
+
+			
 		}
 
 		mesh->m_Loaded = true;

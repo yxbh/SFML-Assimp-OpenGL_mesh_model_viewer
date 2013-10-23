@@ -18,5 +18,9 @@ namespace KG
 	typedef std::vector<Vec3f>	Vec3fVector;
 	typedef glm::vec4			Vec4f;
 	typedef std::vector<Vec4f>	Vec4fVector;
+	typedef glm::ivec3			Vec3i;
+	typedef std::vector<Vec3f>	Vec3iVector;
+	typedef glm::ivec4			Vec4i;
+	typedef std::vector<Vec4i>	Vec4iVector;
 
 } // KG ns

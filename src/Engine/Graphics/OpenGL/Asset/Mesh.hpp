@@ -56,6 +56,8 @@ namespace KG
 		KG::Vec3fVector			m_TexCoordVertices;
 		KG::Vec4fVector			m_ColorVertices;
 		KG::Material			m_Material;
+		KG::Vec4iVector			m_BoneIDs;
+		KG::Vec4fVector			m_BoneWeights;
 		/* mesh properties. */
 		bool					m_HasPosVertices;
 		bool					m_HasFaces;			// vertex indices.
@@ -63,6 +65,9 @@ namespace KG
 		bool					m_HasTexCoords;
 		bool					m_HasColors;		// color vertices
 		bool					m_HasMaterial;
+		bool					m_HasBones;
+		unsigned				m_NumBones;
+		//bool					m_HasAnimation;
 		bool					m_LightBackFace;	// light with only ambient if false.
 		bool					m_LoadedToGPU;		// loaded into GPU memory.
 		bool					m_Loaded;			// loaded into RAM.
@@ -73,6 +78,7 @@ namespace KG
 		GLuint					m_NormalVBO;
 		GLuint					m_TexCoordVBO;
 		GLuint					m_ColorVBO;
+		GLuint					m_BoneIDVBO;
 		/* texture related. */
 		KG::Texture_SmartPtr	m_spTexture;
 		bool					m_HasTexture;
@@ -114,6 +120,7 @@ namespace KG
 		const bool HasNormal(void) const;
 		const bool HasColor(void) const;
 		const bool HasTexture(void) const;
+		const bool HasBones(void) const;
 		void SetHasVertex(const bool p_Have);
 		void SetHasNormal(const bool p_Have);
 		void SetHasColor(const bool p_Have);
@@ -140,6 +147,7 @@ namespace KG
 		void SetNormalVBO(const GLuint p_VBO);
 		void SetTexCoordVBO(const GLuint p_VBO);
 		void SetColorVBO(const GLuint p_VBO);
+		void SetBoneIDVBO(const GLuint p_VBO);
 		void SetRenderMode(const RenderMode p_RenderMode);
 		void SetPrimitiveType(const GLenum p_PrimitiveType);
 		void SetIndexType(const GLenum p_IndexType);
