@@ -69,6 +69,7 @@ namespace KG
 			}
 			// load mesh
 			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
+			mesh->SetID(meshes->GetEntityID());
 			// load texture
 			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
 			meshes->AddChild(mesh);

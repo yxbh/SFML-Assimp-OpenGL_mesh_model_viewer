@@ -11,7 +11,7 @@ namespace KG
 
 	*/
 	class Meshes
-		: KG::SceneNode
+		: public KG::Mesh
 	{
 		friend class MeshLoader;
 
@@ -20,7 +20,7 @@ namespace KG
 		glm::dmat4		m_GlobalInverse;
 
 	public:
-		Meshes(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Null);
+		Meshes(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered);
 
 		/*! Return the first Mesh smart pointer or nullptr if there isn't any. */
 		Mesh_SmartPtr GetFirst(void);
@@ -28,9 +28,13 @@ namespace KG
 		KG::Mesh_SP_List GetList(void);
 		Mesh_SmartPtr At(unsigned p_Index);
 		const unsigned GetNumMesh(void) const;
+		/*! buffer all Meshes onto the GPU. */
+		virtual const bool BufferAll(void);
 
 		void Clear(void);
 
+
+		virtual void SetTexture(KG::Texture_SmartPtr p_spTexture) override;
 	private:
 
 	};

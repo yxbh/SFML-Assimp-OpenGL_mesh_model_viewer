@@ -134,7 +134,7 @@ namespace KG
 		/*! Check and see if this Mesh is empty. */
 		const bool Loaded(void) const;
 		/*! Buffer everything to GPU and set ID's for all VAO and VBO's. */
-		const bool BufferAll(void);
+		virtual const bool BufferAll(void);
 		/*! Check to see if mesh is already buffered to the GPU memory. */
 		const bool Buffered(void) const;
 
@@ -156,7 +156,7 @@ namespace KG
 		void SetNumElement(const GLuint p_ElementCount);
 		void SetIndexOffset(const GLuint p_IndexOffset);
 		void SetLightBackFace(const bool p_LightBackFace);
-		void SetTexture(KG::Texture_SmartPtr p_spTexture);
+		virtual void SetTexture(KG::Texture_SmartPtr p_spTexture);
 	};
 
 	typedef std::shared_ptr<KG::Mesh> Mesh_SmartPtr;

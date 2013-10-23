@@ -168,6 +168,7 @@ namespace KG
 	void SceneNode::SetID(const KE::EntityID p_ID)
 	{
 		m_ID = p_ID;
+		KE::EntityIDGenerator::Remove(p_ID);
 	}
 
 	void SceneNode::SetName(const std::string & p_rName)

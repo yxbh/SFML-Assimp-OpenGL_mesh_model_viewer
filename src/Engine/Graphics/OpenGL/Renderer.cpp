@@ -202,23 +202,28 @@ namespace KG
 			KE::Debug::check_for_GL_error();
 
 
-			if (mesh_ptr->GetVAO() == 0) 
-				KE::Debug::print(KE::Debug::DBG_ERROR, "Renderer : VAO id is 0.");
-			glBindVertexArray(mesh_ptr->GetVAO());
-			if (mesh_ptr->GetRenderMode() == KG::Mesh::RenderMode::Arrays)
+			if (mesh_ptr->GetVAO() != 0)
 			{
-				glDrawArrays(mesh_ptr->GetPrimitiveType(), mesh_ptr->GetFirstIndex(), mesh_ptr->GetNumIndex());
-			}
-			else if (mesh_ptr->GetRenderMode() == KG::Mesh::RenderMode::Indexed)
-			{
-				glDrawElements(mesh_ptr->GetPrimitiveType(), mesh_ptr->GetNumElement()
-					, mesh_ptr->GetIndexVarType(), (const GLvoid*)(mesh_ptr->GetIndexOffset()));
+				glBindVertexArray(mesh_ptr->GetVAO());
+				if (mesh_ptr->GetRenderMode() == KG::Mesh::RenderMode::Arrays)
+				{
+					glDrawArrays(mesh_ptr->GetPrimitiveType(), mesh_ptr->GetFirstIndex(), mesh_ptr->GetNumIndex());
+				}
+				else if (mesh_ptr->GetRenderMode() == KG::Mesh::RenderMode::Indexed)
+				{
+					glDrawElements(mesh_ptr->GetPrimitiveType(), mesh_ptr->GetNumElement()
+						, mesh_ptr->GetIndexVarType(), (const GLvoid*)(mesh_ptr->GetIndexOffset()));
+				}
+				else
+				{
+					KE::Debug::print(KE::Debug::DBG_ERROR, "Renderer : render mode is not set (default to null).");
+				}
+				glBindVertexArray(0);
 			}
 			else
 			{
-				KE::Debug::print(KE::Debug::DBG_ERROR, "Renderer : render mode is not set (default to null).");
+				//KE::Debug::print(KE::Debug::DBG_ERROR, "Renderer : VAO id is 0.");			
 			}
-			glBindVertexArray(0);
 			KE::Debug::check_for_GL_error();
 
 			shader_program_ptr->Disable();

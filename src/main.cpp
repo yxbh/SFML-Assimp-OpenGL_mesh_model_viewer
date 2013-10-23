@@ -165,10 +165,7 @@ static void TestAsset(KE::Engine & p_rEngine)
 		return;
 	}
 	
-	KG::Mesh_SmartPtr mesh = mesh_list.at(0);
-	assert(mesh);
-	if(mesh->Loaded())
-		mesh->BufferAll();
+	meshes->BufferAll();
 	KE::Debug::check_for_GL_error();
 
 	KG::ShaderResourceList shader_resource_list;
@@ -176,12 +173,12 @@ static void TestAsset(KE::Engine & p_rEngine)
 	shader_resource_list.push_back(KG::ShaderResource(GL_FRAGMENT_SHADER, "shaders/generic.F.shader"));
 	KG::ShaderProgram_SmartPtr shader_program(new KG::ShaderProgram());
 	shader_program->SetGLHandle(KG::ShaderProgramFactory::MakeFromFiles(shader_resource_list));
-	mesh->SetShaderProgram(shader_program);
+	meshes->SetShaderProgram(shader_program);
 
-	mesh->SetRenderPass(KG::RenderPass::Static);
+	meshes->SetRenderPass(KG::RenderPass::Static);
 	//mesh->SetModelMatrix(glm::scale(glm::dvec3(0.05, 0.05, 0.05)));
-	mesh->SetPosition(6.0,2.0,0.0);
-	mesh->SetName("Model");
+	meshes->SetPosition(6.0,2.0,0.0);
+	meshes->SetName("Model");
 
 	// texture
 	std::string texture_path = "";
@@ -190,13 +187,13 @@ static void TestAsset(KE::Engine & p_rEngine)
 		texture_fin >> texture_path;
 	KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, model_tex_dir+texture_path));
 	//mesh->SetTexture(texture);
-	mesh->SetMaterial(KG::Material());
-	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(mesh);/**/
+	meshes->SetMaterial(KG::Material());
+	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(meshes);/**/
 
-	KE::Entity_SmartPtr entity(new KE::Entity(mesh->GetEntityID()));
+	KE::Entity_SmartPtr entity(new KE::Entity(meshes->GetEntityID()));
 	KE::RenderComponent_SmartPtr r_comp(new KE::RenderComponent(entity));
 	entity->AddComponent(r_comp);
-	r_comp->SetSceneNode(mesh);
+	r_comp->SetSceneNode(meshes);
 	p_rEngine.GetEntityManager().Add(entity);
 
 	KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::NewObject_Event(entity->GetID())));

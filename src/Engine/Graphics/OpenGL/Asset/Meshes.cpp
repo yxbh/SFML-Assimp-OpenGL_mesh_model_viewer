@@ -3,7 +3,7 @@
 namespace KG
 {
 	Meshes::Meshes(const KE::EntityID p_EntityID, const KG::RenderPass p_RenderPass)
-		: KG::SceneNode(p_EntityID, p_RenderPass)
+		: KG::Mesh(p_EntityID, p_RenderPass)
 	{}
 
 	Mesh_SmartPtr Meshes::GetFirst(void)
@@ -32,9 +32,36 @@ namespace KG
 		return m_ChildSceneNodeList.size();
 	}
 
+	const bool Meshes::BufferAll(void)
+	{
+		bool result = true;
+		for (auto node_ptr : m_ChildSceneNodeList)
+		{
+			KG::Mesh_SmartPtr mesh_ptr(std::static_pointer_cast<KG::Mesh>(node_ptr));
+			if (mesh_ptr) // make sure ptr is valid post-cast
+			{
+				if (!mesh_ptr->Loaded())
+					result = false;
+				else
+					mesh_ptr->BufferAll();
+			}			
+		}
+		return result;
+	}
+
 	void Meshes::Clear(void)
 	{
 		m_ChildSceneNodeList.clear();
+	}
+
+	void Meshes::SetTexture(KG::Texture_SmartPtr p_spTexture)
+	{
+		for (auto node_ptr : m_ChildSceneNodeList)
+		{
+			KG::Mesh_SmartPtr mesh_ptr(std::static_pointer_cast<KG::Mesh>(node_ptr));
+			if (mesh_ptr) // make sure ptr is valid post-cast
+				mesh_ptr->SetTexture(p_spTexture);
+		}
 	}
 
 } // KG ns
