@@ -10,6 +10,9 @@ namespace KG
 	typedef std::weak_ptr<KG::Meshes>	Meshes_WeakPtr;
 	class Texture;
 	typedef std::shared_ptr<KG::Texture>	Texture_SmartPtr;
+	class Skeleton;
+	typedef std::shared_ptr<KG::Skeleton>	Skeleton_SmartPtr;
+	typedef std::weak_ptr<KG::Skeleton>		Skeleton_WeakPtr;
 
 	/*! \class MeshLoader
 	*/
@@ -33,7 +36,8 @@ namespace KG
 		Meshes_SmartPtr LoadMeshes(const std::string & p_rPath);
 		Meshes_SmartPtr InitFromScene(const aiScene * p_pScene, const std::string & p_rPath);
 		Mesh_SmartPtr InitMesh(const aiMesh * const p_AiMesh);
-		void ConstructSkeleton(const aiNode * const p_AiNode);
+		void InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_AiMesh);
+		void ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiNode * const p_AiNode);
 		const bool InitMaterial(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh, const aiScene * const p_pAiScene, const std::string & p_Path);
 		
 	};

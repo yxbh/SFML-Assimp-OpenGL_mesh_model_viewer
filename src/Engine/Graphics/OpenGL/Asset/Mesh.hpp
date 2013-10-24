@@ -10,6 +10,9 @@ namespace KG
 	class Texture;
 	typedef std::shared_ptr<KG::Texture>	Texture_SmartPtr;
 	typedef std::weak_ptr<KG::Texture>		Texture_WeakPtr;
+	class Skeleton;
+	typedef std::shared_ptr<KG::Skeleton>	Skeleton_SmartPtr;
+	typedef std::weak_ptr<KG::Skeleton>		Skeleton_WeakPtr;
 
 	/*! \class Mesh
 	*/
@@ -56,8 +59,7 @@ namespace KG
 		KG::Vec3fVector			m_TexCoordVertices;
 		KG::Vec4fVector			m_ColorVertices;
 		KG::Material			m_Material;
-		KG::Vec4iVector			m_BoneIDs;
-		KG::Vec4fVector			m_BoneWeights;
+		KG::Skeleton_SmartPtr	m_spSkeleton;
 		/* mesh properties. */
 		bool					m_HasPosVertices;
 		bool					m_HasFaces;			// vertex indices.
@@ -65,8 +67,7 @@ namespace KG
 		bool					m_HasTexCoords;
 		bool					m_HasColors;		// color vertices
 		bool					m_HasMaterial;
-		bool					m_HasBones;
-		unsigned				m_NumBones;
+		bool					m_HasSkeleton;
 		//bool					m_HasAnimation;
 		bool					m_LightBackFace;	// light with only ambient if false.
 		bool					m_LoadedToGPU;		// loaded into GPU memory.
@@ -121,7 +122,7 @@ namespace KG
 		const bool HasNormal(void) const;
 		const bool HasColor(void) const;
 		const bool HasTexture(void) const;
-		const bool HasBones(void) const;
+		const bool HasSkeleton(void) const;
 		void SetHasVertex(const bool p_Have);
 		void SetHasNormal(const bool p_Have);
 		void SetHasColor(const bool p_Have);
@@ -158,6 +159,7 @@ namespace KG
 		void SetIndexOffset(const GLuint p_IndexOffset);
 		void SetLightBackFace(const bool p_LightBackFace);
 		virtual void SetTexture(KG::Texture_SmartPtr p_spTexture);
+		void SetSkeleton(KG::Skeleton_SmartPtr p_spSkeleton);
 	};
 
 	typedef std::shared_ptr<KG::Mesh> Mesh_SmartPtr;

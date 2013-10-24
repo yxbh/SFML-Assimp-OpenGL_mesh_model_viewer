@@ -201,7 +201,7 @@ namespace KG
 			KE::Debug::check_for_GL_error();
 
 			// animation
-			if (mesh_ptr->HasBones())
+			if (mesh_ptr->HasSkeleton())
 			{
 				// TODO disabled for now.
 				//shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_TRUE);

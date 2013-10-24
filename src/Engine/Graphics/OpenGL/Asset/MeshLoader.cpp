@@ -71,12 +71,14 @@ namespace KG
 			// load mesh
 			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
 			mesh->SetID(meshes->GetEntityID());
+			// load skeleton if there's any.
+			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
+			skeleton_ptr->SetID(meshes->GetEntityID());
+			this->InitSkeleton(mesh, p_pScene->mMeshes[i]);
 			// load texture
 			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
 			meshes->AddChild(mesh);
 		}
-		// construct the skeleton using SceneNodes
-		this->ConstructSkeleton(p_pScene->mRootNode);
 
 		m_Importer.FreeScene(); m_pScene = nullptr;
 		return meshes;
@@ -187,16 +189,21 @@ namespace KG
 			}
 		}
 
+		mesh->m_Loaded = true;
+		return mesh;
+	}
+
+	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_AiMesh)
+	{
 		// load bones
 		if (p_AiMesh->HasBones())
 		{
 			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
 			const unsigned num_bones = p_AiMesh->mNumBones;
-			mesh->m_NumBones = num_bones;
 			skeleton_ptr->Reserve(num_bones);
 			// convert Bone to Vertices relation to Vertex to bones relation.
 			std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
-			for (unsigned vertex_index = 0; vertex_index < mesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
+			for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
 			{
 				vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
 			}
@@ -281,14 +288,15 @@ namespace KG
 				++vertex_index;
 			}
 
-			mesh->m_HasBones = true;
-		} // if has bones
+			this->ConstructSkeleton(skeleton_ptr, m_pScene->mRootNode);
 
-		mesh->m_Loaded = true;
-		return mesh;
+			p_spMesh->SetSkeleton(skeleton_ptr);
+			p_spMesh->m_HasSkeleton = true;
+			
+		} // if has bones
 	}
 
-	void MeshLoader::ConstructSkeleton(const aiNode * const p_AiNode)
+	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiNode * const p_AiNode)
 	{
 
 	}
