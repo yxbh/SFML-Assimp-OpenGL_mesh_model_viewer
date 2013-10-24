@@ -48,7 +48,8 @@ namespace KG
 		std::vector<std::string>	names;				// bone names
 		std::vector<BoneIDs>		IDs;				// positon would be index to vertex. value is the IDs.
 		std::vector<BoneWeights>	weights;			// positon would be index to vertex. value is the weights.
-		std::vector<BoneTransform>	bone_transforms;	// all bones and their offet and final transform matrix.
+		std::vector<glm::dmat4>		offset_transforms;
+		std::vector<glm::dmat4>		final_transforms;
 
 	public:
 		Skeleton(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
@@ -64,9 +65,20 @@ namespace KG
 		void Reserve(const unsigned p_Size)
 		{
 			names.reserve(p_Size);
+			offset_transforms.reserve(p_Size);
+			final_transforms.reserve(p_Size);
+		}
+
+		void ReserveMemForIDs(const unsigned p_Size)
+		{
 			IDs.reserve(p_Size);
+		}
+
+		void ReserveMemForWeights(const unsigned p_Size)
+		{
 			weights.reserve(p_Size);
 		}
+
 
 	private:
 		void ComputeBoneTransforms(const KE::Duration, const glm::dmat4 & p_ParentTransform)

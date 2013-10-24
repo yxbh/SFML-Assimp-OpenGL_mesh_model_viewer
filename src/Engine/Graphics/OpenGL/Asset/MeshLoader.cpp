@@ -235,8 +235,7 @@ namespace KG
 				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
 				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
 				KG::BoneTransform bone_transform;
-				bone_transform.offset = glm::inverse(glm::dmat4(col1, col2, col3, col4));
-				skeleton_ptr->bone_transforms.push_back(bone_transform);
+				skeleton_ptr->offset_transforms.push_back(glm::dmat4(col1, col2, col3, col4));
 				// insert bone weights into map.
 				for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
 				{
@@ -245,10 +244,11 @@ namespace KG
 						.insert(std::make_pair(ai_vweight.mWeight, bone_name));
 				}
 			}
+
 			// fill in Skeleton's ID's and weights vectors for each vertex
 			unsigned vertex_index = 0;
-			skeleton_ptr->IDs.resize(p_AiMesh->mNumVertices);
-			skeleton_ptr->weights.resize(p_AiMesh->mNumVertices);
+			skeleton_ptr->IDs.resize(p_AiMesh->mNumVertices);		// resize first and then iterate.
+			skeleton_ptr->weights.resize(p_AiMesh->mNumVertices);	// resize first and then iterate.
 			for (auto & vertex_to_names : vertex_to_bones_map)
 			{ // for vertex to 4 x Weights pair
 				auto bone_weight_pair = vertex_to_names.second.begin();
