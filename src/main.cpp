@@ -177,7 +177,7 @@ static void TestAsset(KE::Engine & p_rEngine)
 
 	meshes->SetRenderPass(KG::RenderPass::Static);
 	//mesh->SetModelMatrix(glm::scale(glm::dvec3(0.05, 0.05, 0.05)));
-	meshes->SetPosition(6.0,2.0,0.0);
+	meshes->GetChildSceneNodeList().at(0)->SetPosition(6.0,2.0,0.0);
 	meshes->SetName("Model");
 
 	// texture

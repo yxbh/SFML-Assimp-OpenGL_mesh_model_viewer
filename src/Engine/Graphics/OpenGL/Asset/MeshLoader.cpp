@@ -55,6 +55,7 @@ namespace KG
 	Meshes_SmartPtr MeshLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
 	{
 		Meshes_SmartPtr meshes(new KG::Meshes);
+		// load all the meshes
 		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
 		{
 			// global inverse transform for animation if there's any.
@@ -74,6 +75,8 @@ namespace KG
 			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
 			meshes->AddChild(mesh);
 		}
+		// construct the skeleton using SceneNodes
+		this->ConstructSkeleton(p_pScene->mRootNode);
 
 		m_Importer.FreeScene(); m_pScene = nullptr;
 		return meshes;
@@ -233,7 +236,7 @@ namespace KG
 						.insert(std::make_pair(ai_vweight.mWeight, bone_name));
 				}
 			}
-			// fill in Skeleton's ID's and weights vectors
+			// fill in Skeleton's ID's and weights vectors for each vertex
 			unsigned vertex_index = 0;
 			skeleton_ptr->IDs.resize(p_AiMesh->mNumVertices);
 			skeleton_ptr->weights.resize(p_AiMesh->mNumVertices);
@@ -277,11 +280,17 @@ namespace KG
 				skeleton_ptr->weights[vertex_index].w = bone_weight_pair->first;
 				++vertex_index;
 			}
-			
-		}
+
+			mesh->m_HasBones = true;
+		} // if has bones
 
 		mesh->m_Loaded = true;
 		return mesh;
+	}
+
+	void MeshLoader::ConstructSkeleton(const aiNode * const p_AiNode)
+	{
+
 	}
 
 	const bool MeshLoader::InitMaterial

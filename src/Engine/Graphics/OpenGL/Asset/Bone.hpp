@@ -14,6 +14,18 @@ namespace KG
 		glm::dmat4 final;
 	};
 
+	/*! \class
+	*/
+	class BoneNode
+		: public KG::SceneNode
+	{
+	public:
+		BoneNode(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
+			: KG::SceneNode(p_EntityID, p_RenderPass)
+		{}
+		~BoneNode(void) {}
+	};
+
 	typedef Vec4i VertexIDs;
 	typedef Vec4i BoneIDs;
 	typedef Vec4f BoneWeights;
@@ -32,9 +44,10 @@ namespace KG
 		std::vector<BoneTransform>	bone_transforms;	// offset and final transform for each bone.
 		
 	public:
-		Skeleton(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Null)
+		Skeleton(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
 			: KG::SceneNode(p_EntityID, p_RenderPass)
 		{}
+		~Skeleton(void) {}
 
 		KG::SceneNodeList & GetChildren(void)
 		{
@@ -49,9 +62,16 @@ namespace KG
 			bone_transforms.reserve(p_Size);
 		}
 
-	};
+	private:
+		void ComputeBoneTransforms(const KE::Duration, const glm::dmat4 & p_ParentTransform)
+		{
+			// TODO
+			KE_UNREFERENCED_PARAMETER(p_ParentTransform);
+		}
 
+	};
 
 	typedef std::shared_ptr<KG::Skeleton>	Skeleton_SmartPtr;
 	typedef std::weak_ptr<KG::Skeleton>		Skeleton_WeakPtr;
+
 } // KG ns

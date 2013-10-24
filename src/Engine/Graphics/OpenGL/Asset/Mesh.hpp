@@ -95,7 +95,7 @@ namespace KG
 		// e.g. glDrawElements(m_PrimitiveType, m_ElementCount, m_IndexVarType, m_IndexOffset)
 
 	public:
-		Mesh(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Static);
+		Mesh(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Dynamic);
 		virtual ~Mesh(void);
 
 		const GLenum GetPrimitiveType(void) const;

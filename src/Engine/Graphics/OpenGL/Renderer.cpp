@@ -142,25 +142,24 @@ namespace KG
 			const glm::dmat4 camera_view_matrix = scene_ref.GetCamera().GetViewProjectionMatrixd();
 			const glm::dmat4 model_matrix = node_ptr->GetModelMatrix();
 			auto shader_program_ptr = m_spShaderProgram;
-			//auto shader_program_ptr = mesh_ptr->GetShaderProgram();
 			shader_program_ptr->Use(); // already called in PreRender(). but will leave it here for now.
 			shader_program_ptr->SetParameter<glm::mat4>("mvpMatrix", glm::mat4(camera_view_matrix*model_matrix));
 		
 			// setup vertex
 			if (mesh_ptr->HasNormal())
-				shader_program_ptr->Enable().SetParameter<GLboolean>("HasNormals", GL_TRUE);
+				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_TRUE);
 			else
-				shader_program_ptr->Enable().SetParameter<GLboolean>("HasNormals", GL_FALSE);
+				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_FALSE);
 
 			// setup color or texture
 			if (mesh_ptr->HasColor())
-				shader_program_ptr->Enable().SetParameter<GLboolean>("HasColorVertices", GL_TRUE);
+				shader_program_ptr->SetParameter<GLboolean>("HasColorVertices", GL_TRUE);
 			else if (mesh_ptr->HasTexture())
-				shader_program_ptr->Enable().SetParameter<GLboolean>("HasTexCoord2D", GL_TRUE);
+				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_TRUE);
 			else
 			{
-				shader_program_ptr->Enable().SetParameter<GLboolean>("HasColorVertices", GL_FALSE);
-				shader_program_ptr->Enable().SetParameter<GLboolean>("HasTexCoord2D", GL_FALSE);
+				shader_program_ptr->SetParameter<GLboolean>("HasColorVertices", GL_FALSE);
+				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_FALSE);
 			}
 
 			// texture
@@ -201,6 +200,16 @@ namespace KG
 				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_FALSE);
 			KE::Debug::check_for_GL_error();
 
+			// animation
+			if (mesh_ptr->HasBones())
+			{
+				// TODO disabled for now.
+				//shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_TRUE);
+			}
+			else
+			{
+				//shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_FALSE);
+			}
 
 			if (mesh_ptr->GetVAO() != 0)
 			{

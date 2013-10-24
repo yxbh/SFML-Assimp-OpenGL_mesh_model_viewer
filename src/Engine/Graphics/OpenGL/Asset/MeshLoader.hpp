@@ -33,8 +33,9 @@ namespace KG
 		Meshes_SmartPtr LoadMeshes(const std::string & p_rPath);
 		Meshes_SmartPtr InitFromScene(const aiScene * p_pScene, const std::string & p_rPath);
 		Mesh_SmartPtr InitMesh(const aiMesh * const p_AiMesh);
+		void ConstructSkeleton(const aiNode * const p_AiNode);
 		const bool InitMaterial(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh, const aiScene * const p_pAiScene, const std::string & p_Path);
-
+		
 	};
 
 } // KG ns

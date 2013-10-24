@@ -4,6 +4,8 @@ namespace KG
 {
 	Meshes::Meshes(const KE::EntityID p_EntityID, const KG::RenderPass p_RenderPass)
 		: KG::Mesh(p_EntityID, p_RenderPass)
+		, m_spAnimSkeleton(nullptr)
+		, m_HasSkeleton(false)
 	{}
 
 	Mesh_SmartPtr Meshes::GetFirst(void)
@@ -62,6 +64,19 @@ namespace KG
 			if (mesh_ptr) // make sure ptr is valid post-cast
 				mesh_ptr->SetTexture(p_spTexture);
 		}
+	}
+
+	void Meshes::SetSkeleton(KG::Skeleton_SmartPtr p_spSkeleton)
+	{
+		if (this->HasSkeleton())
+			KE::Debug::print(KE::Debug::DBG_WARNING, "Meshes::SetSkeleton : already contains Skeleton. Go ahead anyway.");
+		m_spAnimSkeleton = p_spSkeleton;
+		m_HasSkeleton = true;
+	}
+
+	const bool Meshes::HasSkeleton(void) const
+	{
+		return m_HasSkeleton;
 	}
 
 } // KG ns
