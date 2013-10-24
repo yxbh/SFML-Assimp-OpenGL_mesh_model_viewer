@@ -68,13 +68,14 @@ namespace KG
 				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
 				meshes->m_GlobalInverse = glm::inverse(glm::dmat4(col1, col2, col3, col4));
 			}
+
 			// load mesh
 			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
 			mesh->SetID(meshes->GetEntityID());
+
 			// load skeleton if there's any.
-			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
-			skeleton_ptr->SetID(meshes->GetEntityID());
 			this->InitSkeleton(mesh, p_pScene->mMeshes[i]);
+
 			// load texture
 			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
 			meshes->AddChild(mesh);
@@ -199,6 +200,7 @@ namespace KG
 		if (p_AiMesh->HasBones())
 		{
 			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
+			skeleton_ptr->SetID(p_spMesh->GetEntityID());
 			const unsigned num_bones = p_AiMesh->mNumBones;
 			skeleton_ptr->Reserve(num_bones);
 			// convert Bone to Vertices relation to Vertex to bones relation.
@@ -299,6 +301,117 @@ namespace KG
 	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiNode * const p_AiNode)
 	{
 
+		/*
+			To reconstruct the bone tree. Build a bone depth map by going through each Bone name and search them in the scene.
+			For each bone. calculate the depth from the root. the one with the lowest depth would be the root bone.
+		*/
+
+		//construct a bone depth map
+		std::map<std::string, unsigned> bone_depth_map; // bones must have different names.
+		for ( auto & bone_name : p_spSkeleton->names)
+		{
+			unsigned depth = 0; // depth starts from 1 at the root AiNode
+			const aiNode * scene_root_node = m_pScene->mRootNode;
+			if (!scene_root_node) // check root node first.
+			{
+				KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::ConstructSkeleton : root node is null?");
+				return;
+			}
+			
+			if (this->FindBoneDepth(depth, scene_root_node, bone_name))
+			{
+				bone_depth_map.insert(std::make_pair(bone_name, depth));
+			}
+			else
+				assert(false);
+		}
+
+		// find root bone of skeleton.
+		// Note: there could be more than 1. (e.g. Blender's armture is a root but isn't technically a bone).
+		unsigned min_depth = 9999; // just something bigger than the possible number of bones...
+		std::string root_bone_name("N/A");
+		for (auto & it : bone_depth_map)
+		{
+			if (it.second < min_depth)
+			{
+				min_depth = it.second;
+				root_bone_name = it.first;
+			}
+		}
+		std::vector<std::string> root_bone_names;
+		for (auto & it : bone_depth_map) // get all root bone names.
+		{
+			if (it.second == min_depth)
+				root_bone_names.push_back(it.first);
+		}
+		
+		for (auto & name : root_bone_names)
+		{
+			KG::BoneNode_SmartPtr bone_node_sp(new KG::BoneNode(p_spSkeleton->GetEntityID(), KG::RenderPass::NotRendered));
+			bone_node_sp->SetName(name);
+			this->GrowBoneTree(bone_node_sp, this->FindAiNodeByName(name, p_AiNode));
+			p_spSkeleton->AddChild(bone_node_sp);
+		}
+
+	}
+
+	const bool MeshLoader::FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName)
+	{
+		++p_Depth;
+		const std::string this_bone_name(p_pAiNode->mName.data);
+		if (p_BoneName == this_bone_name) // FOUND!!!
+			return true;
+		else
+		{
+			for (unsigned i = 0; i < p_pAiNode->mNumChildren; ++i)
+			{
+				if (this->FindBoneDepth(p_Depth, p_pAiNode->mChildren[i], p_BoneName))
+					return true;
+				else
+					--p_Depth;
+			}
+		}
+		return false;
+	}
+
+	const aiNode * const MeshLoader::FindAiNodeByName(const std::string & p_rNodeName, const aiNode * const p_pAiNode)
+	{
+		if (!p_pAiNode)
+		{
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::FindAiNodeByName : received a nullptr");
+			assert(false);
+		}
+		
+		const std::string this_bone_name(p_pAiNode->mName.data);
+		if (p_rNodeName == this_bone_name) // FOUND!!!
+			return p_pAiNode;
+		else
+		{
+			for (unsigned i = 0; i < p_pAiNode->mNumChildren; ++i)
+			{
+				const aiNode * const ai_node_ptr = this->FindAiNodeByName(p_rNodeName, p_pAiNode->mChildren[i]);
+				if (ai_node_ptr)
+					return ai_node_ptr;
+			}
+		}
+		return nullptr;
+	}
+
+	void MeshLoader::GrowBoneTree(KG::BoneNode_SmartPtr p_spBoneNode, const aiNode * const p_pAiNode)
+	{
+		if (!p_pAiNode)
+		{
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::GrowBoneTree : received a nullptr");
+			assert(false);
+		}
+		p_spBoneNode->SetName(p_pAiNode->mName.data);
+
+		for (unsigned i = 0; i < p_pAiNode->mNumChildren; ++i)
+		{
+			KG::BoneNode_SmartPtr bone_node(new KG::BoneNode(p_spBoneNode->GetEntityID(), KG::RenderPass::NotRendered));
+			p_spBoneNode->AddChild(bone_node);
+			this->GrowBoneTree(bone_node, p_pAiNode->mChildren[i]);
+		}
 	}
 
 	const bool MeshLoader::InitMaterial
