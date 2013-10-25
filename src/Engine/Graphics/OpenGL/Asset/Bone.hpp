@@ -36,6 +36,9 @@ namespace KG
 	typedef Vec4i BoneIDs;
 	typedef Vec4f BoneWeights;
 
+	class Animation;
+	typedef std::shared_ptr<Animation> Animation_SmartPtr;
+	typedef std::weak_ptr<Animation> Animation_WeakPtr;
 
 	/*! \class Skeleton
 
@@ -44,41 +47,31 @@ namespace KG
 	class Skeleton
 		: public KG::SceneNode
 	{
-	public:
-		std::vector<std::string>	names;				// bone names
-		std::vector<BoneIDs>		IDs;				// positon would be index to vertex. value is the IDs.
-		std::vector<BoneWeights>	weights;			// positon would be index to vertex. value is the weights.
-		std::vector<glm::dmat4>		offset_transforms;
-		std::vector<glm::dmat4>		final_transforms;
+		friend class MeshLoader;
 
 	public:
-		Skeleton(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
-			: KG::SceneNode(p_EntityID, p_RenderPass)
-		{}
-		~Skeleton(void) {}
+		std::vector<std::string>			names;				// bone names
+		std::vector<BoneIDs>				IDs;				// positon would be index to vertex. value is the IDs.
+		std::vector<BoneWeights>			weights;			// positon would be index to vertex. value is the weights.
+		std::vector<glm::dmat4>				offset_transforms;
+		std::vector<glm::dmat4>				final_transforms;
+		std::vector<KG::Animation_SmartPtr>	m_Animations;
 
-		KG::SceneNodeList & GetChildren(void)
-		{
-			return m_ChildSceneNodeList;
-		}
+	public:
+		Skeleton
+		(
+			const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID()
+			, const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered
+		);
+		~Skeleton(void);
 
-		void Reserve(const unsigned p_Size)
-		{
-			names.reserve(p_Size);
-			offset_transforms.reserve(p_Size);
-			final_transforms.reserve(p_Size);
-		}
+		const bool HasAnimations(void) const;
 
-		void ReserveMemForIDs(const unsigned p_Size)
-		{
-			IDs.reserve(p_Size);
-		}
+		KG::SceneNodeList & GetChildren(void);
 
-		void ReserveMemForWeights(const unsigned p_Size)
-		{
-			weights.reserve(p_Size);
-		}
-
+		void Reserve(const unsigned p_Size);
+		void ReserveMemForIDs(const unsigned p_Size);
+		void ReserveMemForWeights(const unsigned p_Size);
 
 	private:
 		void ComputeBoneTransforms(const KE::Duration, const glm::dmat4 & p_ParentTransform)

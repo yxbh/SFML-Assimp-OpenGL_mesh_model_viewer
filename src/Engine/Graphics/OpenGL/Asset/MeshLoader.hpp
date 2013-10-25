@@ -46,6 +46,7 @@ namespace KG
 		const bool FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName);
 		const aiNode * const FindAiNodeByName(const std::string & p_rNodeName, const aiNode * const p_pAiNode);
 		void GrowBoneTree(KG::BoneNode_SmartPtr p_spBoneNode, const aiNode * const p_pAiNode);
+		void InitAnimations(Mesh_SmartPtr p_spMesh);
 		const bool InitMaterial(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh, const aiScene * const p_pAiScene, const std::string & p_Path);
 		
 	};
