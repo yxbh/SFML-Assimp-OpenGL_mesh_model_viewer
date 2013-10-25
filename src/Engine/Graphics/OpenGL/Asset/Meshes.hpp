@@ -1,11 +1,14 @@
 #pragma once
 #include "../../../common.hpp"
 #include "Mesh.hpp"
-#include "Bone.hpp"
 
 namespace KG
 {
 	
+	class Skeleton;
+	typedef std::shared_ptr<KG::Skeleton>	Skeleton_SmartPtr;
+	typedef std::weak_ptr<KG::Skeleton>		Skeleton_WeakPtr;
+
 	/*! \class Meshes
 
 		A simple container containing some Meshes in a tree structure.

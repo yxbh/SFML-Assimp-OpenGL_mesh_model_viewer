@@ -1,6 +1,6 @@
 #include "Mesh.hpp"
 #include "Texture.hpp"
-#include "Bone.hpp"
+#include "Skeleton.hpp"
 
 namespace KG
 {

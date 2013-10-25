@@ -1,4 +1,5 @@
 #include "Meshes.hpp"
+#include "Skeleton.hpp"
 
 namespace KG
 {

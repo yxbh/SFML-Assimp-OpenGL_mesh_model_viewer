@@ -3,7 +3,7 @@
 #include "Meshes.hpp"
 #include "TextureLoader.hpp"
 #include "Texture.hpp"
-#include "Bone.hpp"
+#include "Skeleton.hpp"
 #include "Animation.hpp"
 
 namespace KG
@@ -502,7 +502,7 @@ namespace KG
 		if (material_ptr->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 		{
 			aiString Path;
-			if ( material_ptr->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL)
+			if ( material_ptr->GetTexture(aiTextureType_DIFFUSE, 0, &Path, nullptr, nullptr, nullptr, nullptr, nullptr)
 					== AI_SUCCESS
 				)
 			{

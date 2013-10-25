@@ -1,4 +1,4 @@
-#include "Bone.hpp"
+#include "Skeleton.hpp"
 #include "Animation.hpp"
 
 namespace KG
