@@ -81,7 +81,7 @@ namespace KG
 			this->InitAnimations(mesh);
 
 			// load texture
-			this->InitMaterial(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
+			this->InitMaterialTexture(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
 			meshes->AddChild(mesh);
 		}
 
@@ -91,20 +91,49 @@ namespace KG
 
 	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_AiMesh)
 	{
-		KE::Debug::print("Model : Init mesh.");
+		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
 		assert(p_AiMesh); // cannot be null
 		KG::Mesh_SmartPtr mesh(new KG::Mesh());
 		
 		// pos vertex
-		if (p_AiMesh->HasPositions())
+		KE::Debug::print("MeshLoader::InitMesh : Init positions.");
+		this->InitPositions(mesh, p_AiMesh);
+
+		// index
+		KE::Debug::print("MeshLoader::InitMesh : Init indices.");
+		this->InitFaces(mesh, p_AiMesh);
+
+		// normal 
+		KE::Debug::print("MeshLoader::InitMesh : Init normalss.");
+		this->InitNormals(mesh, p_AiMesh);
+
+		// material
+		KE::Debug::print("MeshLoader::InitMesh : Init material.");
+		this->InitMaterials(mesh, p_AiMesh);
+
+		// color vertex.
+		KE::Debug::print("MeshLoader::InitMesh : Init colors.");
+		this->InitColors(mesh, p_AiMesh);
+
+		// texture coords
+		KE::Debug::print("MeshLoader::InitMesh : Init texture coords.");
+		this->InitTexCoords(mesh, p_AiMesh);
+
+		mesh->m_Loaded = true;
+		return mesh;
+	}
+
+	void MeshLoader::InitPositions(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	{
+		if (p_pAiMesh->HasPositions())
 		{
-			mesh->m_HasPosVertices = true;
-			const unsigned num_pos = p_AiMesh->mNumVertices;
-			mesh->m_PosVertices.reserve(num_pos);
+			p_spMesh->m_HasPosVertices = true;
+			const unsigned num_pos(p_pAiMesh->mNumVertices);
+			p_spMesh->m_PosVertices.reserve(num_pos);
 			for (int i = 0; i < static_cast<int>(num_pos); ++i)
 			{
-				const aiVector3D & ai_pos = p_AiMesh->mVertices[i];
-				mesh->m_PosVertices.push_back(glm::vec3(ai_pos.x, ai_pos.y, ai_pos.z));
+				const aiVector3D & ai_pos = p_pAiMesh->mVertices[i];
+				p_spMesh->m_PosVertices.push_back(glm::vec3(ai_pos.x, ai_pos.y, ai_pos.z));
 			}
 		}
 		else
@@ -112,100 +141,107 @@ namespace KG
 			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitMesh mesh has no position vertices!");
 			assert(false);
 		}
+	}
 
-		// index
-		if (p_AiMesh->HasFaces())
+	void MeshLoader::InitFaces(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	{
+		if (p_pAiMesh->HasFaces())
 		{
-			mesh->m_HasFaces = true;
-			const unsigned num_faces = p_AiMesh->mNumFaces;
-			mesh->SetNumIndex(num_faces * 3);
-			mesh->SetNumElement(num_faces * 3);
-			mesh->m_Indices.reserve(num_faces * 3);
+			p_spMesh->m_HasFaces = true;
+			const unsigned num_faces(p_pAiMesh->mNumFaces);
+			p_spMesh->SetNumIndex(num_faces * 3);
+			p_spMesh->SetNumElement(num_faces * 3);
+			p_spMesh->m_Indices.reserve(num_faces * 3);
 			for (int i = 0; i < static_cast<int>(num_faces); ++i)
 			{
-				const aiFace & face = p_AiMesh->mFaces[i];
+				const aiFace & face = p_pAiMesh->mFaces[i];
 				assert(face.mNumIndices == 3);
 				for (int j = 0; j < 3; ++j)
-					mesh->m_Indices.push_back(face.mIndices[j]);
+					p_spMesh->m_Indices.push_back(face.mIndices[j]);
 			}
 		}
+	}
 
-		// normal 
-		if (p_AiMesh->HasNormals())
+	void MeshLoader::InitNormals(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	{
+		if (p_pAiMesh->HasNormals())
 		{
-			mesh->m_HasNormals = true;
-			const unsigned num_normal = p_AiMesh->mNumVertices;
-			mesh->m_NormalVertices.reserve(num_normal);
+			p_spMesh->m_HasNormals = true;
+			const unsigned num_normal(p_pAiMesh->mNumVertices);
+			p_spMesh->m_NormalVertices.reserve(num_normal);
 			for (int i = 0; i < static_cast<int>(num_normal); ++i)
 			{
-				const aiVector3D & ai_normal = p_AiMesh->mNormals[i];
-				mesh->m_NormalVertices.push_back(glm::vec3(ai_normal.x, ai_normal.y, ai_normal.z));
+				const aiVector3D & ai_normal = p_pAiMesh->mNormals[i];
+				p_spMesh->m_NormalVertices.push_back(glm::vec3(ai_normal.x, ai_normal.y, ai_normal.z));
 			}
 		}
+	}
 
-		// material
+	void MeshLoader::InitTexCoords(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	{
+		const unsigned texcoord_id = 0;
+		if (p_pAiMesh->HasTextureCoords(texcoord_id))
+		{
+			p_spMesh->m_HasTexCoords = true;
+			const unsigned num_tex_coord(p_spMesh->GetVertices().size());
+			p_spMesh->m_TexCoordVertices.reserve(num_tex_coord);
+			for (int i = 0; i < static_cast<int>(num_tex_coord); ++i)
+			{				
+				const aiVector3D & tex_coord = p_pAiMesh->mTextureCoords[texcoord_id][i];
+				p_spMesh->m_TexCoordVertices.push_back(glm::vec3(tex_coord.x, tex_coord.y, tex_coord.z));
+			}
+		}
+	}
+
+	void MeshLoader::InitColors(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	{
+		const unsigned vc_id = 0; // TODO : ??
+		if (p_pAiMesh->HasVertexColors(vc_id))
+		{
+			p_spMesh->m_HasColors = true;
+			const unsigned num_colors(p_spMesh->GetVertices().size());
+			p_spMesh->m_ColorVertices.reserve(num_colors);
+			for (int i = 0; i < static_cast<int>(num_colors); ++i)
+			{
+				const aiColor4D & color_vert = p_pAiMesh->mColors[vc_id][i];
+				p_spMesh->m_ColorVertices.push_back(glm::vec4(color_vert.r, color_vert.g, color_vert.b, color_vert.a));
+			}
+		}
+	}
+
+	void MeshLoader::InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	{
 		if (m_pScene->HasMaterials())
 		{
-			mesh->m_HasMaterial = true;
-			int material_id = p_AiMesh->mMaterialIndex;
+			p_spMesh->m_HasMaterial = true;
+			int material_id = p_pAiMesh->mMaterialIndex;
 			const aiMaterial * const material_ptr = m_pScene->mMaterials[material_id];
 			aiString name;
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_NAME, name))
-				mesh->m_Material.Name = name.C_Str();
+				p_spMesh->m_Material.Name = name.C_Str();
 			float shininess = 0.0f;
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_SHININESS, shininess))
-				mesh->m_Material.Shininess = shininess;
+				p_spMesh->m_Material.Shininess = shininess;
 			aiColor3D ai_vec3;
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_COLOR_AMBIENT, ai_vec3)) // ambient
-				mesh->m_Material.Ambient = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
+				p_spMesh->m_Material.Ambient = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_COLOR_DIFFUSE, ai_vec3)) // diffuse
-				mesh->m_Material.Diffuse = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
+				p_spMesh->m_Material.Diffuse = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_COLOR_SPECULAR, ai_vec3)) // specular
-				mesh->m_Material.Specular = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
+				p_spMesh->m_Material.Specular = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_COLOR_EMISSIVE, ai_vec3)) // emissive
-				mesh->m_Material.Emissive = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
+				p_spMesh->m_Material.Emissive = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
 		}
-
-		// color vertex.
-		const unsigned vc_id = 0;
-		if (p_AiMesh->HasVertexColors(vc_id))
-		{
-			mesh->m_HasColors = true;
-			const unsigned num_colors = mesh->GetVertices().size();
-			mesh->m_ColorVertices.reserve(num_colors);
-			for (int i = 0; i < static_cast<int>(num_colors); ++i)
-			{
-				const aiColor4D & color_vert = p_AiMesh->mColors[vc_id][i];
-				mesh->m_ColorVertices.push_back(glm::vec4(color_vert.r, color_vert.g, color_vert.b, color_vert.a));
-			}
-		}
-
-		// texture coords
-		const unsigned texcoord_id = 0;
-		if (p_AiMesh->HasTextureCoords(texcoord_id))
-		{
-			mesh->m_HasTexCoords = true;
-			const unsigned num_tex_coord = mesh->GetVertices().size();
-			mesh->m_TexCoordVertices.reserve(num_tex_coord);
-			for (int i = 0; i < static_cast<int>(num_tex_coord); ++i)
-			{				
-				const aiVector3D & tex_coord = p_AiMesh->mTextureCoords[texcoord_id][i];
-				mesh->m_TexCoordVertices.push_back(glm::vec3(tex_coord.x, tex_coord.y, tex_coord.z));
-			}
-		}
-
-		mesh->m_Loaded = true;
-		return mesh;
 	}
 
-	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_AiMesh)
+	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		// load bones
-		if (p_AiMesh->HasBones())
+		if (p_pAiMesh->HasBones())
 		{
 			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
 			skeleton_ptr->SetID(p_spMesh->GetEntityID());
-			const unsigned num_bones = p_AiMesh->mNumBones;
+			const unsigned num_bones = p_pAiMesh->mNumBones;
 			skeleton_ptr->Reserve(num_bones);
 			// convert Bone to Vertices relation to Vertex to bones relation.
 			std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
@@ -221,14 +257,14 @@ namespace KG
 				}
 				while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
 				{
-					pair_it.second.insert(std::make_pair(0.0f, std::string(p_AiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
+					pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
 					// TODO : normalize total weight so it equals 1.
 				}
 			}
 			// process each bone
 			for (unsigned i = 0; i < num_bones; ++i)
 			{
-				const aiBone * const ai_bone_ptr = p_AiMesh->mBones[i];
+				const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
 				// get bone name
 				const std::string bone_name(ai_bone_ptr->mName.data);
 				skeleton_ptr->names.push_back(bone_name);
@@ -251,8 +287,8 @@ namespace KG
 
 			// fill in Skeleton's ID's and weights vectors for each vertex
 			unsigned vertex_index = 0;
-			skeleton_ptr->IDs.resize(p_AiMesh->mNumVertices);		// resize first and then iterate.
-			skeleton_ptr->weights.resize(p_AiMesh->mNumVertices);	// resize first and then iterate.
+			skeleton_ptr->IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
+			skeleton_ptr->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
 			for (auto & vertex_to_names : vertex_to_bones_map)
 			{ // for vertex to 4 x Weights pair
 				auto bone_weight_pair = vertex_to_names.second.begin();
@@ -429,7 +465,7 @@ namespace KG
 		for (unsigned i = 0; i < m_pScene->mNumAnimations; ++i)
 		{ // load each animation into proprietary format.
 			const aiAnimation * const ai_anim_ptr = m_pScene->mAnimations[i];
-			
+			const double factor = (ai_anim_ptr->mTicksPerSecond > 0) ? ai_anim_ptr->mTicksPerSecond : 1.0;
 			for (unsigned a = 0; a < ai_anim_ptr->mNumChannels; ++a)
 			{ // iterate through each aiNode
 				KG::AnimationNode_SmartPtr anim_node_sp(new KG::AnimationNode(p_spMesh->GetEntityID()));
@@ -440,7 +476,8 @@ namespace KG
 				{
 					const aiVectorKey & ai_key = ai_animnode_ptr->mScalingKeys[node_index];
 					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime));
+					
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
 					const KG::AnimationScaleKey key(time, vec);
 					anim_node_sp->m_ScaleKeys.push_back(key);
 				}
@@ -450,7 +487,7 @@ namespace KG
 				{
 					const aiVectorKey & ai_key = ai_animnode_ptr->mPositionKeys[node_index];
 					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime));
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
 					const KG::AnimationPositionKey key(time, vec);
 					anim_node_sp->m_PositionKeys.push_back(key);
 				}
@@ -460,7 +497,7 @@ namespace KG
 				{
 					const aiQuatKey & ai_key = ai_animnode_ptr->mRotationKeys[node_index];
 					const glm::dquat quat(ai_key.mValue.w, ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime));
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
 					const KG::AnimationOrientationKey key(time, quat);
 					anim_node_sp->m_OrientationKeys.push_back(key);
 				}
@@ -472,7 +509,7 @@ namespace KG
 
 	}
 
-	const bool MeshLoader::InitMaterial
+	const bool MeshLoader::InitMaterialTexture
 		(
 			Mesh_SmartPtr p_spMesh
 			, const aiMesh * const p_pAiMesh

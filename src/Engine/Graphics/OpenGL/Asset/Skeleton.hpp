@@ -21,6 +21,7 @@ namespace KG
 	{
 	public:
 		KG::BoneTransform	transform;
+		unsigned			index;		// index to the per-bone data arrays in Skeleton.
 
 	public:
 		BoneNode(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
@@ -40,6 +41,7 @@ namespace KG
 	typedef std::shared_ptr<Animation> Animation_SmartPtr;
 	typedef std::weak_ptr<Animation> Animation_WeakPtr;
 
+
 	/*! \class Skeleton
 
 		Acts as root to all BoneNodes.
@@ -50,12 +52,16 @@ namespace KG
 		friend class MeshLoader;
 
 	public:
+		/* per-bone data */
 		std::vector<std::string>			names;				// bone names
-		std::vector<BoneIDs>				IDs;				// positon would be index to vertex. value is the IDs.
-		std::vector<BoneWeights>			weights;			// positon would be index to vertex. value is the weights.
 		std::vector<glm::dmat4>				offset_transforms;
 		std::vector<glm::dmat4>				final_transforms;
+		/* per-vertex data */
+		std::vector<BoneIDs>				IDs;				// positon would be index to vertex. value is the IDs.
+		std::vector<BoneWeights>			weights;			// positon would be index to vertex. value is the weights.
+		/**/
 		std::vector<KG::Animation_SmartPtr>	m_Animations;
+		unsigned							m_IndexCurAnim;		// index to current animation.
 
 	public:
 		Skeleton
@@ -79,6 +85,11 @@ namespace KG
 			// TODO
 			KE_UNREFERENCED_PARAMETER(p_ParentTransform);
 		}
+
+		/*! compute frame interpolation and etc. */
+		void ComputePose(const KE::Duration p_Elapsed);
+		/*! calculate final transform for each bone. */
+		void ComputePoseTransform(const KE::Duration p_Elapsed);
 
 	}; // class Skeleton
 
