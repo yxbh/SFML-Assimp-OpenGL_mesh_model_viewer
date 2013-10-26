@@ -96,27 +96,21 @@ namespace KG
 		KG::Mesh_SmartPtr mesh(new KG::Mesh());
 		
 		// pos vertex
-		KE::Debug::print("MeshLoader::InitMesh : Init positions.");
 		this->InitPositions(mesh, p_AiMesh);
 
 		// index
-		KE::Debug::print("MeshLoader::InitMesh : Init indices.");
 		this->InitFaces(mesh, p_AiMesh);
 
-		// normal 
-		KE::Debug::print("MeshLoader::InitMesh : Init normalss.");
+		// normal
 		this->InitNormals(mesh, p_AiMesh);
 
 		// material
-		KE::Debug::print("MeshLoader::InitMesh : Init material.");
 		this->InitMaterials(mesh, p_AiMesh);
 
 		// color vertex.
-		KE::Debug::print("MeshLoader::InitMesh : Init colors.");
 		this->InitColors(mesh, p_AiMesh);
 
 		// texture coords
-		KE::Debug::print("MeshLoader::InitMesh : Init texture coords.");
 		this->InitTexCoords(mesh, p_AiMesh);
 
 		mesh->m_Loaded = true;
@@ -127,6 +121,7 @@ namespace KG
 	{
 		if (p_pAiMesh->HasPositions())
 		{
+			KE::Debug::print("MeshLoader::InitPositions : Init positions.");
 			p_spMesh->m_HasPosVertices = true;
 			const unsigned num_pos(p_pAiMesh->mNumVertices);
 			p_spMesh->m_PosVertices.reserve(num_pos);
@@ -147,6 +142,7 @@ namespace KG
 	{
 		if (p_pAiMesh->HasFaces())
 		{
+			KE::Debug::print("MeshLoader::InitFaces : Init indices.");
 			p_spMesh->m_HasFaces = true;
 			const unsigned num_faces(p_pAiMesh->mNumFaces);
 			p_spMesh->SetNumIndex(num_faces * 3);
@@ -166,6 +162,7 @@ namespace KG
 	{
 		if (p_pAiMesh->HasNormals())
 		{
+			KE::Debug::print("MeshLoader::InitNormals : Init normals.");
 			p_spMesh->m_HasNormals = true;
 			const unsigned num_normal(p_pAiMesh->mNumVertices);
 			p_spMesh->m_NormalVertices.reserve(num_normal);
@@ -182,6 +179,7 @@ namespace KG
 		const unsigned texcoord_id = 0;
 		if (p_pAiMesh->HasTextureCoords(texcoord_id))
 		{
+			KE::Debug::print("MeshLoader::InitTexCoords : Init material.");
 			p_spMesh->m_HasTexCoords = true;
 			const unsigned num_tex_coord(p_spMesh->GetVertices().size());
 			p_spMesh->m_TexCoordVertices.reserve(num_tex_coord);
@@ -198,6 +196,7 @@ namespace KG
 		const unsigned vc_id = 0; // TODO : ??
 		if (p_pAiMesh->HasVertexColors(vc_id))
 		{
+			KE::Debug::print("MeshLoader::InitColors : Init colors.");
 			p_spMesh->m_HasColors = true;
 			const unsigned num_colors(p_spMesh->GetVertices().size());
 			p_spMesh->m_ColorVertices.reserve(num_colors);
@@ -213,6 +212,7 @@ namespace KG
 	{
 		if (m_pScene->HasMaterials())
 		{
+			KE::Debug::print("MeshLoader::InitMaterials : Init texture coords.");
 			p_spMesh->m_HasMaterial = true;
 			int material_id = p_pAiMesh->mMaterialIndex;
 			const aiMaterial * const material_ptr = m_pScene->mMaterials[material_id];
@@ -236,99 +236,94 @@ namespace KG
 
 	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
-		// load bones
-		if (p_pAiMesh->HasBones())
-		{
-			KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
-			skeleton_ptr->SetID(p_spMesh->GetEntityID());
-			const unsigned num_bones = p_pAiMesh->mNumBones;
-			skeleton_ptr->Reserve(num_bones);
-			// convert Bone to Vertices relation to Vertex to bones relation.
-			std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
-			for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
-			{
-				vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
-			}
-			for (auto & pair_it  : vertex_to_bones_map) // needs map to be pre-filled to work properly.
-			{
-				while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
-				{
-					pair_it.second.erase(pair_it.second.begin());
-				}
-				while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
-				{
-					pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
-					// TODO : normalize total weight so it equals 1.
-				}
-			}
-			// process each bone
-			for (unsigned i = 0; i < num_bones; ++i)
-			{
-				const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
-				// get bone name
-				const std::string bone_name(ai_bone_ptr->mName.data);
-				skeleton_ptr->names.push_back(bone_name);
-				// get transform
-				const aiMatrix4x4 & ai_mat = ai_bone_ptr->mOffsetMatrix;
-				const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
-				const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
-				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
-				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
-				KG::BoneTransform bone_transform;
-				skeleton_ptr->offset_transforms.push_back(glm::dmat4(col1, col2, col3, col4));
-				// insert bone weights into map.
-				for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
-				{
-					const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
-					vertex_to_bones_map[ai_vweight.mVertexId]
-						.insert(std::make_pair(ai_vweight.mWeight, bone_name));
-				}
-			}
+		if (!p_pAiMesh->HasBones())
+			return; // no bones, leave.
 
-			// fill in Skeleton's ID's and weights vectors for each vertex
-			unsigned vertex_index = 0;
-			skeleton_ptr->IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
-			skeleton_ptr->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
-			for (auto & vertex_to_names : vertex_to_bones_map)
-			{ // for vertex to 4 x Weights pair
-				auto bone_weight_pair = vertex_to_names.second.begin();
-				// 1st weight
-				auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
-				if (it == skeleton_ptr->names.end())
-					assert(false); // should never fail.
-				unsigned bone_index = std::distance(skeleton_ptr->names.begin(), it);
-				if (bone_index < 0 || bone_index > 4) assert(false);
-				skeleton_ptr->IDs[vertex_index].x = bone_index;
-				skeleton_ptr->weights[vertex_index].x = bone_weight_pair->first;
-				// 2nd weight
-				++bone_weight_pair;
-				it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
-				if (it == skeleton_ptr->names.end())
-					assert(false); // should never fail.
-				bone_index = std::distance(skeleton_ptr->names.begin(), it);
-				if (bone_index < 0 || bone_index > 4) assert(false);
-				skeleton_ptr->IDs[vertex_index].y = bone_index;
-				skeleton_ptr->weights[vertex_index].y = bone_weight_pair->first;
-				// 3rd weight
-				++bone_weight_pair;
-				it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
-				if (it == skeleton_ptr->names.end())
-					assert(false); // should never fail.
-				bone_index = std::distance(skeleton_ptr->names.begin(), it);
-				if (bone_index < 0 || bone_index > 4) assert(false);
-				skeleton_ptr->IDs[vertex_index].z = bone_index;
-				skeleton_ptr->weights[vertex_index].z = bone_weight_pair->first;
-				// 4th weight
-				++bone_weight_pair;
-				it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
-				if (it == skeleton_ptr->names.end())
-					assert(false); // should never fail.
-				bone_index = std::distance(skeleton_ptr->names.begin(), it);
-				if (bone_index < 0 || bone_index > 4) assert(false);
-				skeleton_ptr->IDs[vertex_index].w = bone_index;
-				skeleton_ptr->weights[vertex_index].w = bone_weight_pair->first;
-				++vertex_index;
+		KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
+		skeleton_ptr->SetID(p_spMesh->GetEntityID());
+		const unsigned num_bones = p_pAiMesh->mNumBones;
+		skeleton_ptr->Reserve(num_bones);
+		// convert Bone to Vertices relation to Vertex to bones relation.
+		std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
+		for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
+		{
+			vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
+		}
+		for (auto & pair_it  : vertex_to_bones_map) // needs map to be pre-filled to work properly.
+		{
+			while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
+				pair_it.second.erase(pair_it.second.begin());
+			while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
+				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
+				// TODO : normalize total weight so it equals 1.
+		}
+		// process each bone
+		for (unsigned i = 0; i < num_bones; ++i)
+		{
+			const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
+			// get bone name
+			const std::string bone_name(ai_bone_ptr->mName.data);
+			skeleton_ptr->names.push_back(bone_name);
+			// get transform
+			const aiMatrix4x4 & ai_mat = ai_bone_ptr->mOffsetMatrix;
+			const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
+			const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
+			const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
+			const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+			KG::BoneTransform bone_transform;
+			skeleton_ptr->offset_transforms.push_back(glm::dmat4(col1, col2, col3, col4));
+			// insert bone weights into map.
+			for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
+			{
+				const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
+				vertex_to_bones_map[ai_vweight.mVertexId]
+					.insert(std::make_pair(ai_vweight.mWeight, bone_name));
 			}
+		}
+
+		// fill in Skeleton's ID's and weights vectors for each vertex
+		unsigned vertex_index = 0;
+		skeleton_ptr->IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
+		skeleton_ptr->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
+		for (auto & vertex_to_names : vertex_to_bones_map)
+		{ // for vertex to 4 x Weights pair
+			auto bone_weight_pair = vertex_to_names.second.begin();
+			// 1st weight
+			auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			if (it == skeleton_ptr->names.end())
+				assert(false); // should never fail.
+			unsigned bone_index = std::distance(skeleton_ptr->names.begin(), it);
+			if (bone_index < 0 || bone_index > 4) assert(false);
+			skeleton_ptr->IDs[vertex_index].x = bone_index;
+			skeleton_ptr->weights[vertex_index].x = bone_weight_pair->first;
+			// 2nd weight
+			++bone_weight_pair;
+			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			if (it == skeleton_ptr->names.end())
+				assert(false); // should never fail.
+			bone_index = std::distance(skeleton_ptr->names.begin(), it);
+			if (bone_index < 0 || bone_index > 4) assert(false);
+			skeleton_ptr->IDs[vertex_index].y = bone_index;
+			skeleton_ptr->weights[vertex_index].y = bone_weight_pair->first;
+			// 3rd weight
+			++bone_weight_pair;
+			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			if (it == skeleton_ptr->names.end())
+				assert(false); // should never fail.
+			bone_index = std::distance(skeleton_ptr->names.begin(), it);
+			if (bone_index < 0 || bone_index > 4) assert(false);
+			skeleton_ptr->IDs[vertex_index].z = bone_index;
+			skeleton_ptr->weights[vertex_index].z = bone_weight_pair->first;
+			// 4th weight
+			++bone_weight_pair;
+			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			if (it == skeleton_ptr->names.end())
+				assert(false); // should never fail.
+			bone_index = std::distance(skeleton_ptr->names.begin(), it);
+			if (bone_index < 0 || bone_index > 4) assert(false);
+			skeleton_ptr->IDs[vertex_index].w = bone_index;
+			skeleton_ptr->weights[vertex_index].w = bone_weight_pair->first;
+			++vertex_index;
 
 			this->ConstructSkeleton(skeleton_ptr, m_pScene->mRootNode);
 
@@ -366,7 +361,7 @@ namespace KG
 				assert(false);
 		}
 
-		// find root bone of skeleton.
+		// find root bones of skeleton.
 		// Note: there could be more than 1. (e.g. Blender's armture is a root but isn't technically a bone).
 		unsigned min_depth = 9999; // just something bigger than the possible number of bones...
 		std::string root_bone_name("N/A");

@@ -21,7 +21,7 @@ namespace KG
 	{
 	public:
 		KG::BoneTransform	transform;
-		unsigned			index;		// index to the per-bone data arrays in Skeleton.
+		unsigned			skeleton_index;		// index to the per-bone data arrays in Skeleton.
 
 	public:
 		BoneNode(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
@@ -61,7 +61,7 @@ namespace KG
 		std::vector<BoneWeights>			weights;			// positon would be index to vertex. value is the weights.
 		/**/
 		std::vector<KG::Animation_SmartPtr>	m_Animations;
-		unsigned							m_IndexCurAnim;		// index to current animation.
+		unsigned							m_CurAnimIndex;		// index to current animation.
 
 	public:
 		Skeleton
@@ -89,7 +89,7 @@ namespace KG
 		/*! compute frame interpolation and etc. */
 		void ComputePose(const KE::Duration p_Elapsed);
 		/*! calculate final transform for each bone. */
-		void ComputePoseTransform(const KE::Duration p_Elapsed);
+		void ComputePoseTransforms(const KE::Duration p_Elapsed);
 
 	}; // class Skeleton
 

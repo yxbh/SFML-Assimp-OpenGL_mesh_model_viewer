@@ -38,5 +38,14 @@ namespace KG
 		weights.reserve(p_Size);
 	}
 
+	void Skeleton::ComputePose(const KE::Duration p_Elapsed)
+	{
+
+	}
+
+	void Skeleton::ComputePoseTransforms(const KE::Duration p_Elapsed)
+	{
+
+	}
 
 } // KG ns
