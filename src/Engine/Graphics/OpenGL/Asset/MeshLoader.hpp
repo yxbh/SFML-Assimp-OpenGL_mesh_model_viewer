@@ -39,7 +39,7 @@ namespace KG
 
 		Meshes_SmartPtr LoadMeshes(const std::string & p_rPath);
 		Meshes_SmartPtr InitFromScene(const aiScene * p_pScene, const std::string & p_rPath);
-		Mesh_SmartPtr InitMesh(const aiMesh * const p_AiMesh);
+		Mesh_SmartPtr InitMesh(const aiMesh * const p_pAiMesh);
 		/*! initialize position vertices. */
 		void InitPositions(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! initialize vertex indices */
@@ -53,13 +53,13 @@ namespace KG
 		/*! initialize materials. */
 		void InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! */
-		void InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_AiMesh);
+		void InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 
-		void ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiNode * const p_AiNode);
+		void ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode);
 		/*! recursively find a bone with specified name and compute it's depth. */
 		const bool FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName);
 		const aiNode * const FindAiNodeByName(const std::string & p_rNodeName, const aiNode * const p_pAiNode);
-		void GrowBoneTree(KG::BoneNode_SmartPtr p_spBoneNode, const aiNode * const p_pAiNode);
+		void GrowBoneTree(KG::Skeleton_SmartPtr p_spSkeleton, KG::BoneNode_SmartPtr p_spBoneNode, const aiMesh * const p_pAiMesh, const aiNode * const p_pAiNode);
 		void InitAnimations(Mesh_SmartPtr p_spMesh);
 		const bool InitMaterialTexture(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh, const aiScene * const p_pAiScene, const std::string & p_Path);
 		

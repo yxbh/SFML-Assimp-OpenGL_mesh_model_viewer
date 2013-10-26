@@ -71,7 +71,7 @@ namespace KG
 			}
 
 			// load mesh
-			KG::Mesh_SmartPtr mesh = this->InitMesh(p_pScene->mMeshes[i]);
+			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i]));
 			mesh->SetID(meshes->GetEntityID());
 
 			// load skeleton if there's any.
@@ -82,36 +82,37 @@ namespace KG
 
 			// load texture
 			this->InitMaterialTexture(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
+
 			meshes->AddChild(mesh);
 		}
 
-		m_Importer.FreeScene(); m_pScene = nullptr;
+		m_Importer.FreeScene(); m_pScene = nullptr; // cleanup
 		return meshes;
 	}
 
-	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_AiMesh)
+	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_pAiMesh)
 	{
 		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
-		assert(p_AiMesh); // cannot be null
+		assert(p_pAiMesh); // cannot be null
 		KG::Mesh_SmartPtr mesh(new KG::Mesh());
 		
 		// pos vertex
-		this->InitPositions(mesh, p_AiMesh);
+		this->InitPositions(mesh, p_pAiMesh);
 
 		// index
-		this->InitFaces(mesh, p_AiMesh);
+		this->InitFaces(mesh, p_pAiMesh);
 
 		// normal
-		this->InitNormals(mesh, p_AiMesh);
+		this->InitNormals(mesh, p_pAiMesh);
 
 		// material
-		this->InitMaterials(mesh, p_AiMesh);
+		this->InitMaterials(mesh, p_pAiMesh);
 
 		// color vertex.
-		this->InitColors(mesh, p_AiMesh);
+		this->InitColors(mesh, p_pAiMesh);
 
 		// texture coords
-		this->InitTexCoords(mesh, p_AiMesh);
+		this->InitTexCoords(mesh, p_pAiMesh);
 
 		mesh->m_Loaded = true;
 		return mesh;
@@ -133,7 +134,7 @@ namespace KG
 		}
 		else
 		{
-			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitMesh mesh has no position vertices!");
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitPositions : mesh has no position vertices!");
 			assert(false);
 		}
 	}
@@ -239,7 +240,8 @@ namespace KG
 		if (!p_pAiMesh->HasBones())
 			return; // no bones, leave.
 
-		KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton);
+		KE::Debug::print("MeshLoader::InitSkeleton : Init Skeleton.");
+		KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton(p_spMesh->GetEntityID()));
 		skeleton_ptr->SetID(p_spMesh->GetEntityID());
 		const unsigned num_bones = p_pAiMesh->mNumBones;
 		skeleton_ptr->Reserve(num_bones);
@@ -257,21 +259,13 @@ namespace KG
 				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
 				// TODO : normalize total weight so it equals 1.
 		}
-		// process each bone
+		// collect name and weights of each bone:
 		for (unsigned i = 0; i < num_bones; ++i)
 		{
 			const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
 			// get bone name
 			const std::string bone_name(ai_bone_ptr->mName.data);
 			skeleton_ptr->names.push_back(bone_name);
-			// get transform
-			const aiMatrix4x4 & ai_mat = ai_bone_ptr->mOffsetMatrix;
-			const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
-			const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
-			const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
-			const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
-			KG::BoneTransform bone_transform;
-			skeleton_ptr->offset_transforms.push_back(glm::dmat4(col1, col2, col3, col4));
 			// insert bone weights into map.
 			for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
 			{
@@ -288,45 +282,45 @@ namespace KG
 		skeleton_ptr->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
 		for (auto & vertex_to_names : vertex_to_bones_map)
 		{ // for vertex to 4 x Weights pair
-			auto bone_weight_pair = vertex_to_names.second.begin();
+			auto bone_weight_pair_it = vertex_to_names.second.begin();
 			// 1st weight
-			auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			unsigned bone_index = std::distance(skeleton_ptr->names.begin(), it);
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].x = bone_index;
-			skeleton_ptr->weights[vertex_index].x = bone_weight_pair->first;
+			skeleton_ptr->weights[vertex_index].x = bone_weight_pair_it->first;
 			// 2nd weight
-			++bone_weight_pair;
-			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			++bone_weight_pair_it;
+			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			bone_index = std::distance(skeleton_ptr->names.begin(), it);
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].y = bone_index;
-			skeleton_ptr->weights[vertex_index].y = bone_weight_pair->first;
+			skeleton_ptr->weights[vertex_index].y = bone_weight_pair_it->first;
 			// 3rd weight
-			++bone_weight_pair;
-			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			++bone_weight_pair_it;
+			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			bone_index = std::distance(skeleton_ptr->names.begin(), it);
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].z = bone_index;
-			skeleton_ptr->weights[vertex_index].z = bone_weight_pair->first;
+			skeleton_ptr->weights[vertex_index].z = bone_weight_pair_it->first;
 			// 4th weight
-			++bone_weight_pair;
-			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair->second);
+			++bone_weight_pair_it;
+			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			bone_index = std::distance(skeleton_ptr->names.begin(), it);
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].w = bone_index;
-			skeleton_ptr->weights[vertex_index].w = bone_weight_pair->first;
+			skeleton_ptr->weights[vertex_index].w = bone_weight_pair_it->first;
 			++vertex_index;
 
-			this->ConstructSkeleton(skeleton_ptr, m_pScene->mRootNode);
+			this->ConstructSkeleton(skeleton_ptr, p_pAiMesh, m_pScene->mRootNode);
 
 			p_spMesh->SetSkeleton(skeleton_ptr);
 			p_spMesh->m_HasSkeleton = true;
@@ -334,7 +328,7 @@ namespace KG
 		} // if has bones
 	}
 
-	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiNode * const p_AiNode)
+	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode)
 	{
 
 		/*
@@ -383,10 +377,7 @@ namespace KG
 		
 		for (auto & name : root_bone_names)
 		{
-			KG::BoneNode_SmartPtr bone_node_sp(new KG::BoneNode(p_spSkeleton->GetEntityID(), KG::RenderPass::NotRendered));
-			bone_node_sp->SetName(name);
-			this->GrowBoneTree(bone_node_sp, this->FindAiNodeByName(name, p_AiNode));
-			p_spSkeleton->AddChild(bone_node_sp);
+			this->GrowBoneTree(p_spSkeleton, nullptr, p_pAiMesh, this->FindAiNodeByName(name,  p_AiNode));
 		}
 
 	}
@@ -433,21 +424,71 @@ namespace KG
 		return nullptr;
 	}
 
-	void MeshLoader::GrowBoneTree(KG::BoneNode_SmartPtr p_spBoneNode, const aiNode * const p_pAiNode)
+	void MeshLoader::GrowBoneTree
+	(
+		KG::Skeleton_SmartPtr p_spSkeleton
+		, KG::BoneNode_SmartPtr p_spBoneNode
+		, const aiMesh * const p_pAiMesh
+		, const aiNode * const p_pAiNode
+	)
 	{
-		if (!p_pAiNode)
+		if (!p_pAiNode) // check valid pointer.
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::GrowBoneTree : received a nullptr");
 			assert(false);
 		}
-		p_spBoneNode->SetName(p_pAiNode->mName.data);
 
-		for (unsigned i = 0; i < p_pAiNode->mNumChildren; ++i)
+		// create and fill in bone node
+		KG::BoneNode_SmartPtr bone_node_sp(new KG::BoneNode(p_spSkeleton->GetEntityID(), KG::RenderPass::NotRendered));
+		const std::string bone_name(p_pAiNode->mName.data);
+		bone_node_sp->SetName(bone_name);
+		bool bone_found = false;
+		for (unsigned i = 0; i < p_pAiMesh->mNumBones; ++i)
 		{
-			KG::BoneNode_SmartPtr bone_node(new KG::BoneNode(p_spBoneNode->GetEntityID(), KG::RenderPass::NotRendered));
-			p_spBoneNode->AddChild(bone_node);
-			this->GrowBoneTree(bone_node, p_pAiNode->mChildren[i]);
+			if (bone_name == std::string(p_pAiMesh->mBones[i]->mName.data))
+			{
+				bone_found = true;
+
+				// collect offset matrix:
+				const aiMatrix4x4 & ai_mat = p_pAiMesh->mBones[i]->mOffsetMatrix;
+				const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
+				const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
+				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
+				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+				KG::BoneTransform bone_transform;
+				bone_node_sp->transform.offset = glm::dmat4(col1, col2, col3, col4);
+
+				// compute index to array in Skeleton.
+				unsigned index = 0;
+				for (const std::string & name : p_spSkeleton->names)
+				{
+					if (bone_name == name)
+					{
+						bone_node_sp->skeleton_index = index;
+						break;
+					}
+					else
+						++index;
+				}
+
+				break; // found
+			}
 		}
+		if (!bone_found)
+		{
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::GrowBoneTree : unexpected error: bone not found in aiMesh!");
+			assert(false);
+		}
+
+		// attach to parent:
+		if (p_spBoneNode == nullptr) // if given BoneNode is null then it's a root bone.
+			p_spSkeleton->AddChild(bone_node_sp);
+		else
+			p_spBoneNode->AddChild(bone_node_sp);
+
+		// recursively grow branches:
+		for (unsigned i = 0; i < p_pAiNode->mNumChildren; ++i)
+			this->GrowBoneTree(p_spSkeleton, bone_node_sp, p_pAiMesh, p_pAiNode->mChildren[i]);
 	}
 
 	void MeshLoader::InitAnimations(Mesh_SmartPtr p_spMesh)

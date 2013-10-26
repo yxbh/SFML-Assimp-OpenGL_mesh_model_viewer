@@ -358,9 +358,8 @@ namespace ObjectManipulator
 		use_texture = (m_TextureName == "NONE") ? false : true; // don't use texture if string empty.
 
 		std::string model_tex_dir = "models-textures/";
-		KG::MeshLoader model;
-		model.Load(model_tex_dir+m_MeshName);
-		auto mesh_list = model.Load(model_tex_dir+m_MeshName)->GetList();
+		KG::MeshLoader loader;
+		auto mesh_list = loader.Load(model_tex_dir+m_MeshName)->GetList();
 		if (mesh_list.size() == 0)
 		{
 			KE::Debug::print("ObjectManipulator : nothing in mesh list.");

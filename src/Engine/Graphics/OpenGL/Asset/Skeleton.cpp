@@ -24,7 +24,6 @@ namespace KG
 	void Skeleton::Reserve(const unsigned p_Size)
 	{
 		names.reserve(p_Size);
-		offset_transforms.reserve(p_Size);
 		final_transforms.reserve(p_Size);
 	}
 

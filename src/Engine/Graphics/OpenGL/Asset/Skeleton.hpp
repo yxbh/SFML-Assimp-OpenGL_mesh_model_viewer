@@ -24,7 +24,7 @@ namespace KG
 		unsigned			skeleton_index;		// index to the per-bone data arrays in Skeleton.
 
 	public:
-		BoneNode(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
+		BoneNode(const KE::EntityID p_EntityID , const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered)
 			: KG::SceneNode(p_EntityID, p_RenderPass)
 		{}
 		~BoneNode(void) {}
@@ -54,7 +54,6 @@ namespace KG
 	public:
 		/* per-bone data */
 		std::vector<std::string>			names;				// bone names
-		std::vector<glm::dmat4>				offset_transforms;
 		std::vector<glm::dmat4>				final_transforms;
 		/* per-vertex data */
 		std::vector<BoneIDs>				IDs;				// positon would be index to vertex. value is the IDs.
@@ -66,7 +65,7 @@ namespace KG
 	public:
 		Skeleton
 		(
-			const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID()
+			const KE::EntityID p_EntityID
 			, const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered
 		);
 		~Skeleton(void);
