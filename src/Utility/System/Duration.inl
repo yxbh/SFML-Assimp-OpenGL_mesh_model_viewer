@@ -156,4 +156,9 @@ namespace KE
 		return p_rLeft = p_rLeft / p_Right;
 	}
 	
+	inline const int operator %(KE::Duration & p_rLeft, const KE::Duration & p_rRight)
+	{
+		return static_cast<int>(p_rLeft.AsMicroseconds() % p_rRight.AsMicroseconds());
+	}
+
 } // KE ns
