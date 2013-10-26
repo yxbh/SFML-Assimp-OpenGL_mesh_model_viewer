@@ -39,6 +39,16 @@ namespace KG
 
 	void Skeleton::ComputePose(const KE::Duration p_Elapsed)
 	{
+		
+
+		if (m_Animations.size() == 0)
+		{
+			KE::Debug::print(KE::Debug::DBG_WARNING, "Skeleton::ComputePose : no animations to compute pose!");
+			return;
+		}
+
+		KG::Animation_SmartPtr current_animation_sp(m_Animations[m_CurAnimIndex]);
+
 
 	}
 

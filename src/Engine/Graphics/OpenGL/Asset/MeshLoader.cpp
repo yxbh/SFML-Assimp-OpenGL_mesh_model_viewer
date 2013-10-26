@@ -498,15 +498,30 @@ namespace KG
 		if (!m_pScene->HasAnimations())
 			return; // no animations
 
-		KG::Animation_SmartPtr animation_sp(new KG::Animation(p_spMesh->GetEntityID()));
-		for (unsigned i = 0; i < m_pScene->mNumAnimations; ++i)
+		// load all aiAnimations
+		for (unsigned i = 0; i < m_pScene->mNumAnimations; ++i) // for each aiAnimation
 		{ // load each animation into proprietary format.
+			KG::Animation_SmartPtr animation_sp(new KG::Animation(p_spMesh->GetEntityID()));
 			const aiAnimation * const ai_anim_ptr = m_pScene->mAnimations[i];
 			const double factor = (ai_anim_ptr->mTicksPerSecond > 0) ? ai_anim_ptr->mTicksPerSecond : 1.0;
 			for (unsigned a = 0; a < ai_anim_ptr->mNumChannels; ++a)
 			{ // iterate through each aiNode
 				KG::AnimationNode_SmartPtr anim_node_sp(new KG::AnimationNode(p_spMesh->GetEntityID()));
 				const aiNodeAnim * const ai_animnode_ptr = ai_anim_ptr->mChannels[a];
+
+				// compute index to array in Skeleton.
+				unsigned index = 0;
+				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
+				for (const std::string & name : p_spMesh->m_spSkeleton->names)
+				{
+					if (bone_name == name)
+					{
+						anim_node_sp->skeleton_index = index;
+						break;
+					}
+					else
+						++index;
+				}
 
 				// collect scaling keys
 				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumScalingKeys; ++node_index)
@@ -525,8 +540,8 @@ namespace KG
 					const aiVectorKey & ai_key = ai_animnode_ptr->mPositionKeys[node_index];
 					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
 					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
-					const KG::AnimationPositionKey key(time, vec);
-					anim_node_sp->m_PositionKeys.push_back(key);
+					const KG::AnimationTranslationKey key(time, vec);
+					anim_node_sp->m_TranslationKeys.push_back(key);
 				}
 
 				// collect rotation keys.
@@ -535,8 +550,8 @@ namespace KG
 					const aiQuatKey & ai_key = ai_animnode_ptr->mRotationKeys[node_index];
 					const glm::dquat quat(ai_key.mValue.w, ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
 					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
-					const KG::AnimationOrientationKey key(time, quat);
-					anim_node_sp->m_OrientationKeys.push_back(key);
+					const KG::AnimationRotationKey key(time, quat);
+					anim_node_sp->m_RotationKeys.push_back(key);
 				}
 				animation_sp->m_Channels.push_back(anim_node_sp);
 			} // end for each channel.
