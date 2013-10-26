@@ -282,6 +282,7 @@ namespace KG
 		}
 
 		// fill in Skeleton's ID's and weights vectors for each vertex
+		//	also calculate indices for each weight for each vertex.
 		unsigned vertex_index = 0;
 		skeleton_ptr->IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
 		skeleton_ptr->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
