@@ -302,7 +302,6 @@ namespace KG
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			unsigned bone_index = std::distance(skeleton_ptr->names.begin(), it);
-			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].x = bone_index;
 			skeleton_ptr->weights[vertex_index].x = bone_weight_pair_it->first;
 
@@ -312,7 +311,6 @@ namespace KG
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			bone_index = std::distance(skeleton_ptr->names.begin(), it);
-			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].y = bone_index;
 			skeleton_ptr->weights[vertex_index].y = bone_weight_pair_it->first;
 
@@ -322,7 +320,6 @@ namespace KG
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			bone_index = std::distance(skeleton_ptr->names.begin(), it);
-			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].z = bone_index;
 			skeleton_ptr->weights[vertex_index].z = bone_weight_pair_it->first;
 
@@ -332,7 +329,6 @@ namespace KG
 			if (it == skeleton_ptr->names.end())
 				assert(false); // should never fail.
 			bone_index = std::distance(skeleton_ptr->names.begin(), it);
-			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].w = bone_index;
 			skeleton_ptr->weights[vertex_index].w = bone_weight_pair_it->first;
 			++vertex_index;

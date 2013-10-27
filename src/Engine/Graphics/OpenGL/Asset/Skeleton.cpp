@@ -83,7 +83,7 @@ namespace KG
 	{
 		const unsigned bone_index(p_spBoneNode->skeleton_bone_index);
 		const glm::dmat4 global_transform( p_ParentTransform * this->intermediate_transforms[bone_index] );
-		//this->final_transforms[bone_index] = this->global_inverse_transform * global_transform * this->bone_offsets[bone_index];
+		this->final_transforms[bone_index] = this->global_inverse_transform * global_transform * this->bone_offsets[bone_index];
 
 		for (KG::SceneNode_SmartPtr scenenode : p_spBoneNode->GetChildSceneNodeList())
 		{
