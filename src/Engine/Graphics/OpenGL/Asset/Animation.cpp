@@ -62,7 +62,9 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeScaleTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		const int mod(time_stamp % m_ScaleKeys.back().first);
+		int mod(0);
+		if (m_ScaleKeys.back().first.AsMicroseconds() != 0)
+			mod = time_stamp % m_ScaleKeys.back().first;
 		if (mod > 0)
 			time_stamp -= m_ScaleKeys.back().first * std::int64_t(mod);
 		return time_stamp;
@@ -71,7 +73,9 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeTranslationTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		const int mod(time_stamp % m_TranslationKeys.back().first);
+		int mod(0);
+		if (m_TranslationKeys.back().first.AsMicroseconds() != 0)
+			mod = time_stamp % m_TranslationKeys.back().first;
 		if (mod > 0)
 			time_stamp -= m_TranslationKeys.back().first * std::int64_t(mod);
 		return time_stamp;
@@ -80,7 +84,9 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeRotationTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		const int mod(time_stamp % m_RotationKeys.back().first);
+		int mod(0);
+		if (m_RotationKeys.back().first.AsMicroseconds() != 0)
+			mod = time_stamp % m_RotationKeys.back().first;
 		if (mod > 0)
 			time_stamp -= m_RotationKeys.back().first * std::int64_t(mod);
 		return time_stamp;
@@ -88,23 +94,26 @@ namespace KG
 
 	const glm::dvec3 AnimationNode::InterpolateScale(const KE::Duration & p_rTimeStamp)
 	{
-		const unsigned head_index = this->FindHeadScaleKeyIndex(p_rTimeStamp);
-		const unsigned tail_index = this->FindTailScaleKeyIndex(p_rTimeStamp);
-		return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
+		int head_index, tail_index;
+		if (this->FindHeadScaleKeyIndex(head_index, p_rTimeStamp) && this->FindTailScaleKeyIndex(tail_index, p_rTimeStamp))
+			return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
+		return glm::dvec3(1.0, 1.0, 1.0);
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateTranslation(const KE::Duration & p_rTimeStamp)
 	{
-		const unsigned head_index = this->FindHeadTranslationKeyIndex(p_rTimeStamp);
-		const unsigned tail_index = this->FindTailTranslationKeyIndex(p_rTimeStamp);
-		return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
+		int head_index, tail_index;
+		if (this->FindHeadTranslationKeyIndex(head_index, p_rTimeStamp) && this->FindTailTranslationKeyIndex(tail_index, p_rTimeStamp))
+			return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
+		return glm::dvec3(0.0, 0.0, 0.0);
 	}
 
 	const glm::dquat AnimationNode::InterpolateRotation(const KE::Duration & p_rTimeStamp, const AnimationBehaviour p_Behaviour)
 	{
-		const unsigned head_index = this->FindHeadRotationIndex(p_rTimeStamp);
-		const unsigned tail_index = this->FindTailRotationIndex(p_rTimeStamp);
-		return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp);
+		int head_index, tail_index;
+		if (this->FindHeadRotationIndex(head_index, p_rTimeStamp) && this->FindTailRotationIndex(tail_index, p_rTimeStamp))
+			return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp, p_Behaviour);
+		return glm::dquat();
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateScale
@@ -149,69 +158,112 @@ namespace KG
 			return glm::slerp(p_rKeyL.second, p_rKeyR.second, percentage);
 	}
 
-	const unsigned AnimationNode::FindHeadScaleKeyIndex(const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindHeadScaleKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
 	{
-		for (unsigned i = 0; i < m_ScaleKeys.size(); ++i)
+		if (m_ScaleKeys.empty())
+			return false;
+		if (m_ScaleKeys.size() == 1)
 		{
-			if (p_TimeStamp > m_ScaleKeys[i].first)
-				return i;
+			p_rIndex = 0;
+			return true;
+		}
+		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_ScaleKeys.size()); ++p_rIndex)
+		{
+			if (p_TimeStamp > m_ScaleKeys[p_rIndex].first)
+				return true;
 		}
 		assert(false); // shouldn't get here.
-		return 0;
+		return false;
 	}
 
-	const unsigned AnimationNode::FindTailScaleKeyIndex(const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindTailScaleKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
 	{
-		for (int i = m_ScaleKeys.size() - 1; i >= 0 ; --i)		{
-			if (p_TimeStamp < m_ScaleKeys[i].first)
-				return i;
+		if (m_ScaleKeys.empty())
+			return false;
+		if (m_ScaleKeys.size() == 1)
+		{
+			p_rIndex = 0;
+			return true;
+		}
+		for (p_rIndex = m_ScaleKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+		{
+			if (p_TimeStamp < m_ScaleKeys[p_rIndex].first)
+				return true;
 		}
 		assert(false); // shouldn't get here.
-		return 0;
+		return false;
 	}
 
-	const unsigned AnimationNode::FindHeadTranslationKeyIndex(const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindHeadTranslationKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
 	{
-		for (unsigned i = 0; i < m_TranslationKeys.size(); ++i)
+		if (m_TranslationKeys.empty())
+			return false;
+		if (m_TranslationKeys.size() == 1)
 		{
-			if (p_TimeStamp > m_TranslationKeys[i].first)
-				return i;
+			p_rIndex = 0;
+			return true;
+		}
+		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_TranslationKeys.size()); ++p_rIndex)
+		{
+			if (p_TimeStamp > m_TranslationKeys[p_rIndex].first)
+				return true;
 		}
 		assert(false); // shouldn't get here.
-		return 0;
+		return false;
 	}
 
-	const unsigned AnimationNode::FindTailTranslationKeyIndex(const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindTailTranslationKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
 	{
-		for (int i = m_TranslationKeys.size() - 1; i >= 0 ; --i)
+		if (m_TranslationKeys.empty())
+			return false;
+		if (m_TranslationKeys.size() == 1)
 		{
-			if (p_TimeStamp < m_TranslationKeys[i].first)
-				return i;
+			p_rIndex = 0;
+			return true;
+		}
+		for (p_rIndex = m_TranslationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+		{
+			if (p_TimeStamp < m_TranslationKeys[p_rIndex].first)
+				return true;
 		}
 		assert(false); // shouldn't get here.
-		return 0;
+		return false;
 	}
 
-	const unsigned AnimationNode::FindHeadRotationIndex(const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindHeadRotationIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
 	{
-		for (unsigned i = 0; i < m_RotationKeys.size(); ++i)
+		if (m_RotationKeys.empty())
+			return false;
+		if (m_RotationKeys.size() == 1)
 		{
-			if (p_TimeStamp > m_RotationKeys[i].first)
-				return i;
+			p_rIndex = 0;
+			return true;
+		}
+		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_RotationKeys.size()); ++p_rIndex)
+		{
+			if (p_TimeStamp > m_RotationKeys[p_rIndex].first)
+				return true;
 		}
 		assert(false); // shouldn't get here.
-		return 0;
+		return false;
 	}
 
-	const unsigned AnimationNode::FindTailRotationIndex(const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindTailRotationIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
 	{
-		for (int i = m_RotationKeys.size() - 1; i >= 0 ; --i)
+		if (m_RotationKeys.empty())
+			return false;
+		if (m_RotationKeys.size() == 1)
 		{
-			if (p_TimeStamp < m_RotationKeys[i].first)
-				return i;
+			p_rIndex = 0;
+			return true;
+		}
+		for (p_rIndex = m_RotationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+		{
+			if (p_TimeStamp < m_RotationKeys[p_rIndex].first)
+				return true;
 		}
 		assert(false); // shouldn't get here.
-		return 0;
+		return false;
 	}
 	
 

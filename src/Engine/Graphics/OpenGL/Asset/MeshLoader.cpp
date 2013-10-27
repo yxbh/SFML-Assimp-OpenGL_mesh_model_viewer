@@ -256,6 +256,9 @@ namespace KG
 				// TODO : normalize total weight so it equals 1.
 		}
 
+		// resize final transform.
+		skeleton_ptr->final_transforms.resize(num_bones);
+
 		// collect name, offset, and weights of each bone:
 		for (unsigned i = 0; i < num_bones; ++i)
 		{
@@ -514,6 +517,7 @@ namespace KG
 				// compute index to array in Skeleton.
 				unsigned index = 0;
 				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
+				anim_node_sp->SetName(bone_name);
 				for (const std::string & name : p_spMesh->m_spSkeleton->names)
 				{
 					if (bone_name == name)
@@ -526,6 +530,10 @@ namespace KG
 				}
 
 				// collect scaling keys
+				KE::Debug::print("animnode name = " + bone_name);
+				KE::Debug::print("... NumScaleKeys = " + std::to_string(ai_animnode_ptr->mNumScalingKeys));
+				KE::Debug::print("... NumTranslateKeys = " + std::to_string(ai_animnode_ptr->mNumPositionKeys));
+				KE::Debug::print("... NumRotateKeys = " + std::to_string(ai_animnode_ptr->mNumRotationKeys));
 				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumScalingKeys; ++node_index)
 				{
 					const aiVectorKey & ai_key = ai_animnode_ptr->mScalingKeys[node_index];
@@ -536,7 +544,7 @@ namespace KG
 					anim_node_sp->m_ScaleKeys.push_back(key);
 				}
 
-				// collect position offset keys
+				// collect translation offset keys
 				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumPositionKeys; ++node_index)
 				{
 					const aiVectorKey & ai_key = ai_animnode_ptr->mPositionKeys[node_index];

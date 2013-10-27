@@ -104,12 +104,12 @@ namespace KG
 		const glm::dquat InterpolateRotation(const AnimationRotationKey & p_rKeyL, const AnimationRotationKey & p_rKeyR, const KE::Duration & p_rTimeStamp, const AnimationBehaviour p_Behaviour = AnimationBehaviour::Flat);
 
 	private:
-		const unsigned FindHeadScaleKeyIndex(const KE::Duration p_TimeStamp);
-		const unsigned FindTailScaleKeyIndex(const KE::Duration p_TimeStamp);
-		const unsigned FindHeadTranslationKeyIndex(const KE::Duration p_TimeStamp);
-		const unsigned FindTailTranslationKeyIndex(const KE::Duration p_TimeStamp);
-		const unsigned FindHeadRotationIndex(const KE::Duration p_TimeStamp);
-		const unsigned FindTailRotationIndex(const KE::Duration p_TimeStamp);
+		const bool FindHeadScaleKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp);
+		const bool FindTailScaleKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp);
+		const bool FindHeadTranslationKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp);
+		const bool FindTailTranslationKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp);
+		const bool FindHeadRotationIndex(int & p_rIndex, const KE::Duration p_TimeStamp);
+		const bool FindTailRotationIndex(int & p_rIndex, const KE::Duration p_TimeStamp);
 	
 	}; // class AnimationNode
 

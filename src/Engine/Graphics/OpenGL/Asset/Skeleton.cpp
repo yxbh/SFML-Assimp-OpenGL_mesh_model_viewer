@@ -20,6 +20,7 @@ namespace KG
 
 	Skeleton::Skeleton(const KE::EntityID p_EntityID, const KG::RenderPass p_RenderPass)
 		: KG::SceneNode(p_EntityID, p_RenderPass)
+		, m_CurAnimIndex(0)
 	{}
 
 	Skeleton::~Skeleton(void)
@@ -38,6 +39,8 @@ namespace KG
 	void Skeleton::Reserve(const unsigned p_Size)
 	{
 		names.reserve(p_Size);
+		bone_offsets.reserve(p_Size);
+		intermediate_transforms.reserve(p_Size);
 		final_transforms.reserve(p_Size);
 	}
 
