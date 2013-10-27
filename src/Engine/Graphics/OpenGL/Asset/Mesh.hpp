@@ -68,7 +68,6 @@ namespace KG
 		bool					m_HasColors;		// color vertices
 		bool					m_HasMaterial;
 		bool					m_HasSkeleton;
-		//bool					m_HasAnimation;
 		bool					m_LightBackFace;	// light with only ambient if false.
 		bool					m_LoadedToGPU;		// loaded into GPU memory.
 		bool					m_Loaded;			// loaded into RAM.

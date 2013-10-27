@@ -366,15 +366,9 @@ namespace KG
 	void Mesh::Update(KG::Scene & p_rScene, const KE::Duration p_Elapsed)
 	{
 		this->KG::SceneNode::Update(p_rScene, p_Elapsed);
-		static KE::Duration elapsed; elapsed += p_Elapsed;
-		//this->
-		//	//.SetScale(0.05, 0.05, 0.05)
-		//	SetRotation
-		//	(
-		//		0//elapsed.AsSeconds() * 50
-		//		, elapsed.AsSeconds() * 50
-		//		, 0//elapsed.AsSeconds() * 100
-		//	);
+		
+		if (this->HasSkeleton())
+			m_spSkeleton->ComputePose(p_Elapsed);
 	}
 
 	void Mesh::SetVAO(const GLuint p_VAO)

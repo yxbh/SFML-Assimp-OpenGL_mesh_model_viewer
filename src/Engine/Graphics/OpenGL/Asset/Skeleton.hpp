@@ -71,15 +71,10 @@ namespace KG
 		void ReserveMemForIDs(const unsigned p_Size);
 		void ReserveMemForWeights(const unsigned p_Size);
 
-	private:
-		void ComputeBoneTransforms(const KE::Duration, const glm::dmat4 & p_ParentTransform)
-		{
-			// TODO
-			KE_UNREFERENCED_PARAMETER(p_ParentTransform);
-		}
-
 		/*! compute frame interpolation and etc. */
 		void ComputePose(const KE::Duration p_Elapsed);
+
+	private:
 		/*! calculate final transform for each bone. */
 		void ComputePoseTransforms(const KG::BoneNode_SmartPtr p_spBoneNode, const glm::dmat4 p_ParentTransform);
 
