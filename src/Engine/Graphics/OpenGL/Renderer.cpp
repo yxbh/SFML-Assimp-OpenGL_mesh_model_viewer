@@ -3,14 +3,14 @@
 #include "SceneNode.hpp"
 #include "Asset/Mesh.hpp"
 #include "Asset/Texture.hpp"
+#include "Asset/Skeleton.hpp"
 #include "Shader/ShaderProgram.hpp"
 #include "Shader/ShaderFactory.hpp"
 #include "RenderSystem.hpp"
 /* Event related. */
 #include "../../Event/EventManager.hpp"
 #include "Events.hpp"
-#include <algorithm>
-#include <functional>
+
 
 namespace KG
 {
@@ -203,12 +203,13 @@ namespace KG
 			// animation
 			if (mesh_ptr->HasSkeleton())
 			{
-				// TODO disabled for now.
-				//shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_TRUE);
+				//// TODO disabled for now.
+				shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_TRUE);
+				shader_program_ptr->SetParameter("BoneTranforms[0]", mesh_ptr->GetSkeleton()->final_transforms);
 			}
 			else
 			{
-				//shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_FALSE);
+				shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_FALSE);
 			}
 
 			if (mesh_ptr->GetVAO() != 0)

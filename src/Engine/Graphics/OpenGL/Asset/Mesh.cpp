@@ -124,6 +124,11 @@ namespace KG
 		return m_spTexture;
 	}
 
+	const KG::Skeleton_SmartPtr Mesh::GetSkeleton(void) const
+	{
+		return m_spSkeleton;
+	}
+
 	const bool Mesh::Has(const Property p_Property) const
 	{
 		switch (p_Property)
@@ -368,9 +373,7 @@ namespace KG
 		this->KG::SceneNode::Update(p_rScene, p_Elapsed);
 		
 		if (this->HasSkeleton())
-		{
 			m_spSkeleton->ComputePose(p_Elapsed);
-		}
 	}
 
 	void Mesh::SetVAO(const GLuint p_VAO)

@@ -107,6 +107,10 @@ namespace KG
 		template<> const bool SetParameter<GLint>
 		(const GLchar * const p_UniformVariable, const GLint & p_Value, const GLint & p_Value2, const GLint & p_Value3, const GLint & p_Value4);
 
+		/*! variable amount of. */
+		inline const bool SetParameter(const GLchar * const p_UniformVariable, const std::vector<glm::mat4> & p_rValue1);
+
+
 	}; // ShaderProgram
 
 	typedef std::shared_ptr<KG::ShaderProgram>	ShaderProgram_SmartPtr;

@@ -84,7 +84,8 @@ namespace KG
 		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
 		assert(p_pAiMesh); // cannot be null
 		KG::Mesh_SmartPtr mesh(new KG::Mesh());
-		
+		mesh->SetName(p_pAiMesh->mName.data);
+
 		// pos vertex
 		this->InitPositions(mesh, p_pAiMesh);
 
@@ -242,25 +243,12 @@ namespace KG
 		// convert Bone to Vertices relation to Vertex to bones relation.
 		const unsigned num_bones = p_pAiMesh->mNumBones;
 		skeleton_ptr->Reserve(num_bones);
-		std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
-		for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
-		{
-			vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
-		}
-		for (auto & pair_it  : vertex_to_bones_map) // needs map to be pre-filled to work properly.
-		{
-			while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
-				pair_it.second.erase(pair_it.second.begin());
-			while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
-				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
-				// TODO : normalize total weight so it equals 1.
-		}
-
 		// resize intermediate and final transform array.
 		skeleton_ptr->intermediate_transforms.resize(num_bones);
 		skeleton_ptr->final_transforms.resize(num_bones);
 
 		// collect name, offset, and weights of each bone:
+		std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
 		for (unsigned i = 0; i < num_bones; ++i)
 		{
 			const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
@@ -275,15 +263,29 @@ namespace KG
 			const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
 			const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
 			const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+			//skeleton_ptr->bone_offsets.push_back(glm::transpose(glm::dmat4(col1, col2, col3, col4)));
 			skeleton_ptr->bone_offsets.push_back(glm::dmat4(col1, col2, col3, col4));
-			
+
 			// insert bone weights into map. (per-vertex & per-weight)
+
 			for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
 			{
 				const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
 				vertex_to_bones_map[ai_vweight.mVertexId]
 					.insert(std::make_pair(ai_vweight.mWeight, bone_name));
 			}
+		}
+		for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
+		{
+			vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
+		}
+		for (auto & pair_it  : vertex_to_bones_map) // needs map to be pre-filled to work properly.
+		{
+			while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
+				pair_it.second.erase(pair_it.second.begin());
+			while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
+				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
+				// TODO : normalize total weight so it equals 1.
 		}
 
 		// fill in Skeleton's ID's and weights vectors for each vertex
@@ -293,7 +295,7 @@ namespace KG
 		skeleton_ptr->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
 		for (auto & vertex_to_names : vertex_to_bones_map)
 		{ // for vertex to 4 x Weights pair
-			auto bone_weight_pair_it = vertex_to_names.second.begin();
+			auto bone_weight_pair_it = vertex_to_names.second.begin(); //--bone_weight_pair_it;
 
 			// 1st weight
 			auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
@@ -531,10 +533,6 @@ namespace KG
 				}
 
 				// collect scaling keys
-				KE::Debug::print("animnode name = " + bone_name);
-				KE::Debug::print("... NumScaleKeys = " + std::to_string(ai_animnode_ptr->mNumScalingKeys));
-				KE::Debug::print("... NumTranslateKeys = " + std::to_string(ai_animnode_ptr->mNumPositionKeys));
-				KE::Debug::print("... NumRotateKeys = " + std::to_string(ai_animnode_ptr->mNumRotationKeys));
 				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumScalingKeys; ++node_index)
 				{
 					const aiVectorKey & ai_key = ai_animnode_ptr->mScalingKeys[node_index];

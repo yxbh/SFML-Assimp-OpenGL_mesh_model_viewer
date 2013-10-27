@@ -47,7 +47,7 @@ namespace KG
 		std::vector<std::string>			names;				// bone names
 		std::vector<glm::dmat4>				bone_offsets;		//
 		std::vector<glm::dmat4>				intermediate_transforms; // AnimationNode transforms
-		std::vector<glm::dmat4>				final_transforms;
+		std::vector<glm::mat4>				final_transforms;	// uses float version for GLSL compatibility
 		/* per-vertex data */
 		std::vector<BoneIDs>				IDs;				// positon would be index to vertex. value is the IDs.
 		std::vector<BoneWeights>			weights;			// positon would be index to vertex. value is the weights.
@@ -76,7 +76,7 @@ namespace KG
 
 	private:
 		/*! calculate final transform for each bone. */
-		void ComputePoseTransforms(const KG::BoneNode_SmartPtr p_spBoneNode, const glm::dmat4 p_ParentTransform);
+		void ComputePoseTransforms(const KG::BoneNode_SmartPtr p_spBoneNode, const glm::dmat4 & p_ParentTransform);
 
 	}; // class Skeleton
 

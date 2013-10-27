@@ -175,5 +175,14 @@ namespace KG
 		return true;
 	}
 
+	const bool ShaderProgram::SetParameter(const GLchar * const p_UniformVariable, const std::vector<glm::mat4> & p_rValue1)
+	{
+		GLint location;
+		if (!this->SearchAndGetUniform(location, p_UniformVariable))
+			return false;
+		glUniformMatrix4fv(location, p_rValue1.size(), GL_FALSE, glm::value_ptr(p_rValue1[0]));
+		KE::Debug::check_for_GL_error();
+		return true;
+	}
 
 } // KG ns

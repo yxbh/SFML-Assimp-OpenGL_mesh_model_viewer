@@ -115,6 +115,7 @@ namespace KG
 		const GLuint GetIndexOffset(void) const;
 		const KG::Material & GetMaterial(void) const;
 		const KG::Texture_SmartPtr GetTexture(void) const;
+		const KG::Skeleton_SmartPtr GetSkeleton(void) const;
 
 		const bool Has(const Property p_Property) const;
 		const bool HasVertex(void) const;

@@ -47,6 +47,8 @@
 #include <stack>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <functional>
 
 // engine commonly used
 #include "../Utility/System/Duration.hpp"
