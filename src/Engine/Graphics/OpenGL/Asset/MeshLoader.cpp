@@ -256,7 +256,8 @@ namespace KG
 				// TODO : normalize total weight so it equals 1.
 		}
 
-		// resize final transform.
+		// resize intermediate and final transform array.
+		skeleton_ptr->intermediate_transforms.resize(num_bones);
 		skeleton_ptr->final_transforms.resize(num_bones);
 
 		// collect name, offset, and weights of each bone:

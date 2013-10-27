@@ -61,8 +61,6 @@ namespace KG
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Skeleton::ComputePose : no animations to compute pose!");
 			return;
 		}
-
-		this->intermediate_transforms.resize(this->names.size());
 		
 		// calculate animation pose.
 		KG::Animation_SmartPtr current_animation_sp(m_Animations[m_CurAnimIndex]);
@@ -76,7 +74,7 @@ namespace KG
 		for (KG::SceneNode_SmartPtr scenenode : m_ChildSceneNodeList)
 		{
 			const KG::BoneNode_SmartPtr bonenode(std::static_pointer_cast<KG::BoneNode>(scenenode));
-			this->ComputePoseTransforms(bonenode, glm::dmat4());
+			//this->ComputePoseTransforms(bonenode, glm::dmat4());
 		}
 
 	}

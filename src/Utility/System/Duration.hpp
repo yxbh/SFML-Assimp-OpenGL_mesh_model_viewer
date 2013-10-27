@@ -58,7 +58,7 @@ namespace KE
 	const KE::Duration operator /(const KE::Duration p_Left, const std::int64_t p_Right);
 	const KE::Duration & operator /=(KE::Duration & p_rLeft, const double p_Right);
 	const KE::Duration & operator /=(KE::Duration & p_rLeft, const std::int64_t p_Right);
-	const int operator % (KE::Duration & p_rLeft, const KE::Duration & p_rRight);
+	const KE::Duration operator % (KE::Duration & p_rLeft, const KE::Duration & p_rRight);
 
 } // KE ns
 

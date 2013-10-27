@@ -368,7 +368,9 @@ namespace KG
 		this->KG::SceneNode::Update(p_rScene, p_Elapsed);
 		
 		if (this->HasSkeleton())
+		{
 			m_spSkeleton->ComputePose(p_Elapsed);
+		}
 	}
 
 	void Mesh::SetVAO(const GLuint p_VAO)
