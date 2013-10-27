@@ -18,9 +18,8 @@ namespace KG
 	class Scene;
 	class SceneNode;
 	typedef std::shared_ptr<KG::SceneNode>						SceneNode_SmartPtr;
-	//typedef std::pair<KG::SceneNode*const, glm::dmat4>			NodeAndTransform;
-	typedef std::vector<KG::SceneNode*const>					SceneNodeRenderVector;
-	typedef std::map<KG::RenderPass, KG::SceneNodeRenderVector>	RenderMap;
+	typedef std::vector<KG::SceneNode*const>					SceneNodeSPVector;
+	typedef std::map<KG::RenderPass, KG::SceneNodeSPVector>		RenderMap;
 	class ShaderProgram;
 	typedef std::shared_ptr<KG::ShaderProgram>					ShaderProgram_SmartPtr;
 

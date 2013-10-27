@@ -59,17 +59,6 @@ namespace KG
 		// load all the meshes
 		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
 		{
-			// global inverse transform for animation if there's any.
-			if (p_pScene->HasAnimations())
-			{
-				const aiMatrix4x4 & ai_mat = p_pScene->mRootNode->mTransformation.Transpose();
-				const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
-				const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
-				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
-				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
-				meshes->m_GlobalInverse = glm::inverse(glm::dmat4(col1, col2, col3, col4));
-			}
-
 			// load mesh
 			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i]));
 			mesh->SetID(meshes->GetEntityID());
@@ -242,10 +231,17 @@ namespace KG
 
 		KE::Debug::print("MeshLoader::InitSkeleton : Init Skeleton.");
 		KG::Skeleton_SmartPtr skeleton_ptr(new KG::Skeleton(p_spMesh->GetEntityID()));
-		skeleton_ptr->SetID(p_spMesh->GetEntityID());
+		// get and set global inverse matrix
+		const aiMatrix4x4 & ai_mat(m_pScene->mRootNode->mTransformation); // TODO : correct?
+		const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
+		const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
+		const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
+		const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+		skeleton_ptr->global_inverse_transform = glm::inverse(glm::dmat4(col1, col2, col3, col4));
+
+		// convert Bone to Vertices relation to Vertex to bones relation.
 		const unsigned num_bones = p_pAiMesh->mNumBones;
 		skeleton_ptr->Reserve(num_bones);
-		// convert Bone to Vertices relation to Vertex to bones relation.
 		std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
 		for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
 		{
@@ -259,14 +255,25 @@ namespace KG
 				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
 				// TODO : normalize total weight so it equals 1.
 		}
-		// collect name and weights of each bone:
+
+		// collect name, offset, and weights of each bone:
 		for (unsigned i = 0; i < num_bones; ++i)
 		{
 			const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
-			// get bone name
+			
+			// collect bone name for Skeleton (per-bone)
 			const std::string bone_name(ai_bone_ptr->mName.data);
 			skeleton_ptr->names.push_back(bone_name);
-			// insert bone weights into map.
+			
+			// collect offset transform for Skeleton (per-bone)
+			const aiMatrix4x4 & ai_mat(ai_bone_ptr->mOffsetMatrix);
+			const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
+			const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
+			const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
+			const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
+			skeleton_ptr->bone_offsets.push_back(glm::dmat4(col1, col2, col3, col4));
+			
+			// insert bone weights into map. (per-vertex & per-weight)
 			for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
 			{
 				const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
@@ -283,6 +290,7 @@ namespace KG
 		for (auto & vertex_to_names : vertex_to_bones_map)
 		{ // for vertex to 4 x Weights pair
 			auto bone_weight_pair_it = vertex_to_names.second.begin();
+
 			// 1st weight
 			auto it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
 			if (it == skeleton_ptr->names.end())
@@ -291,6 +299,7 @@ namespace KG
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].x = bone_index;
 			skeleton_ptr->weights[vertex_index].x = bone_weight_pair_it->first;
+
 			// 2nd weight
 			++bone_weight_pair_it;
 			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
@@ -300,6 +309,7 @@ namespace KG
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].y = bone_index;
 			skeleton_ptr->weights[vertex_index].y = bone_weight_pair_it->first;
+
 			// 3rd weight
 			++bone_weight_pair_it;
 			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
@@ -309,6 +319,7 @@ namespace KG
 			if (bone_index < 0 || bone_index > 4) assert(false);
 			skeleton_ptr->IDs[vertex_index].z = bone_index;
 			skeleton_ptr->weights[vertex_index].z = bone_weight_pair_it->first;
+
 			// 4th weight
 			++bone_weight_pair_it;
 			it = std::find(skeleton_ptr->names.begin(), skeleton_ptr->names.end(), bone_weight_pair_it->second);
@@ -449,22 +460,13 @@ namespace KG
 			{
 				bone_found = true;
 
-				// collect offset matrix:
-				const aiMatrix4x4 & ai_mat = p_pAiMesh->mBones[i]->mOffsetMatrix;
-				const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
-				const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
-				const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
-				const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);
-				KG::BoneTransform bone_transform;
-				bone_node_sp->transform.offset = glm::dmat4(col1, col2, col3, col4);
-
 				// compute index to array in Skeleton.
 				unsigned index = 0;
 				for (const std::string & name : p_spSkeleton->names)
 				{
 					if (bone_name == name)
 					{
-						bone_node_sp->skeleton_index = index;
+						bone_node_sp->skeleton_bone_index = index;
 						break;
 					}
 					else
@@ -516,7 +518,7 @@ namespace KG
 				{
 					if (bone_name == name)
 					{
-						anim_node_sp->skeleton_index = index;
+						anim_node_sp->m_SkeletonBoneIndex = index;
 						break;
 					}
 					else

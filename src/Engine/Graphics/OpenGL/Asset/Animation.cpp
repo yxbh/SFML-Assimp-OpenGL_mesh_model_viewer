@@ -8,6 +8,7 @@ namespace KG
 		, const KG::RenderPass p_RenderPass
 	)
 		: KG::SceneNode(p_EntityID, p_RenderPass)
+		, m_SkeletonBoneIndex(0)
 	{}
 
 	AnimationNode::AnimationNode
@@ -22,6 +23,7 @@ namespace KG
 		, m_ScaleKeys(p_ScaleKeys)
 		, m_TranslationKeys(p_TranslationKeys)
 		, m_RotationKeys(p_RotationKeys)
+		, m_SkeletonBoneIndex(0)
 	{}
 
 	AnimationNode::~AnimationNode(void)
@@ -40,6 +42,21 @@ namespace KG
 	const AnimationRotationKeyList & AnimationNode::GetRotationKeys(void) const
 	{
 		return m_RotationKeys;
+	}
+
+	const glm::dmat4 & AnimationNode::GetTransform(void) const
+	{
+		return m_Transform;
+	}
+
+	const unsigned AnimationNode::GetBoneIndex(void) const
+	{
+		return m_SkeletonBoneIndex;
+	}
+
+	void AnimationNode::SetTransform(const glm::dmat4 & p_rTransform)
+	{
+		m_Transform = p_rTransform;
 	}
 
 	const KE::Duration AnimationNode::ComputeScaleTimeStamp(const KE::Duration & p_rDuration)
@@ -221,7 +238,7 @@ namespace KG
 			const KE::Duration rotate_time_stamp(anim_node_sp->ComputeRotationTimeStamp(m_Duration));
 			const glm::dmat4 t_mat(glm::translate(anim_node_sp->InterpolateTranslation(rotate_time_stamp)));
 			const glm::dmat4 final_mat( t_mat * r_mat * s_mat );
-
+			anim_node_sp->SetTransform(final_mat);
 		}
 	}
 
@@ -239,6 +256,11 @@ namespace KG
 	{
 		m_AnimationBehaviour = p_Behaviour;
 		return *this;
+	}
+
+	void Animation::SetDuration(const KE::Duration p_Duration)
+	{
+		m_Duration = p_Duration;
 	}
 
 } // KG ns

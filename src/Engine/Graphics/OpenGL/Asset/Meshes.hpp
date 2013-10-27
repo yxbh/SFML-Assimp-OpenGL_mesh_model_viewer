@@ -21,7 +21,6 @@ namespace KG
 
 	private:
 		/*! animation related. */
-		glm::dmat4				m_GlobalInverse;
 		KG::Skeleton_SmartPtr	m_spAnimSkeleton;		// animaition skeleton.
 		bool					m_HasSkeleton;
 

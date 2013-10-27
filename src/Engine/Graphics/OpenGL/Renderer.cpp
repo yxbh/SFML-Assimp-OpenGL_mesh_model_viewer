@@ -30,11 +30,11 @@ namespace KG
 		, m_Initialized(false)
 		, m_spShaderProgram(nullptr)
 	{
-		m_RenderMap.insert(std::make_pair(KG::RenderPass::Null, SceneNodeRenderVector()));
-		m_RenderMap.insert(std::make_pair(KG::RenderPass::NotRendered, SceneNodeRenderVector()));
-		m_RenderMap.insert(std::make_pair(KG::RenderPass::Dynamic, SceneNodeRenderVector()));
-		m_RenderMap.insert(std::make_pair(KG::RenderPass::Static, SceneNodeRenderVector()));
-		m_RenderMap.insert(std::make_pair(KG::RenderPass::Sky, SceneNodeRenderVector()));
+		m_RenderMap.insert(std::make_pair(KG::RenderPass::Null, SceneNodeSPVector()));
+		m_RenderMap.insert(std::make_pair(KG::RenderPass::NotRendered, SceneNodeSPVector()));
+		m_RenderMap.insert(std::make_pair(KG::RenderPass::Dynamic, SceneNodeSPVector()));
+		m_RenderMap.insert(std::make_pair(KG::RenderPass::Static, SceneNodeSPVector()));
+		m_RenderMap.insert(std::make_pair(KG::RenderPass::Sky, SceneNodeSPVector()));
 	}
 
 	Renderer::~Renderer(void)

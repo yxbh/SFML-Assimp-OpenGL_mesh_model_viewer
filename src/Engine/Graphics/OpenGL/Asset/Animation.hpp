@@ -65,7 +65,8 @@ namespace KG
 		AnimationScaleKeyList				m_ScaleKeys;
 		AnimationTranslationKeyList			m_TranslationKeys;
 		AnimationRotationKeyList			m_RotationKeys;
-		unsigned							skeleton_index;
+		glm::dmat4							m_Transform;
+		unsigned							m_SkeletonBoneIndex;	// index to bone arrays in the Skeleton.
 
 	public:
 		AnimationNode
@@ -86,6 +87,10 @@ namespace KG
 		const AnimationScaleKeyList & GetScaleKeys(void) const;
 		const AnimationTranslationKeyList & GetTranslationKeys(void) const;
 		const AnimationRotationKeyList & GetRotationKeys(void) const;
+		const glm::dmat4 & GetTransform(void) const;
+		const unsigned GetBoneIndex(void) const;
+
+		void SetTransform(const glm::dmat4 & p_rTransform);
 
 		const KE::Duration ComputeScaleTimeStamp(const KE::Duration & p_rDuration);
 		const KE::Duration ComputeTranslationTimeStamp(const KE::Duration & p_rDuration);
@@ -146,6 +151,7 @@ namespace KG
 		const std::int16_t GetBehaviour(void) const;
 
 		Animation & SetBehaviour(const std::int16_t p_Behaviour);
+		void SetDuration(const KE::Duration p_Duration);
 
 	}; // class Animation
 
