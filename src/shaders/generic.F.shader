@@ -21,6 +21,10 @@ uniform 	mat4 	modelMatrix;
 uniform 	bool	HasNormals 		= false;
 uniform 	mat3	ModelRotationMat3;
 
+// animation related
+const int MaxNumBones = 64;
+uniform mat4 BoneTranforms[MaxNumBones];
+
 // texture & color related.
 smooth in 	vec4		fColor;
 smooth in 	vec2		fTexCoord2D;
@@ -28,6 +32,7 @@ uniform		bool		HasColorVertices	= bool(false);
 uniform		bool 		HasTexCoord2D 		= bool(false);
 uniform		bool		HasMaterial			= bool(false);
 uniform 	sampler2D	Tex2D;
+uniform		float		TexCoordMultiplier	= 1.0f;
 
 /* light related */
 smooth in 	vec3		fNormal;
@@ -128,7 +133,7 @@ vec4 ComputeSurfaceColor(void)
 {
 	vec4 color;
 	if (HasTexCoord2D)			// has 2D texture
-		color = texture(Tex2D, fTexCoord2D);
+		color = texture(Tex2D, fTexCoord2D * TexCoordMultiplier);
 	else if (HasColorVertices)	// has color vertices
 		color = fColor;
 	else						// use default color
