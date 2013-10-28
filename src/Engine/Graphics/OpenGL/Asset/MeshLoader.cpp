@@ -34,11 +34,26 @@ namespace KG
 			&& p_rPath.at(index-1) == '.'
 			)// flip winding for CITS .x file. (normally .x has CW winding, but the CITS ones have CCW.
 		{
-			m_pScene = m_Importer.ReadFile(p_rPath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality|aiProcess_FlipWindingOrder|aiProcess_FlipUVs);
+			m_pScene
+				= m_Importer.ReadFile
+				(
+					p_rPath.c_str()
+					, aiProcessPreset_TargetRealtime_MaxQuality
+						|aiProcess_FlipWindingOrder
+						|aiProcess_FlipUVs
+						|aiProcess_LimitBoneWeights
+				);
 		}
 		else
 		{
-			m_pScene = m_Importer.ReadFile(p_rPath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality|aiProcess_FlipUVs);
+			m_pScene
+				= m_Importer.ReadFile
+				(
+					p_rPath.c_str()
+					, aiProcessPreset_TargetRealtime_MaxQuality
+						|aiProcess_FlipUVs
+						|aiProcess_LimitBoneWeights
+				);
 		}
 
 		if (!m_pScene)
@@ -357,7 +372,7 @@ namespace KG
 
 		//construct a bone depth map
 		std::map<std::string, unsigned> bone_depth_map; // bones must have different names.
-		for ( auto & bone_name : p_spSkeleton->names)
+		for ( auto & bone_name : p_spSkeleton->names )
 		{
 			unsigned depth = 0; // depth starts from 1 at the root AiNode
 			const aiNode * scene_root_node = m_pScene->mRootNode;
@@ -487,6 +502,7 @@ namespace KG
 		if (!bone_found)
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::GrowBoneTree : unexpected error: bone not found in aiMesh!");
+			KE::Debug::print(KE::Debug::DBG_ERROR, "	- missing bone : " + bone_name);
 			assert(false);
 		}
 

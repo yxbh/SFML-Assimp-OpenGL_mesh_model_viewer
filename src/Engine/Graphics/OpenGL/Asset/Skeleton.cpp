@@ -59,8 +59,8 @@ namespace KG
 		if (m_Animations.empty())
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Skeleton::ComputePose : no animations to compute pose!");
-			//return;
 
+			// set intermediate to bone node transforms to retain bind pose.
 			for (unsigned i = 0; i < this->intermediate_transforms.size(); ++i)
 				this->intermediate_transforms[i] = this->bone_transform[i];
 		}

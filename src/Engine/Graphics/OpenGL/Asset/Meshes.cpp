@@ -3,6 +3,7 @@
 
 namespace KG
 {
+
 	Meshes::Meshes(const KE::EntityID p_EntityID, const KG::RenderPass p_RenderPass)
 		: KG::Mesh(p_EntityID, p_RenderPass)
 		, m_spAnimSkeleton(nullptr)
