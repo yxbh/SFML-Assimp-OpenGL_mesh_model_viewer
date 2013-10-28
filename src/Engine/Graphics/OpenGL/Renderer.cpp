@@ -155,7 +155,10 @@ namespace KG
 			if (mesh_ptr->HasColor())
 				shader_program_ptr->SetParameter<GLboolean>("HasColorVertices", GL_TRUE);
 			else if (mesh_ptr->HasTexture())
+			{
 				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_TRUE);
+				shader_program_ptr->SetParameter<GLfloat>("TexCoordMultiplier", static_cast<float>(mesh_ptr->GetTexture()->m_TexCoordMultiplier));
+			}
 			else
 			{
 				shader_program_ptr->SetParameter<GLboolean>("HasColorVertices", GL_FALSE);

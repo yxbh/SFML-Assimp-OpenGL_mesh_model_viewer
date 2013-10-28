@@ -56,7 +56,7 @@ namespace CITS
 		SetThirdPersonMode				= 100012,
 		SetObjectManMode				= 100013,
 		SetObjectMatMode				= 100014,
-		ScaleTexture                    = 100015,
+		SetTexCoordMultiplier           = 100015,
 	};
 
 
@@ -652,21 +652,6 @@ namespace CITS
 			return sk_EventType;
 		}
 	};
-		
-	//class ScaleTexture_Event final
-	//	: public CITS::SetVec3f_Event
-	//{
-	//private:
-	//	static const KE::EventType sk_EventType = EventType::ScaleTexture;
-
-	//public:
-	//	explicit ScaleTexture_Event(const double p_Value) : SetVec3f_Event(float(p_Value), 1.0f, 1.0f) {}
-
-	//	virtual const KE::EventType GetType(void) const final
-	//	{
-	//		return sk_EventType;
-	//	}
-	//};
 
 	class SetFreeFlightMode_Event final
 		: public KE::IEvent
@@ -727,4 +712,20 @@ namespace CITS
 			return sk_EventTypeId;
 		}
 	};
+
+	class SetTexCoordMutiplier_Event final
+		: public CITS::Control_Event
+	{
+	private:
+		static const KE::EventType sk_EventType = EventType::SetTexCoordMultiplier;
+
+	public:
+		explicit SetTexCoordMutiplier_Event(const double p_Value) : CITS::Control_Event(p_Value) {}
+
+		virtual const KE::EventType GetType(void) const final
+		{
+			return sk_EventType;
+		}
+	};
+
 } // CITS ns

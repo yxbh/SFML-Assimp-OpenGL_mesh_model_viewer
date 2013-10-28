@@ -27,6 +27,9 @@ namespace KG
 			Null, Tex1D, Tex2D, Tex3D, Cube, Size
 		};
 	
+	public:
+		double					m_TexCoordMultiplier;		// TODO : remove after CITS3003 project.
+
 	private:
 		static KG::TextureLoader_SmartPtr 	s_spTextureLoader;
 

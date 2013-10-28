@@ -112,6 +112,12 @@ namespace ObjectManipulator
 			, std::bind(&LogicComponent::EventDelegate, this, std::placeholders::_1)
 			, CITS::EventType::ChangeTextureRequest
 		);
+		KE::Event::Get().AddListener
+		(
+			this->GetEntity()->GetID()
+			, std::bind(&LogicComponent::EventDelegate, this, std::placeholders::_1)
+			, CITS::EventType::SetTexCoordMultiplier
+		);
 	}
 
 	LogicComponent::~LogicComponent(void)
@@ -272,6 +278,12 @@ namespace ObjectManipulator
 			case CITS::EventType::SetMatShininess:
 				mat.Shininess = man_event->GetValues().x;
 				break;
+			case CITS::EventType::SetTexCoordMultiplier:
+				{
+					if (mesh_node->GetTexture())
+						mesh_node->GetTexture()->m_TexCoordMultiplier = std::static_pointer_cast<CITS::Control_Event>(p_spEvent)->GetDelta();
+				}
+				break;
 		}
 		mesh_node->SetMaterial(mat);
 		return true;
@@ -318,7 +330,8 @@ namespace ObjectManipulator
 		case CITS::EventType::SetMatEmissive:
 		case CITS::EventType::SetMatDiffuse:
 		case CITS::EventType::SetMatSpecular:
-		case CITS::EventType::SetMatShininess:		
+		case CITS::EventType::SetMatShininess:
+		case CITS::EventType::SetTexCoordMultiplier:
 			this->HandleMaterialManipoulation(p_spEvent);
 			break;
 		case CITS::EventType::ToggleControlPanelVisibility:

@@ -18,6 +18,7 @@ namespace KG
 		: m_Type(DType::Tex2D), m_GLTextureHandle(0), m_DevILHandle(0)
 		, m_FilePath(p_Path)
 		, m_Valid(true)
+		, m_TexCoordMultiplier(1.0f)
 	{
 		if (p_Path.length() == 0)
 			KE::Debug::print(KE::Debug::DBG_ERROR, "Texture : ctor given empty string.");

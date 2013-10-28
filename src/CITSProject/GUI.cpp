@@ -229,7 +229,7 @@ namespace CITS
 		sfg::Box::Ptr scalebox = sfg::Box::Create(sfg::Box::VERTICAL);
 		
 		m_TextureScale = sfg::Scale::Create(sfg::Scale::HORIZONTAL);
-		m_TextureScaleAdj = sfg::Adjustment::Create( 1.f, 0.f, 200.0f, 1.0f, 5.0f, 0.f);
+		m_TextureScaleAdj = sfg::Adjustment::Create( 1.0f, 0.01f, 1.0f, 0.05f, 0.1f, 0.0f);
 		m_TextureScaleAdj->GetSignal( sfg::Adjustment::OnChange ).Connect( &ControlPanelGUI::TextureMultiplier, this );
 
 		m_TextureScale -> SetAdjustment(m_TextureScaleAdj);
@@ -355,6 +355,6 @@ namespace CITS
 
 	void ControlPanelGUI::TextureMultiplier()
 	{
-		//KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::ScaleMaterials_Event());
+		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetTexCoordMutiplier_Event(m_TextureScaleAdj->GetValue())));
 	}
 }
