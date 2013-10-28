@@ -62,7 +62,7 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeScaleTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		if (m_ScaleKeys.back().first.AsMicroseconds() != 0)
+		if (m_ScaleKeys.back().first != KE::Duration::Zero)
 			return time_stamp % m_ScaleKeys.back().first;
 		return KE::Duration::Zero;
 	}
@@ -70,7 +70,7 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeTranslationTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		if (m_TranslationKeys.back().first.AsMicroseconds() != 0)
+		if (m_TranslationKeys.back().first != KE::Duration::Zero)
 			return time_stamp % m_TranslationKeys.back().first;
 		return KE::Duration::Zero;
 	}
@@ -78,18 +78,19 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeRotationTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		if (m_RotationKeys.back().first.AsMicroseconds() != 0)
+		if (m_RotationKeys.back().first != KE::Duration::Zero)
 			return time_stamp % m_RotationKeys.back().first;
 		return KE::Duration::Zero;
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateScale(const KE::Duration & p_rTimeStamp)
 	{
+		if (m_ScaleKeys.size() == 1) // only 1 key
+			return m_ScaleKeys[0].second;
+
 		int head_index, tail_index;
 		if (this->FindHeadScaleKeyIndex(head_index, p_rTimeStamp) && this->FindTailScaleKeyIndex(tail_index, p_rTimeStamp))
 		{
-			if (head_index == tail_index)
-				return glm::dvec3(1.0, 1.0, 1.0);
 			return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(1.0, 1.0, 1.0);
@@ -97,11 +98,12 @@ namespace KG
 
 	const glm::dvec3 AnimationNode::InterpolateTranslation(const KE::Duration & p_rTimeStamp)
 	{
+		if (m_TranslationKeys.size() == 1) // only 1 key
+			return m_TranslationKeys[0].second;
+
 		int head_index, tail_index;
 		if (this->FindHeadTranslationKeyIndex(head_index, p_rTimeStamp) && this->FindTailTranslationKeyIndex(tail_index, p_rTimeStamp))
 		{
-			if (head_index == tail_index)
-				return glm::dvec3(0.0, 0.0, 0.0);
 			return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(0.0, 0.0, 0.0);
@@ -109,11 +111,12 @@ namespace KG
 
 	const glm::dquat AnimationNode::InterpolateRotation(const KE::Duration & p_rTimeStamp, const AnimationBehaviour p_Behaviour)
 	{
+		if (m_RotationKeys.size() == 1) // only 1 key
+			return m_RotationKeys[0].second;
+
 		int head_index, tail_index;
 		if (this->FindHeadRotationIndex(head_index, p_rTimeStamp) && this->FindTailRotationIndex(tail_index, p_rTimeStamp))
 		{
-			if (head_index == tail_index)
-				return glm::dquat();
 			return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp, p_Behaviour);
 		}
 		return glm::dquat();
@@ -170,9 +173,9 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_ScaleKeys.size()); ++p_rIndex)
+		for (p_rIndex = m_ScaleKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
 		{
-			if (p_TimeStamp >= m_ScaleKeys[p_rIndex].first)
+			if (p_TimeStamp <= m_ScaleKeys[p_rIndex].first)
 				return true;
 		}
 		assert(false); // shouldn't get here.
@@ -188,9 +191,9 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = m_ScaleKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_ScaleKeys.size()); ++p_rIndex)
 		{
-			if (p_TimeStamp <= m_ScaleKeys[p_rIndex].first)
+			if (m_ScaleKeys[p_rIndex].first >= p_TimeStamp)
 				return true;
 		}
 		assert(false); // shouldn't get here.
@@ -206,9 +209,9 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_TranslationKeys.size()); ++p_rIndex)
+		for (p_rIndex = m_TranslationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
 		{
-			if (p_TimeStamp >= m_TranslationKeys[p_rIndex].first)
+			if (m_TranslationKeys[p_rIndex].first <= p_TimeStamp)
 				return true;
 		}
 		assert(false); // shouldn't get here.
@@ -224,9 +227,9 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = m_TranslationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_TranslationKeys.size()); ++p_rIndex)
 		{
-			if (p_TimeStamp <= m_TranslationKeys[p_rIndex].first)
+			if (m_TranslationKeys[p_rIndex].first >= p_TimeStamp)
 				return true;
 		}
 		assert(false); // shouldn't get here.
@@ -242,9 +245,9 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_RotationKeys.size()); ++p_rIndex)
+		for (p_rIndex = m_RotationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
 		{
-			if (p_TimeStamp >= m_RotationKeys[p_rIndex].first)
+			if (m_RotationKeys[p_rIndex].first <= p_TimeStamp)
 				return true;
 		}
 		assert(false); // shouldn't get here.
@@ -260,9 +263,9 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = m_RotationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_RotationKeys.size()); ++p_rIndex)
 		{
-			if (p_TimeStamp <= m_RotationKeys[p_rIndex].first)
+			if (m_RotationKeys[p_rIndex].first >= p_TimeStamp)
 				return true;
 		}
 		assert(false); // shouldn't get here.
@@ -285,7 +288,7 @@ namespace KG
 	{
 		m_Duration += p_Elapsed;
 		//KE::Debug::print("animation duration: " + std::to_string(m_Duration.AsSeconds()));
-		//KE::Debug::print(" - eg rotation time stamp: " + std::to_string(m_Channels[2]->ComputeRotationTimeStamp(m_Duration).AsSeconds()));
+		KE::Debug::print(" - eg rotation time stamp: " + std::to_string(m_Channels[2]->ComputeRotationTimeStamp(m_Duration).AsSeconds()));
 		for (KG::AnimationNode_SmartPtr anim_node_sp : m_Channels)
 		{
 			// scale
