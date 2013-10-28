@@ -260,8 +260,19 @@ namespace KG
 			const aiMatrix4x4 & ai_mat(ai_bone_ptr->mOffsetMatrix);
 			glm::dmat4 offset;
 			this->AiMatToGLMMat(ai_mat, offset);
-			//skeleton_ptr->bone_offsets.push_back(glm::transpose(offset));
 			skeleton_sp->bone_offsets.push_back(offset);
+
+			// collect bone transform relative to parent (per-bone/aiNode)
+			const aiNode * const ai_node_ptr(this->FindAiNodeByName(bone_name, m_pScene->mRootNode));
+			if (ai_node_ptr)
+			{
+				const aiMatrix4x4 & ai_mat(ai_node_ptr->mTransformation);
+				glm::dmat4 transform;
+				this->AiMatToGLMMat(ai_mat, transform);
+				skeleton_sp->bone_transform.push_back(transform);
+			}
+			else
+				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitSkeleton : ?");
 
 			// insert bone weights into map. (per-vertex & per-weight)
 			for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
@@ -458,7 +469,7 @@ namespace KG
 				bone_found = true;
 
 				// compute index to array in Skeleton.
-				unsigned index = 0;
+				unsigned index(0);
 				for (const std::string & name : p_spSkeleton->names)
 				{
 					if (bone_name == name)
@@ -509,7 +520,7 @@ namespace KG
 				const aiNodeAnim * const ai_animnode_ptr = ai_anim_ptr->mChannels[a];
 
 				// compute index to array in Skeleton.
-				unsigned index = 0;
+				unsigned index(0);
 				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
 				anim_node_sp->SetName(bone_name);
 				for (const std::string & name : p_spMesh->m_spSkeleton->names)
