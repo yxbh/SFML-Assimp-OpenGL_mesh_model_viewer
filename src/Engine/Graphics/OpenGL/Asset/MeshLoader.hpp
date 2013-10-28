@@ -63,6 +63,7 @@ namespace KG
 		void InitAnimations(Mesh_SmartPtr p_spMesh);
 		const bool InitMaterialTexture(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh, const aiScene * const p_pAiScene, const std::string & p_Path);
 		
+		void AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat, glm::dmat4 & p_rGLMMat);
 	};
 
 } // KG ns

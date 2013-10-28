@@ -284,6 +284,8 @@ namespace KG
 	void Animation::ComputePoses(const KE::Duration p_Elapsed)
 	{
 		m_Duration += p_Elapsed;
+		//KE::Debug::print("animation duration: " + std::to_string(m_Duration.AsSeconds()));
+		//KE::Debug::print(" - eg rotation time stamp: " + std::to_string(m_Channels[2]->ComputeRotationTimeStamp(m_Duration).AsSeconds()));
 		for (KG::AnimationNode_SmartPtr anim_node_sp : m_Channels)
 		{
 			// scale

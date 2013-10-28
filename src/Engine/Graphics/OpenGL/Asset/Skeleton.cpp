@@ -28,7 +28,7 @@ namespace KG
 
 	const bool Skeleton::HasAnimations(void) const
 	{
-		return m_Animations.size() != 0;
+		return !m_Animations.empty();
 	}
 
 	KG::SceneNodeList & Skeleton::GetChildren(void)
