@@ -29,6 +29,9 @@ namespace CITS
 		
 		sfg::Scale::Ptr m_EmissiveScale1, m_EmissiveScale2, m_EmissiveScale3;
 		sfg::Adjustment::Ptr m_emAdjustment1, m_emAdjustment2, m_emAdjustment3 ;
+
+		sfg::Scale::Ptr m_TextureScale;
+		sfg::Adjustment::Ptr m_TextureScaleAdj;
 		
 		sfg::Scale::Ptr m_ShineScale;
 		sfg::Adjustment::Ptr m_shAdjustment1;
@@ -66,6 +69,7 @@ namespace CITS
 		void OnMatEditClicked(void);
 
 		void UpdateMaterials(void);
+		void TextureMultiplier(void);
 		
 		void OpenMenu(void);
 	};

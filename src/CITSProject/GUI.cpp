@@ -225,6 +225,20 @@ namespace CITS
 
 		ShineFrame -> Add(shbox);
 
+		sfg::Frame::Ptr TScaleFrame = sfg::Frame::Create(L"Scale Texture");
+		sfg::Box::Ptr scalebox = sfg::Box::Create(sfg::Box::VERTICAL);
+		
+		m_TextureScale = sfg::Scale::Create(sfg::Scale::HORIZONTAL);
+		m_TextureScaleAdj = sfg::Adjustment::Create( 1.f, 0.f, 200.0f, 1.0f, 5.0f, 0.f);
+		m_TextureScaleAdj->GetSignal( sfg::Adjustment::OnChange ).Connect( &ControlPanelGUI::TextureMultiplier, this );
+
+		m_TextureScale -> SetAdjustment(m_TextureScaleAdj);
+		m_TextureScale -> SetRequisition( sf::Vector2f( 80.f, 20.f ) );
+
+		scalebox -> Pack(m_TextureScale);
+
+		TScaleFrame -> Add(scalebox);
+
 		box_TextureEdit1 -> Pack(DiffuseFrame);
 		box_TextureEdit1 -> Pack(SpecularFrame);
 		box_TextureEdit2 -> Pack(AmbientFrame);
@@ -232,6 +246,7 @@ namespace CITS
 		box_TextureEdit -> Pack(box_TextureEdit1);
 		box_TextureEdit -> Pack(box_TextureEdit2);
 		box_TextureEdit -> Pack(ShineFrame);
+		box_TextureEdit -> Pack(TScaleFrame);
 	
 		m_EditMaterialsFrame -> Add(box_TextureEdit);
 
@@ -338,4 +353,8 @@ namespace CITS
 		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::ChangeTextureRequest_Event("", texture_file)));
 	}
 
+	void ControlPanelGUI::TextureMultiplier()
+	{
+		//KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::ScaleMaterials_Event());
+	}
 }
