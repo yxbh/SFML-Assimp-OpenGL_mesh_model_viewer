@@ -91,6 +91,8 @@ namespace KG
 		int head_index, tail_index;
 		if (this->FindHeadScaleKeyIndex(head_index, p_rTimeStamp) && this->FindTailScaleKeyIndex(tail_index, p_rTimeStamp))
 		{
+			if ((tail_index+1) < static_cast<int>(m_ScaleKeys.size()))
+					++tail_index;
 			return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(1.0, 1.0, 1.0);
@@ -104,6 +106,8 @@ namespace KG
 		int head_index, tail_index;
 		if (this->FindHeadTranslationKeyIndex(head_index, p_rTimeStamp) && this->FindTailTranslationKeyIndex(tail_index, p_rTimeStamp))
 		{
+			if ((tail_index+1) < static_cast<int>(m_TranslationKeys.size()))
+					++tail_index;
 			return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(0.0, 0.0, 0.0);
@@ -117,17 +121,22 @@ namespace KG
 		int head_index, tail_index;
 		if (this->FindHeadRotationIndex(head_index, p_rTimeStamp) && this->FindTailRotationIndex(tail_index, p_rTimeStamp))
 		{
+			if (head_index == tail_index)
+			{
+				if ((tail_index+1) < static_cast<int>(m_RotationKeys.size()))
+					++tail_index;
+			}
 			return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp, p_Behaviour);
 		}
 		return glm::dquat();
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateScale
-	(
-		const AnimationScaleKey & p_rKeyL
-		, const AnimationScaleKey & p_rKeyR
-		, const KE::Duration & p_rTimeStamp
-	)
+		(
+			const AnimationScaleKey & p_rKeyL
+			, const AnimationScaleKey & p_rKeyR
+			, const KE::Duration & p_rTimeStamp
+		)
 	{
 		const glm::dvec3 difference(p_rKeyR.second-p_rKeyL.second);
 		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
@@ -136,11 +145,11 @@ namespace KG
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateTranslation
-	(
-		const AnimationTranslationKey & p_rKeyL
-		, const AnimationTranslationKey & p_rKeyR
-		, const KE::Duration & p_rTimeStamp
-	)
+		(
+			const AnimationTranslationKey & p_rKeyL
+			, const AnimationTranslationKey & p_rKeyR
+			, const KE::Duration & p_rTimeStamp
+		)
 	{
 		const glm::dvec3 difference(p_rKeyR.second-p_rKeyL.second);
 		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
@@ -149,12 +158,12 @@ namespace KG
 	}
 
 	const glm::dquat AnimationNode::InterpolateRotation
-	(
-		const AnimationRotationKey & p_rKeyL
-		, const AnimationRotationKey & p_rKeyR
-		, const KE::Duration & p_rTimeStamp
-		, const AnimationBehaviour p_Behaviour
-	)
+		(
+			const AnimationRotationKey & p_rKeyL
+			, const AnimationRotationKey & p_rKeyR
+			, const KE::Duration & p_rTimeStamp
+			, const AnimationBehaviour p_Behaviour
+		)
 	{
 		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
 		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
@@ -191,7 +200,7 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_ScaleKeys.size()); ++p_rIndex)
+		for (p_rIndex = 1; p_rIndex < static_cast<int>(m_ScaleKeys.size()); ++p_rIndex) // have to start from 1 (not 0). or you will get could get a head = 0 and tail = 0.
 		{
 			if (m_ScaleKeys[p_rIndex].first >= p_TimeStamp)
 				return true;
@@ -227,7 +236,7 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_TranslationKeys.size()); ++p_rIndex)
+		for (p_rIndex = 1; p_rIndex < static_cast<int>(m_TranslationKeys.size()); ++p_rIndex) // have to start from 1 (not 0). or you will get could get a head = 0 and tail = 0.
 		{
 			if (m_TranslationKeys[p_rIndex].first >= p_TimeStamp)
 				return true;
@@ -263,7 +272,7 @@ namespace KG
 			p_rIndex = 0;
 			return true;
 		}
-		for (p_rIndex = 0; p_rIndex < static_cast<int>(m_RotationKeys.size()); ++p_rIndex)
+		for (p_rIndex = 1; p_rIndex < static_cast<int>(m_RotationKeys.size()); ++p_rIndex) // have to start from 1 (not 0). or you will get could get a head = 0 and tail = 0.
 		{
 			if (m_RotationKeys[p_rIndex].first >= p_TimeStamp)
 				return true;
