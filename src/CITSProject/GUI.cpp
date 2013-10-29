@@ -99,7 +99,7 @@ namespace CITS
 		sfg::Box::Ptr box_Speed = sfg::Box::Create(sfg::Box::VERTICAL);
 
 		m_StrafeSpeed = sfg::Scale::Create(sfg::Scale::HORIZONTAL);
-		m_StrafeSpeedAdj = sfg::Adjustment::Create(  1.f, 0.05f, 1.0f, .05f, .1f, 0.f);
+		m_StrafeSpeedAdj = sfg::Adjustment::Create(  1.f, 0.0f, 20.0f, 0.05f, 0.1f, 0.f);
 		m_StrafeSpeedAdj->GetSignal( sfg::Adjustment::OnChange ).Connect( &ControlPanelGUI::UpdateStrafeSpeed, this );
 
 		m_StrafeSpeed -> SetAdjustment(m_StrafeSpeedAdj);
@@ -394,11 +394,11 @@ namespace CITS
 
 	void ControlPanelGUI::UpdateStrafeRadius(void)
 	{
-
+		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetMeshStrafeDistance_Event(m_StrafeRadiusAdj->GetValue())));
 	}
 
 	void ControlPanelGUI::UpdateStrafeSpeed(void)
 	{
-
+		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetMeshStrafeSpeed_Event(m_StrafeSpeedAdj->GetValue())));
 	}
 }

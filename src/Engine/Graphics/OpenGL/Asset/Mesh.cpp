@@ -399,7 +399,7 @@ namespace KG
 				if (current_distance < (this->StrafeDistance * -1.0))
 				{
 					direction = 1.0;
-					const double over_strafed_delta(this->StrafeDistance - current_distance);
+					const double over_strafed_delta( std::abs(current_distance) - this->StrafeDistance );
 					this->StrafeForward(over_strafed_delta);
 				}
 			}

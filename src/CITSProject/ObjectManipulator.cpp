@@ -352,6 +352,8 @@ namespace ObjectManipulator
 		case CITS::EventType::RollRight:
 		case CITS::EventType::NewGUICreated:
 		case CITS::EventType::ChangeTextureRequest:
+		case CITS::EventType::SetMeshStrafeDistance:
+		case CITS::EventType::SetMeshStrafeSpeed:
 			this->HandleManipulation(p_spEvent);
 			break;
 		case CITS::EventType::NewObjectRequest:	

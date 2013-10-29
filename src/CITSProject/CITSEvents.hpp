@@ -739,6 +739,10 @@ namespace CITS
 	public:
 		explicit SetMeshStrafeDistance_Event(const double p_Delta) : Control_Event(p_Delta) {}
 
+		virtual const KE::EventType GetType(void) const final
+		{
+			return sk_EventType;
+		}
 	};
 
 	class SetMeshStrafeSpeed_Event
@@ -750,7 +754,10 @@ namespace CITS
 	public:
 		explicit SetMeshStrafeSpeed_Event(const double p_Delta) : Control_Event(p_Delta) {}
 
-
+		virtual const KE::EventType GetType(void) const final
+		{
+			return sk_EventType;
+		}
 	};
 
 } // CITS ns
