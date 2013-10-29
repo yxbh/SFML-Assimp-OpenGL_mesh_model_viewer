@@ -35,9 +35,13 @@ namespace CITS
 		sfg::Adjustment::Ptr	m_TextureScaleAdj;
 
 		// mesh movement
-		sfg::Scale::Ptr			m_MeshStrafe;
-		sfg::Adjustment::Ptr	m_MeshStrafeAdj;
-		
+		sfg::Scale::Ptr			m_StrafeRadius;
+		sfg::Adjustment::Ptr	m_StrafeRadiusAdj;
+
+		sfg::Scale::Ptr			m_StrafeSpeed;
+		sfg::Adjustment::Ptr	m_StrafeSpeedAdj;
+
+		// material properties
 		sfg::Scale::Ptr			m_ShineScale;
 		sfg::Adjustment::Ptr	m_shAdjustment1;
 
@@ -76,7 +80,8 @@ namespace CITS
 		void UpdateMaterials(void);
 		void TextureMultiplier(void);
 
-		void MeshStrafe(void);
+		void UpdateStrafeRadius(void);
+		void UpdateStrafeSpeed(void);
 		
 		void OpenMenu(void);
 	};
