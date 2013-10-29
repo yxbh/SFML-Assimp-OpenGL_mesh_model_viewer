@@ -118,6 +118,18 @@ namespace ObjectManipulator
 			, std::bind(&LogicComponent::EventDelegate, this, std::placeholders::_1)
 			, CITS::EventType::SetTexCoordMultiplier
 		);
+		KE::Event::Get().AddListener
+		(
+			this->GetEntity()->GetID()
+			, std::bind(&LogicComponent::EventDelegate, this, std::placeholders::_1)
+			, CITS::EventType::SetMeshStrafeDistance
+		);
+		KE::Event::Get().AddListener
+		(
+			this->GetEntity()->GetID()
+			, std::bind(&LogicComponent::EventDelegate, this, std::placeholders::_1)
+			, CITS::EventType::SetMeshStrafeSpeed
+		);
 	}
 
 	LogicComponent::~LogicComponent(void)
@@ -138,6 +150,9 @@ namespace ObjectManipulator
 		KE::Event::Get().RemoveListener(this->GetEntity()->GetID(), CITS::EventType::NewGUICreated);
 		KE::Event::Get().RemoveListener(this->GetEntity()->GetID(), CITS::EventType::ToggleControlPanelVisibility);
 		KE::Event::Get().RemoveListener(this->GetEntity()->GetID(), CITS::EventType::ChangeTextureRequest);
+		KE::Event::Get().RemoveListener(this->GetEntity()->GetID(), CITS::EventType::SetTexCoordMultiplier);
+		KE::Event::Get().RemoveListener(this->GetEntity()->GetID(), CITS::EventType::SetMeshStrafeDistance);
+		KE::Event::Get().RemoveListener(this->GetEntity()->GetID(), CITS::EventType::SetMeshStrafeSpeed);
 	}
 
 	void LogicComponent::Update(const KE::Duration p_Duration)
@@ -231,6 +246,22 @@ namespace ObjectManipulator
 					mesh_node->SetHasTexture(false);
 				else
 					mesh_node->SetTexture(KG::Texture_SmartPtr(new KG::Texture(KG::Texture::DType::Tex2D, "models-textures/" + eve->GetTextureFileName())));
+			}
+			break;
+		case CITS::EventType::SetMeshStrafeDistance:
+			{
+				KG::Mesh_SmartPtr mesh_node = std::static_pointer_cast<KG::Mesh>(node);
+				if (!mesh_node)
+					return false;
+				mesh_node->StrafeDistance = man_event->GetDelta();
+			}
+			break;
+		case CITS::EventType::SetMeshStrafeSpeed:
+			{
+				KG::Mesh_SmartPtr mesh_node = std::static_pointer_cast<KG::Mesh>(node);
+				if (!mesh_node)
+					return false;
+				mesh_node->StrafeSpeed = man_event->GetDelta();
 			}
 			break;
 		}

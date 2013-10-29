@@ -52,6 +52,11 @@ namespace KG
 			ColorVBO,
 		};
 
+	public: // TODO remove after CITS project
+		double					StrafeDistance;
+		double					StrafeSpeed;
+		// end TODO
+
 	private:
 		KG::Vec3fVector			m_PosVertices;
 		KG::Vec1uVector			m_Indices;
