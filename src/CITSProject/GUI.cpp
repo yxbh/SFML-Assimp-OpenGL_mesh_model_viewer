@@ -83,6 +83,9 @@ namespace CITS
 		m_LoadObjectFrame = sfg::Frame::Create( L"Load Objects" );
 		m_LoadObjectFrame -> Add( boxloadobj );
 		m_LoadObjectFrame -> SetAlignment( sf::Vector2f( .8f, .0f ) );
+
+
+
 		//////////////////////////////////////////////////////////////////////////////////////
 		sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
 
@@ -357,4 +360,10 @@ namespace CITS
 	{
 		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetTexCoordMutiplier_Event(m_TextureScaleAdj->GetValue())));
 	}
+
+	void ControlPanelGUI::MeshStrafe(void)
+	{
+
+	}
+
 }
