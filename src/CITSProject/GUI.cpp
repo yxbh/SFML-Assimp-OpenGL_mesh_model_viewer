@@ -78,13 +78,44 @@ namespace CITS
 		// change texture button
 		m_btnChangeTexture = sfg::Button::Create( L"Change Texture") ;
 		m_btnChangeTexture -> GetSignal(sfg::Button::OnLeftClick).Connect( &ControlPanelGUI::OnChangeTextureClicked, this);
+		
+
+		sfg::Frame::Ptr frame_Strafe = sfg::Frame::Create(L"Strafe Radius");
+		sfg::Box::Ptr box_Strafe = sfg::Box::Create(sfg::Box::VERTICAL);
+
+		m_StrafeRadius = sfg::Scale::Create(sfg::Scale::HORIZONTAL);
+		m_StrafeRadiusAdj = sfg::Adjustment::Create(  1.f, 0.f, 10.0f, .50f, 1.0f, 0.f);
+		m_StrafeRadiusAdj->GetSignal( sfg::Adjustment::OnChange ).Connect( &ControlPanelGUI::UpdateStrafeRadius, this );
+
+		m_StrafeRadius -> SetAdjustment(m_StrafeRadiusAdj);
+		m_StrafeRadius -> SetRequisition( sf::Vector2f( 80.f, 20.f ) );
+
+		box_Strafe -> Pack(m_StrafeRadius);
+
+		frame_Strafe -> Add(box_Strafe);
+
+
+		sfg::Frame::Ptr frame_Speed = sfg::Frame::Create(L"Strafe Speed");
+		sfg::Box::Ptr box_Speed = sfg::Box::Create(sfg::Box::VERTICAL);
+
+		m_StrafeSpeed = sfg::Scale::Create(sfg::Scale::HORIZONTAL);
+		m_StrafeSpeedAdj = sfg::Adjustment::Create(  1.f, 0.05f, 1.0f, .05f, .1f, 0.f);
+		m_StrafeSpeedAdj->GetSignal( sfg::Adjustment::OnChange ).Connect( &ControlPanelGUI::UpdateStrafeSpeed, this );
+
+		m_StrafeSpeed -> SetAdjustment(m_StrafeSpeedAdj);
+		m_StrafeSpeed -> SetRequisition( sf::Vector2f( 80.f, 20.f ) );
+
+		box_Speed -> Pack(m_StrafeSpeed);
+
+		frame_Speed -> Add(box_Speed);
+
 		boxloadobj -> Pack( m_btnChangeTexture, false );
+		boxloadobj -> Pack( frame_Strafe );
+		boxloadobj -> Pack( frame_Speed );
 
 		m_LoadObjectFrame = sfg::Frame::Create( L"Load Objects" );
 		m_LoadObjectFrame -> Add( boxloadobj );
 		m_LoadObjectFrame -> SetAlignment( sf::Vector2f( .8f, .0f ) );
-
-
 
 		//////////////////////////////////////////////////////////////////////////////////////
 		sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
@@ -361,9 +392,13 @@ namespace CITS
 		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetTexCoordMutiplier_Event(m_TextureScaleAdj->GetValue())));
 	}
 
-	void ControlPanelGUI::MeshStrafe(void)
+	void ControlPanelGUI::UpdateStrafeRadius(void)
 	{
 
 	}
 
+	void ControlPanelGUI::UpdateStrafeSpeed(void)
+	{
+
+	}
 }
