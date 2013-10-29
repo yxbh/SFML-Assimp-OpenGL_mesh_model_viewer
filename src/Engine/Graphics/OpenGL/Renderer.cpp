@@ -59,7 +59,7 @@ namespace KG
 		GLenum glew_init_status = glewInit();
 		if (glew_init_status != GLEW_OK)
 		{
-			std::string fail_string = "Failure GLEW intialization... \n ";
+			std::string fail_string("Failure GLEW intialization... \n ");
 			fail_string += reinterpret_cast<const char*>(glewGetErrorString(glew_init_status));
 			KE::Debug::print(fail_string);
 			throw std::exception(fail_string.c_str());
@@ -130,7 +130,7 @@ namespace KG
 		{
 		for (auto & node_ptr : node_list_pair.second)
 		{
-			KG::Mesh * const mesh_ptr = static_cast<KG::Mesh*const>(node_ptr); // crash if not mesh. TODO : proper type thing. maybe add a NodeType method into SceneNode.
+			KG::Mesh * const mesh_ptr(static_cast<KG::Mesh*const>(node_ptr)); // crash if not mesh. TODO : proper type thing. maybe add a NodeType method into SceneNode.
 
 			if (mesh_ptr->GetRenderPass() == KG::RenderPass::Null)
 				KE::Debug::print(KE::Debug::DBG_ERROR, "Renderer : RenderPass not set (default to 'null').");
@@ -138,9 +138,9 @@ namespace KG
 				return;
 		
 			// mvp matrix
-			KG::Scene & scene_ref = KG::Graphics::Get().GetScene();
-			const glm::dmat4 camera_view_matrix = scene_ref.GetCamera().GetViewProjectionMatrixd();
-			const glm::dmat4 model_matrix = node_ptr->GetModelMatrix();
+			KG::Scene & scene_ref(KG::Graphics::Get().GetScene());
+			const glm::dmat4 camera_view_matrix(scene_ref.GetCamera().GetViewProjectionMatrixd());
+			const glm::dmat4 model_matrix(node_ptr->GetModelMatrix());
 			auto shader_program_ptr = m_spShaderProgram;
 			shader_program_ptr->Use(); // already called in PreRender(). but will leave it here for now.
 			shader_program_ptr->SetParameter<glm::mat4>("mvpMatrix", glm::mat4(camera_view_matrix*model_matrix));
@@ -178,7 +178,7 @@ namespace KG
 			}
 
 			// material
-			const KG::Material & mat = mesh_ptr->GetMaterial();
+			const KG::Material & mat(mesh_ptr->GetMaterial());
 			if (mesh_ptr->Has(KG::Mesh::Property::Material))
 			{
 				//shader_program_ptr->SetParameter<GLboolean>("HasMaterial", GL_TRUE);

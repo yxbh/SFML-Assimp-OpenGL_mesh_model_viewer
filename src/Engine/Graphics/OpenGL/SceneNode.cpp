@@ -47,10 +47,11 @@ namespace KG
 
 	void SceneNode::PreRender(KG::Scene & p_rScene)
 	{
-		KG::MatrixStack & stack_ref = p_rScene.GetMatrixStack(); 
+		KG::MatrixStack & stack_ref = p_rScene.GetMatrixStack();
+		const glm::dmat4 new_mat(this->GetGLMMatd() * stack_ref.GetTop());
 		stack_ref.Push();
-		stack_ref.SetMatrix(this->GetGLMMatd());
-		this->SetModelMatrix(stack_ref.GetTop());
+		stack_ref.SetMatrix(new_mat);
+		this->SetModelMatrix(new_mat);
 	}
 
 	void SceneNode::Render(KG::Scene & p_rScene)

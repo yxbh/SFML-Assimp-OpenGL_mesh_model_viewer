@@ -23,7 +23,7 @@ static void AddControlPanelGUI(KE::Engine & p_rEngine)
 
 static void AddManipulator(KE::Engine & p_rEngine)
 {
-	KE::Entity_SmartPtr man = CITS::ObjectManipulator::Make();
+	KE::Entity_SmartPtr man(CITS::ObjectManipulator::Make());
 	p_rEngine.GetEntityManager().Add(man);
 
 	KE::Debug::print("Added ObjectManipulator.");
@@ -98,7 +98,7 @@ static void AddGround(KE::Engine & p_rEngine)
 		return;
 	}
 	
-	KG::Mesh_SmartPtr mesh = mesh_list.at(0);
+	KG::Mesh_SmartPtr mesh(mesh_list.at(0));
 	assert(mesh);
 	if(mesh->Loaded())
 		mesh->BufferAll();
@@ -148,12 +148,12 @@ static void AddCube(KE::Engine & p_rEngine)
 
 static void TestAsset(KE::Engine & p_rEngine)
 {
-	std::string model_tex_dir = "models-textures/";
-	std::string mesh_file = "";
+	std::string model_tex_dir("models-textures/");
+	std::string mesh_file("");
 	std::ifstream fin("CurrentMesh.txt");
 	if (fin) fin >> mesh_file;
 	KG::MeshLoader loader;
-	KG::Meshes_SmartPtr meshes = loader.Load(model_tex_dir+mesh_file);
+	KG::Meshes_SmartPtr meshes(loader.Load(model_tex_dir+mesh_file));
 	KG::Mesh_SP_List mesh_list;
 	if (meshes)
 	{
@@ -181,7 +181,7 @@ static void TestAsset(KE::Engine & p_rEngine)
 	meshes->SetName("Model");
 
 	// texture
-	std::string texture_path = "";
+	std::string texture_path("");
 	std::ifstream texture_fin("CurrentTexture.txt");
 	if (texture_fin)
 		texture_fin >> texture_path;
