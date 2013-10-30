@@ -91,8 +91,16 @@ namespace KG
 		int head_index, tail_index;
 		if (this->FindHeadScaleKeyIndex(head_index, p_rTimeStamp) && this->FindTailScaleKeyIndex(tail_index, p_rTimeStamp))
 		{
-			if ((tail_index+1) < static_cast<int>(m_ScaleKeys.size()))
+			if (head_index == tail_index)
+			{
+				if ((tail_index+1) < static_cast<int>(m_ScaleKeys.size()))
 					++tail_index;
+				else
+				{
+					head_index = 0;
+					tail_index = 1;
+				}
+			}
 			return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(1.0, 1.0, 1.0);
@@ -106,8 +114,16 @@ namespace KG
 		int head_index, tail_index;
 		if (this->FindHeadTranslationKeyIndex(head_index, p_rTimeStamp) && this->FindTailTranslationKeyIndex(tail_index, p_rTimeStamp))
 		{
-			if ((tail_index+1) < static_cast<int>(m_TranslationKeys.size()))
+			if (head_index == tail_index)
+			{
+				if ((tail_index+1) < static_cast<int>(m_TranslationKeys.size()))
 					++tail_index;
+				else
+				{
+					head_index = 0;
+					tail_index = 1;
+				}
+			}
 			return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(0.0, 0.0, 0.0);
@@ -125,6 +141,11 @@ namespace KG
 			{
 				if ((tail_index+1) < static_cast<int>(m_RotationKeys.size()))
 					++tail_index;
+				else
+				{
+					head_index = 0;
+					tail_index = 1;
+				}
 			}
 			return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp, p_Behaviour);
 		}
