@@ -89,18 +89,8 @@ namespace KG
 			return m_ScaleKeys[0].second;
 
 		int head_index, tail_index;
-		if (this->FindHeadScaleKeyIndex(head_index, p_rTimeStamp) && this->FindTailScaleKeyIndex(tail_index, p_rTimeStamp))
+		if ( this->FindScaleKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
 		{
-			if (head_index == tail_index)
-			{
-				if ((tail_index+1) < static_cast<int>(m_ScaleKeys.size()))
-					++tail_index;
-				else
-				{
-					head_index = 0;
-					tail_index = 1;
-				}
-			}
 			return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(1.0, 1.0, 1.0);
@@ -112,18 +102,8 @@ namespace KG
 			return m_TranslationKeys[0].second;
 
 		int head_index, tail_index;
-		if (this->FindHeadTranslationKeyIndex(head_index, p_rTimeStamp) && this->FindTailTranslationKeyIndex(tail_index, p_rTimeStamp))
+		if ( this->FindTranslationKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
 		{
-			if (head_index == tail_index)
-			{
-				if ((tail_index+1) < static_cast<int>(m_TranslationKeys.size()))
-					++tail_index;
-				else
-				{
-					head_index = 0;
-					tail_index = 1;
-				}
-			}
 			return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
 		}
 		return glm::dvec3(0.0, 0.0, 0.0);
@@ -135,18 +115,8 @@ namespace KG
 			return m_RotationKeys[0].second;
 
 		int head_index, tail_index;
-		if (this->FindHeadRotationIndex(head_index, p_rTimeStamp) && this->FindTailRotationIndex(tail_index, p_rTimeStamp))
+		if ( this->FindRotationKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
 		{
-			if (head_index == tail_index)
-			{
-				if ((tail_index+1) < static_cast<int>(m_RotationKeys.size()))
-					++tail_index;
-				else
-				{
-					head_index = 0;
-					tail_index = 1;
-				}
-			}
 			return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp, p_Behaviour);
 		}
 		return glm::dquat();
@@ -159,6 +129,9 @@ namespace KG
 			, const KE::Duration & p_rTimeStamp
 		)
 	{
+		if (p_rKeyL.first == p_rKeyR.first) // right on a keyframe.
+			return p_rKeyL.second;
+
 		const glm::dvec3 difference(p_rKeyR.second-p_rKeyL.second);
 		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
 		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
@@ -172,6 +145,9 @@ namespace KG
 			, const KE::Duration & p_rTimeStamp
 		)
 	{
+		if (p_rKeyL.first == p_rKeyR.first) // right on a keyframe.
+			return p_rKeyL.second;
+
 		const glm::dvec3 difference(p_rKeyR.second-p_rKeyL.second);
 		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
 		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
@@ -186,6 +162,9 @@ namespace KG
 			, const AnimationBehaviour p_Behaviour
 		)
 	{
+		if (p_rKeyL.first == p_rKeyR.first) // right on a keyframe.
+			return p_rKeyL.second;
+
 		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
 		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
 		if (p_Behaviour & AnimationBehaviour::Sphereical)
@@ -194,114 +173,92 @@ namespace KG
 			return glm::slerp(p_rKeyL.second, p_rKeyR.second, percentage);
 	}
 
-	const bool AnimationNode::FindHeadScaleKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindScaleKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp)
 	{
-		if (m_ScaleKeys.empty())
+		if ( m_ScaleKeys.empty() )
 			return false;
-		if (m_ScaleKeys.size() == 1)
+		if ( m_ScaleKeys.size() == 1)
 		{
-			p_rIndex = 0;
-			return true;
+			p_rHeadIndex = p_rTailIndex = 0;
+			return false;
 		}
-		for (p_rIndex = m_ScaleKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
+
+		for (p_rHeadIndex = m_ScaleKeys.size() - 1; p_rHeadIndex >= 0 ; --p_rHeadIndex)
 		{
-			if (p_TimeStamp <= m_ScaleKeys[p_rIndex].first)
+			if (p_TimeStamp >= m_ScaleKeys[p_rHeadIndex].first)
+			{
+				if (p_rHeadIndex != static_cast<int>(m_ScaleKeys.size()-1)) // head index is not last keyframe
+					p_rTailIndex = p_rHeadIndex + 1;
+				else
+				{
+					p_rHeadIndex = 0;
+					p_rTailIndex = 1;
+				}
 				return true;
+			}
 		}
-		assert(false); // shouldn't get here.
+		assert(false);
 		return false;
 	}
 
-	const bool AnimationNode::FindTailScaleKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindTranslationKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp)
 	{
-		if (m_ScaleKeys.empty())
+		if ( m_TranslationKeys.empty() )
 			return false;
-		if (m_ScaleKeys.size() == 1)
+		if ( m_TranslationKeys.size() == 1)
 		{
-			p_rIndex = 0;
-			return true;
+			p_rHeadIndex = p_rTailIndex = 0;
+			return false;
 		}
-		for (p_rIndex = 1; p_rIndex < static_cast<int>(m_ScaleKeys.size()); ++p_rIndex) // have to start from 1 (not 0). or you will get could get a head = 0 and tail = 0.
+
+		for (p_rHeadIndex = m_TranslationKeys.size() - 1; p_rHeadIndex >= 0 ; --p_rHeadIndex)
 		{
-			if (m_ScaleKeys[p_rIndex].first >= p_TimeStamp)
+			if (p_TimeStamp >= m_TranslationKeys[p_rHeadIndex].first)
+			{
+				if (p_rHeadIndex != static_cast<int>(m_TranslationKeys.size()-1)) // head index is not last keyframe
+					p_rTailIndex = p_rHeadIndex + 1;
+				else
+				{
+					p_rHeadIndex = 0;
+					p_rTailIndex = 1;
+				}
 				return true;
+			}
 		}
-		assert(false); // shouldn't get here.
+		assert(false);
 		return false;
 	}
 
-	const bool AnimationNode::FindHeadTranslationKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
+	const bool AnimationNode::FindRotationKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp)
 	{
-		if (m_TranslationKeys.empty())
+		if ( m_RotationKeys.empty() )
 			return false;
-		if (m_TranslationKeys.size() == 1)
+		if ( m_RotationKeys.size() == 1)
 		{
-			p_rIndex = 0;
-			return true;
+			p_rHeadIndex = p_rTailIndex = 0;
+			return false;
 		}
-		for (p_rIndex = m_TranslationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
-		{
-			if (m_TranslationKeys[p_rIndex].first <= p_TimeStamp)
-				return true;
-		}
-		assert(false); // shouldn't get here.
-		return false;
-	}
 
-	const bool AnimationNode::FindTailTranslationKeyIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
-	{
-		if (m_TranslationKeys.empty())
-			return false;
-		if (m_TranslationKeys.size() == 1)
+		for (p_rHeadIndex = m_RotationKeys.size() - 1; p_rHeadIndex >= 0 ; --p_rHeadIndex)
 		{
-			p_rIndex = 0;
-			return true;
-		}
-		for (p_rIndex = 1; p_rIndex < static_cast<int>(m_TranslationKeys.size()); ++p_rIndex) // have to start from 1 (not 0). or you will get could get a head = 0 and tail = 0.
-		{
-			if (m_TranslationKeys[p_rIndex].first >= p_TimeStamp)
+			if (p_TimeStamp >= m_RotationKeys[p_rHeadIndex].first)
+			{
+				if ((p_rHeadIndex+1) < static_cast<int>(m_RotationKeys.size())) // head index is last keyframe
+				{
+					
+					p_rTailIndex = p_rHeadIndex + 1;
+				}
+				else
+				{
+					p_rHeadIndex = 0;
+					p_rTailIndex = 1;
+				}					
 				return true;
+			}
 		}
-		assert(false); // shouldn't get here.
+		assert(false);
 		return false;
 	}
-
-	const bool AnimationNode::FindHeadRotationIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
-	{
-		if (m_RotationKeys.empty())
-			return false;
-		if (m_RotationKeys.size() == 1)
-		{
-			p_rIndex = 0;
-			return true;
-		}
-		for (p_rIndex = m_RotationKeys.size() - 1; p_rIndex >= 0 ; --p_rIndex)
-		{
-			if (m_RotationKeys[p_rIndex].first <= p_TimeStamp)
-				return true;
-		}
-		assert(false); // shouldn't get here.
-		return false;
-	}
-
-	const bool AnimationNode::FindTailRotationIndex(int & p_rIndex, const KE::Duration p_TimeStamp)
-	{
-		if (m_RotationKeys.empty())
-			return false;
-		if (m_RotationKeys.size() == 1)
-		{
-			p_rIndex = 0;
-			return true;
-		}
-		for (p_rIndex = 1; p_rIndex < static_cast<int>(m_RotationKeys.size()); ++p_rIndex) // have to start from 1 (not 0). or you will get could get a head = 0 and tail = 0.
-		{
-			if (m_RotationKeys[p_rIndex].first >= p_TimeStamp)
-				return true;
-		}
-		assert(false); // shouldn't get here.
-		return false;
-	}
-	
 
 	Animation::Animation
 	(
