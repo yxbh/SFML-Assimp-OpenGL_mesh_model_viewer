@@ -568,7 +568,6 @@ namespace KG
 				{
 					const aiVectorKey & ai_key = ai_animnode_ptr->mScalingKeys[node_index];
 					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					
 					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
 					const KG::AnimationScaleKey key(time, vec);
 					anim_node_sp->m_ScaleKeys.push_back(key);

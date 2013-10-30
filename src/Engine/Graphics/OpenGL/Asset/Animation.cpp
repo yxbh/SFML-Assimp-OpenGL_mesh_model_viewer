@@ -87,12 +87,9 @@ namespace KG
 	{
 		if (m_ScaleKeys.size() == 1) // only 1 key
 			return m_ScaleKeys[0].scale;
-
 		int head_index, tail_index;
 		if ( this->FindScaleKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
-		{
 			return this->InterpolateScale(m_ScaleKeys[head_index], m_ScaleKeys[tail_index], p_rTimeStamp);
-		}
 		return glm::dvec3(1.0, 1.0, 1.0);
 	}
 
@@ -100,12 +97,9 @@ namespace KG
 	{
 		if (m_TranslationKeys.size() == 1) // only 1 key
 			return m_TranslationKeys[0].translation;
-
 		int head_index, tail_index;
 		if ( this->FindTranslationKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
-		{
 			return this->InterpolateTranslation(m_TranslationKeys[head_index], m_TranslationKeys[tail_index], p_rTimeStamp);
-		}
 		return glm::dvec3(0.0, 0.0, 0.0);
 	}
 
@@ -113,12 +107,9 @@ namespace KG
 	{
 		if (m_RotationKeys.size() == 1) // only 1 key
 			return m_RotationKeys[0].rotation;
-
 		int head_index, tail_index;
 		if ( this->FindRotationKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
-		{
 			return this->InterpolateRotation(m_RotationKeys[head_index], m_RotationKeys[tail_index], p_rTimeStamp, p_Behaviour);
-		}
 		return glm::dquat();
 	}
 

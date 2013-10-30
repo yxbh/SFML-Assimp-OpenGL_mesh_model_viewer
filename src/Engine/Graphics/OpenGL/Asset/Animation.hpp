@@ -3,7 +3,10 @@
 
 namespace KG
 {
+
 	typedef KE::Duration TimeStamp;
+
+
 	/*! \class AnimationState
 		Whether an Animation is in action or not.
 	*/
@@ -34,7 +37,7 @@ namespace KG
 		glm::dvec3 scale;
 		AnimationScaleKey(void)
 		{}
-		AnimationScaleKey(TimeStamp p_TimeStamp, glm::dvec3 & p_rScale)
+		AnimationScaleKey(const TimeStamp p_TimeStamp, const glm::dvec3 & p_rScale)
 			: time_stamp(p_TimeStamp), scale(p_rScale) 
 		{}
 	};
@@ -48,7 +51,7 @@ namespace KG
 		glm::dvec3 translation;
 		AnimationTranslationKey(void)
 		{}
-		AnimationTranslationKey(TimeStamp p_TimeStamp, glm::dvec3 & p_rScale)
+		AnimationTranslationKey(const TimeStamp p_TimeStamp, const glm::dvec3 & p_rScale)
 			: time_stamp(p_TimeStamp), translation(p_rScale) 
 		{}
 	};
@@ -62,7 +65,7 @@ namespace KG
 		glm::dquat rotation;
 		AnimationRotationKey(void)
 		{}
-		AnimationRotationKey(TimeStamp p_TimeStamp, glm::dquat & p_rScale)
+		AnimationRotationKey(const TimeStamp p_TimeStamp, const glm::dquat & p_rScale)
 			: time_stamp(p_TimeStamp), rotation(p_rScale) 
 		{}
 	};
