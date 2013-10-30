@@ -42,6 +42,7 @@ namespace KG
 						|aiProcess_FlipWindingOrder
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
+						//&(~aiProcess_Debone)
 				);
 		}
 		else
@@ -53,6 +54,7 @@ namespace KG
 					, aiProcessPreset_TargetRealtime_MaxQuality
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
+						//&(~aiProcess_Debone)
 				);
 		}
 
@@ -503,7 +505,16 @@ namespace KG
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::GrowBoneTree : unexpected error: bone not found in aiMesh!");
 			KE::Debug::print(KE::Debug::DBG_ERROR, "	- missing bone : " + bone_name);
-			assert(false);
+			//assert(false);
+
+			// instead of crashing. we construct an incomplete bone for the skeleton.
+			// TODO : find that bone offset and complete the bone information!!
+			p_spSkeleton->names.push_back(bone_name);
+			p_spSkeleton->bone_transform.resize(p_spSkeleton->names.size());
+			p_spSkeleton->bone_offsets.resize(p_spSkeleton->names.size());
+			p_spSkeleton->intermediate_transforms.resize(p_spSkeleton->names.size());
+			p_spSkeleton->final_transforms.resize(p_spSkeleton->names.size());
+			bone_node_sp->skeleton_bone_index = p_spSkeleton->names.size() - 1;
 		}
 
 		// attach to parent:
@@ -523,6 +534,8 @@ namespace KG
 		assert(m_pScene);
 		if (!m_pScene->HasAnimations())
 			return; // no animations
+		if (!p_spMesh->HasSkeleton())
+			return; // this mesh has no skeleton
 
 		// load all aiAnimations
 		for (unsigned i = 0; i < m_pScene->mNumAnimations; ++i) // for each aiAnimation
