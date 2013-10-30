@@ -3,7 +3,7 @@
 
 namespace KG
 {
-
+	typedef KE::Duration TimeStamp;
 	/*! \class AnimationState
 		Whether an Animation is in action or not.
 	*/
@@ -28,15 +28,45 @@ namespace KG
 	/*! \class AnimationScaleKey
 		<Time, Scale>
 	*/
-	typedef std::pair<KE::Duration, glm::dvec3> AnimationScaleKey;
+	struct AnimationScaleKey
+	{
+		TimeStamp time_stamp;
+		glm::dvec3 scale;
+		AnimationScaleKey(void)
+		{}
+		AnimationScaleKey(TimeStamp p_TimeStamp, glm::dvec3 & p_rScale)
+			: time_stamp(p_TimeStamp), scale(p_rScale) 
+		{}
+	};
+
 	/*! \class AnimationPositionKey
-		<Time, Position>
+		<TimeStamp, Position>
 	*/
-	typedef std::pair<KE::Duration, glm::dvec3> AnimationTranslationKey;
+	struct AnimationTranslationKey
+	{
+		TimeStamp time_stamp;
+		glm::dvec3 translation;
+		AnimationTranslationKey(void)
+		{}
+		AnimationTranslationKey(TimeStamp p_TimeStamp, glm::dvec3 & p_rScale)
+			: time_stamp(p_TimeStamp), translation(p_rScale) 
+		{}
+	};
+
 	/*! \class AnimationOrientationKey
 		<Time, Orientation>
 	*/
-	typedef std::pair<KE::Duration, glm::dquat> AnimationRotationKey;
+	struct AnimationRotationKey
+	{
+		TimeStamp time_stamp;
+		glm::dquat rotation;
+		AnimationRotationKey(void)
+		{}
+		AnimationRotationKey(TimeStamp p_TimeStamp, glm::dquat & p_rScale)
+			: time_stamp(p_TimeStamp), rotation(p_rScale) 
+		{}
+	};
+
 	/*! \class AnimationScaleKeyList
 	*/
 	typedef std::vector<AnimationScaleKey> AnimationScaleKeyList;
@@ -104,8 +134,11 @@ namespace KG
 		const glm::dquat InterpolateRotation(const AnimationRotationKey & p_rKeyL, const AnimationRotationKey & p_rKeyR, const KE::Duration & p_rTimeStamp, const AnimationBehaviour p_Behaviour = AnimationBehaviour::Flat);
 
 	private:
+		/*! Find the two indices pointing to the head and tail key frames. Both indices will be equal if there is only one keyframe.*/
 		const bool FindScaleKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp);
+		/*! Find the two indices pointing to the head and tail key frames. Both indices will be equal if there is only one keyframe.*/
 		const bool FindTranslationKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp);
+		/*! Find the two indices pointing to the head and tail key frames. Both indices will be equal if there is only one keyframe.*/
 		const bool FindRotationKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp);
 	
 	}; // class AnimationNode

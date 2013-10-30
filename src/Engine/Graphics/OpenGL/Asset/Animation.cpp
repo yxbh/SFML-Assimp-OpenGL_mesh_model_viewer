@@ -62,31 +62,31 @@ namespace KG
 	const KE::Duration AnimationNode::ComputeScaleTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		if (m_ScaleKeys.back().first != KE::Duration::Zero)
-			return time_stamp % m_ScaleKeys.back().first;
+		if (m_ScaleKeys.back().time_stamp != KE::Duration::Zero)
+			return time_stamp % m_ScaleKeys.back().time_stamp;
 		return KE::Duration::Zero;
 	}
 
 	const KE::Duration AnimationNode::ComputeTranslationTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		if (m_TranslationKeys.back().first != KE::Duration::Zero)
-			return time_stamp % m_TranslationKeys.back().first;
+		if (m_TranslationKeys.back().time_stamp != KE::Duration::Zero)
+			return time_stamp % m_TranslationKeys.back().time_stamp;
 		return KE::Duration::Zero;
 	}
 
 	const KE::Duration AnimationNode::ComputeRotationTimeStamp(const KE::Duration & p_rDuration)
 	{
 		KE::Duration time_stamp(p_rDuration);
-		if (m_RotationKeys.back().first != KE::Duration::Zero)
-			return time_stamp % m_RotationKeys.back().first;
+		if (m_RotationKeys.back().time_stamp != KE::Duration::Zero)
+			return time_stamp % m_RotationKeys.back().time_stamp;
 		return KE::Duration::Zero;
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateScale(const KE::Duration & p_rTimeStamp)
 	{
 		if (m_ScaleKeys.size() == 1) // only 1 key
-			return m_ScaleKeys[0].second;
+			return m_ScaleKeys[0].scale;
 
 		int head_index, tail_index;
 		if ( this->FindScaleKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
@@ -99,7 +99,7 @@ namespace KG
 	const glm::dvec3 AnimationNode::InterpolateTranslation(const KE::Duration & p_rTimeStamp)
 	{
 		if (m_TranslationKeys.size() == 1) // only 1 key
-			return m_TranslationKeys[0].second;
+			return m_TranslationKeys[0].translation;
 
 		int head_index, tail_index;
 		if ( this->FindTranslationKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
@@ -112,7 +112,7 @@ namespace KG
 	const glm::dquat AnimationNode::InterpolateRotation(const KE::Duration & p_rTimeStamp, const AnimationBehaviour p_Behaviour)
 	{
 		if (m_RotationKeys.size() == 1) // only 1 key
-			return m_RotationKeys[0].second;
+			return m_RotationKeys[0].rotation;
 
 		int head_index, tail_index;
 		if ( this->FindRotationKeyFrameIndices(head_index, tail_index, p_rTimeStamp) )
@@ -129,13 +129,13 @@ namespace KG
 			, const KE::Duration & p_rTimeStamp
 		)
 	{
-		if (p_rKeyL.first == p_rKeyR.first) // right on a keyframe.
-			return p_rKeyL.second;
+		if (p_rKeyL.time_stamp == p_rKeyR.time_stamp) // right on a keyframe.
+			return p_rKeyL.scale;
 
-		const glm::dvec3 difference(p_rKeyR.second-p_rKeyL.second);
-		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
-		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
-		return difference * percentage + p_rKeyL.second;
+		const glm::dvec3 difference(p_rKeyR.scale-p_rKeyL.scale);
+		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.time_stamp);
+		const double percentage(delta_t_stamp/(p_rKeyR.time_stamp-p_rKeyL.time_stamp));
+		return difference * percentage + p_rKeyL.scale;
 	}
 
 	const glm::dvec3 AnimationNode::InterpolateTranslation
@@ -145,13 +145,13 @@ namespace KG
 			, const KE::Duration & p_rTimeStamp
 		)
 	{
-		if (p_rKeyL.first == p_rKeyR.first) // right on a keyframe.
-			return p_rKeyL.second;
+		if (p_rKeyL.time_stamp == p_rKeyR.time_stamp) // right on a keyframe.
+			return p_rKeyL.translation;
 
-		const glm::dvec3 difference(p_rKeyR.second-p_rKeyL.second);
-		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
-		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
-		return difference * percentage + p_rKeyL.second;
+		const glm::dvec3 difference(p_rKeyR.translation-p_rKeyL.translation);
+		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.time_stamp);
+		const double percentage(delta_t_stamp/(p_rKeyR.time_stamp-p_rKeyL.time_stamp));
+		return difference * percentage + p_rKeyL.translation;
 	}
 
 	const glm::dquat AnimationNode::InterpolateRotation
@@ -162,15 +162,15 @@ namespace KG
 			, const AnimationBehaviour p_Behaviour
 		)
 	{
-		if (p_rKeyL.first == p_rKeyR.first) // right on a keyframe.
-			return p_rKeyL.second;
+		if (p_rKeyL.time_stamp == p_rKeyR.time_stamp) // right on a keyframe.
+			return p_rKeyL.rotation;
 
-		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.first);
-		const double percentage(delta_t_stamp/(p_rKeyR.first-p_rKeyL.first));
+		const KE::Duration delta_t_stamp(p_rTimeStamp - p_rKeyL.time_stamp);
+		const double percentage(delta_t_stamp/(p_rKeyR.time_stamp-p_rKeyL.time_stamp));
 		if (p_Behaviour & AnimationBehaviour::Sphereical)
-			return glm::slerp(p_rKeyL.second, p_rKeyR.second, percentage);
+			return glm::slerp(p_rKeyL.rotation, p_rKeyR.rotation, percentage);
 		else // TODO : implement other interpolation type.
-			return glm::slerp(p_rKeyL.second, p_rKeyR.second, percentage);
+			return glm::slerp(p_rKeyL.rotation, p_rKeyR.rotation, percentage);
 	}
 
 	const bool AnimationNode::FindScaleKeyFrameIndices(int & p_rHeadIndex, int & p_rTailIndex, const KE::Duration p_TimeStamp)
@@ -180,12 +180,11 @@ namespace KG
 		if ( m_ScaleKeys.size() == 1)
 		{
 			p_rHeadIndex = p_rTailIndex = 0;
-			return false;
+			return true;
 		}
-
 		for (p_rHeadIndex = m_ScaleKeys.size() - 1; p_rHeadIndex >= 0 ; --p_rHeadIndex)
 		{
-			if (p_TimeStamp >= m_ScaleKeys[p_rHeadIndex].first)
+			if (p_TimeStamp >= m_ScaleKeys[p_rHeadIndex].time_stamp)
 			{
 				if (p_rHeadIndex != static_cast<int>(m_ScaleKeys.size()-1)) // head index is not last keyframe
 					p_rTailIndex = p_rHeadIndex + 1;
@@ -208,12 +207,11 @@ namespace KG
 		if ( m_TranslationKeys.size() == 1)
 		{
 			p_rHeadIndex = p_rTailIndex = 0;
-			return false;
+			return true;
 		}
-
 		for (p_rHeadIndex = m_TranslationKeys.size() - 1; p_rHeadIndex >= 0 ; --p_rHeadIndex)
 		{
-			if (p_TimeStamp >= m_TranslationKeys[p_rHeadIndex].first)
+			if (p_TimeStamp >= m_TranslationKeys[p_rHeadIndex].time_stamp)
 			{
 				if (p_rHeadIndex != static_cast<int>(m_TranslationKeys.size()-1)) // head index is not last keyframe
 					p_rTailIndex = p_rHeadIndex + 1;
@@ -236,12 +234,11 @@ namespace KG
 		if ( m_RotationKeys.size() == 1)
 		{
 			p_rHeadIndex = p_rTailIndex = 0;
-			return false;
+			return true;
 		}
-
 		for (p_rHeadIndex = m_RotationKeys.size() - 1; p_rHeadIndex >= 0 ; --p_rHeadIndex)
 		{
-			if (p_TimeStamp >= m_RotationKeys[p_rHeadIndex].first)
+			if (p_TimeStamp >= m_RotationKeys[p_rHeadIndex].time_stamp)
 			{
 				if ((p_rHeadIndex+1) < static_cast<int>(m_RotationKeys.size())) // head index is last keyframe
 				{
