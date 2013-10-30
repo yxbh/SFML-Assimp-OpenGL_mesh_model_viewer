@@ -45,7 +45,7 @@ namespace KG
 		glm::dmat4							global_inverse_transform;
 		/* per-bone data */
 		std::vector<std::string>			names;				// bone names
-		std::vector<glm::dmat4>				bone_transform;		// from aiNode. un-filled atm
+		std::vector<glm::dmat4>				bone_transform;		// collected from aiNodes, not sure what this is.
 		std::vector<glm::dmat4>				bone_offsets;		//
 		std::vector<glm::dmat4>				intermediate_transforms; // individual AnimationNode transforms
 		std::vector<glm::mat4>				final_transforms;	// uses float version for GLSL compatibility
@@ -78,7 +78,6 @@ namespace KG
 	private:
 		/*! calculate final transform for each bone. */
 		void ComputePoseTransforms(const KG::BoneNode_SmartPtr p_spBoneNode, const glm::dmat4 & p_ParentTransform);
-		void ComputePoseTransforms(const KG::BoneNode_SmartPtr p_spBoneNode, const glm::dmat4 & p_ParentAnimTransform, const glm::dmat4 & p_ParentBoneTransform);
 
 	}; // class Skeleton
 
