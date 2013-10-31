@@ -62,7 +62,7 @@ namespace KG
 
 			// set intermediate to bone node transforms to retain bind pose.
 			for (unsigned i = 0; i < this->intermediate_transforms.size(); ++i)
-				this->intermediate_transforms[i] = this->bone_transform[i];
+				this->intermediate_transforms[i] = this->bone_transforms[i];
 		}
 		else
 		{

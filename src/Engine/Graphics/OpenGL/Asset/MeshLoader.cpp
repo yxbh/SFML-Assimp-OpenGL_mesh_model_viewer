@@ -242,6 +242,49 @@ namespace KG
 		}
 	}
 
+	const bool MeshLoader::InitMaterialTexture
+		(
+			Mesh_SmartPtr p_spMesh
+			, const aiMesh * const p_pAiMesh
+			, const aiScene * const p_pAiScene
+			, const std::string & p_Path
+		)
+	{
+		bool result(true);
+
+		// Extract the directory part from the file name
+		std::string::size_type slash_index = p_Path.find_last_of("/");
+		std::string dir;
+
+		if (slash_index == std::string::npos)
+			dir = ".";
+		else if (slash_index == 0) 
+			dir = "/";
+		else 
+			dir = p_Path.substr(0, slash_index);
+
+		const int material_index = p_pAiMesh->mMaterialIndex;
+		const aiMaterial * const material_ptr = p_pAiScene->mMaterials[material_index];
+		if (!material_ptr)
+			return false;
+
+		// load material texture. Only diffuse ATM.
+		if (material_ptr->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		{
+			aiString Path;
+			if ( material_ptr->GetTexture(aiTextureType_DIFFUSE, 0, &Path, nullptr, nullptr, nullptr, nullptr, nullptr)
+					== AI_SUCCESS
+				)
+			{
+				const std::string FullPath = dir + "/" + Path.data;
+				KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, FullPath));
+				p_spMesh->SetTexture(texture);
+			}
+		}	
+
+		return result; // TODO
+	}
+
 	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (!p_pAiMesh->HasBones())
@@ -251,10 +294,8 @@ namespace KG
 		KG::Skeleton_SmartPtr skeleton_sp(new KG::Skeleton(p_spMesh->GetEntityID()));
 		// get and set global inverse matrix
 		const aiMatrix4x4 & ai_mat(m_pScene->mRootNode->mTransformation); // TODO : correct?
-		glm::dmat4 inverse_global;
-		this->AiMatToGLMMat(ai_mat, inverse_global);
+		glm::dmat4 inverse_global(this->AiMatToGLMMat(ai_mat));
 		skeleton_sp->global_inverse_transform = glm::inverse(inverse_global);
-		//skeleton_ptr->global_inverse_transform = glm::inverse(glm::transpose(inverse_global));
 
 		// convert Bone to Vertices relation to Vertex to bones relation.
 		const unsigned num_bones = p_pAiMesh->mNumBones;
@@ -275,8 +316,7 @@ namespace KG
 			
 			// collect offset transform for Skeleton (per-bone)
 			const aiMatrix4x4 & ai_mat(ai_bone_ptr->mOffsetMatrix);
-			glm::dmat4 offset;
-			this->AiMatToGLMMat(ai_mat, offset);
+			glm::dmat4 offset(this->AiMatToGLMMat(ai_mat));
 			skeleton_sp->bone_offsets.push_back(offset);
 
 			// collect bone transform relative to parent (per-bone/aiNode)
@@ -284,9 +324,8 @@ namespace KG
 			if (ai_node_ptr)
 			{
 				const aiMatrix4x4 & ai_mat(ai_node_ptr->mTransformation);
-				glm::dmat4 transform;
-				this->AiMatToGLMMat(ai_mat, transform);
-				skeleton_sp->bone_transform.push_back(transform);
+				glm::dmat4 transform(this->AiMatToGLMMat(ai_mat));
+				skeleton_sp->bone_transforms.push_back(transform);
 			}
 			else
 				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitSkeleton : ?");
@@ -309,12 +348,13 @@ namespace KG
 				pair_it.second.erase(pair_it.second.begin());
 			while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
 				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
-				// TODO : normalize total weight so it equals 1.
+				// NOTE : weights are not automatically normalized to a total of 1 here.
+				//			Shouldn't matter if Assimp is already set to limit bones per vertex.
 		}
 
 		// fill in Skeleton's ID's and weights vectors for each vertex
 		//	also calculate indices for each weight for each vertex.
-		unsigned vertex_index = 0;
+		unsigned vertex_index(0);
 		skeleton_sp->IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
 		skeleton_sp->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
 		for (auto & vertex_to_names : vertex_to_bones_map)
@@ -364,6 +404,78 @@ namespace KG
 		p_spMesh->m_HasSkeleton = true;
 	}
 
+	void MeshLoader::InitAnimations(Mesh_SmartPtr p_spMesh)
+	{
+		assert(p_spMesh);
+		assert(m_pScene);
+		if (!m_pScene->HasAnimations())
+			return; // no animations
+		if (!p_spMesh->HasSkeleton())
+			return; // this mesh has no skeleton
+
+		// load all aiAnimations
+		for (unsigned i = 0; i < m_pScene->mNumAnimations; ++i) // for each aiAnimation
+		{ // load each animation into proprietary format.
+			KG::Animation_SmartPtr animation_sp(new KG::Animation(p_spMesh->GetEntityID()));
+			const aiAnimation * const ai_anim_ptr(m_pScene->mAnimations[i]);
+			const double factor = (ai_anim_ptr->mTicksPerSecond > 0) ? ai_anim_ptr->mTicksPerSecond : 1.0;
+			for (unsigned a = 0; a < ai_anim_ptr->mNumChannels; ++a)
+			{ // iterate through each aiNode
+				KG::AnimationNode_SmartPtr anim_node_sp(new KG::AnimationNode(p_spMesh->GetEntityID()));
+				const aiNodeAnim * const ai_animnode_ptr(ai_anim_ptr->mChannels[a]);
+
+				// compute index to array in Skeleton.
+				unsigned index(0);
+				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
+				anim_node_sp->SetName(bone_name);
+				for (const std::string & name : p_spMesh->m_spSkeleton->names)
+				{
+					if (bone_name == name)
+					{
+						anim_node_sp->m_SkeletonBoneIndex = index;
+						break;
+					}
+					else
+						++index;
+				}
+
+				// collect scaling keys
+				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumScalingKeys; ++node_index)
+				{
+					const aiVectorKey & ai_key(ai_animnode_ptr->mScalingKeys[node_index]);
+					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
+					const KG::AnimationScaleKey key(time, vec);
+					anim_node_sp->m_ScaleKeys.push_back(key);
+				}
+
+				// collect translation offset keys
+				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumPositionKeys; ++node_index)
+				{
+					const aiVectorKey & ai_key(ai_animnode_ptr->mPositionKeys[node_index]);
+					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
+					const KG::AnimationTranslationKey key(time, vec);
+					anim_node_sp->m_TranslationKeys.push_back(key);
+				}
+
+				// collect rotation keys.
+				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumRotationKeys; ++node_index)
+				{
+					const aiQuatKey & ai_key(ai_animnode_ptr->mRotationKeys[node_index]);
+					const glm::dquat quat(ai_key.mValue.w, ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
+					const KG::AnimationRotationKey key(time, quat);
+					anim_node_sp->m_RotationKeys.push_back(key);
+				}
+				animation_sp->m_Channels.push_back(anim_node_sp);
+			} // end for each channel.
+
+			p_spMesh->m_spSkeleton->m_Animations.push_back(animation_sp);
+		} // end for each aiAnimation.
+
+	}
+
 	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode)
 	{
 
@@ -376,8 +488,8 @@ namespace KG
 		std::map<std::string, unsigned> bone_depth_map; // bones must have different names.
 		for ( auto & bone_name : p_spSkeleton->names )
 		{
-			unsigned depth = 0; // depth starts from 1 at the root AiNode
-			const aiNode * scene_root_node = m_pScene->mRootNode;
+			unsigned depth(0); // depth starts from 1 at the root AiNode
+			const aiNode * const scene_root_node(m_pScene->mRootNode);
 			if (!scene_root_node) // check root node first.
 			{
 				KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::ConstructSkeleton : root node is null?");
@@ -385,16 +497,14 @@ namespace KG
 			}
 			
 			if (this->FindBoneDepth(depth, scene_root_node, bone_name))
-			{
 				bone_depth_map.insert(std::make_pair(bone_name, depth));
-			}
 			else
 				assert(false);
 		}
 
 		// find root bones of skeleton.
 		// Note: there could be more than 1. (e.g. Blender's armture is a root but isn't technically a bone).
-		unsigned min_depth = 9999; // just something bigger than the possible number of bones...
+		unsigned min_depth(9999); // just something bigger than the possible number of bones...
 		std::string root_bone_name("N/A");
 		for (auto & it : bone_depth_map)
 		{
@@ -510,10 +620,10 @@ namespace KG
 			// instead of crashing. we construct an incomplete bone for the skeleton.
 			// TODO : find that bone offset and complete the bone information!!
 			p_spSkeleton->names.push_back(bone_name);
-			p_spSkeleton->bone_transform.resize(p_spSkeleton->names.size());
-			p_spSkeleton->bone_offsets.resize(p_spSkeleton->names.size());
-			p_spSkeleton->intermediate_transforms.resize(p_spSkeleton->names.size());
-			p_spSkeleton->final_transforms.resize(p_spSkeleton->names.size());
+			p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(p_pAiNode->mTransformation));
+			p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(p_pAiNode));
+			p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
+			p_spSkeleton->final_transforms.push_back(glm::mat4());
 			bone_node_sp->skeleton_bone_index = p_spSkeleton->names.size() - 1;
 		}
 
@@ -528,131 +638,26 @@ namespace KG
 			this->GrowBoneTree(p_spSkeleton, bone_node_sp, p_pAiMesh, p_pAiNode->mChildren[i]);
 	}
 
-	void MeshLoader::InitAnimations(Mesh_SmartPtr p_spMesh)
+	const glm::dmat4 MeshLoader::CalculateBoneOffset(const aiNode * const p_pAiNode, glm::dmat4 p_Offset)
 	{
-		assert(p_spMesh);
-		assert(m_pScene);
-		if (!m_pScene->HasAnimations())
-			return; // no animations
-		if (!p_spMesh->HasSkeleton())
-			return; // this mesh has no skeleton
-
-		// load all aiAnimations
-		for (unsigned i = 0; i < m_pScene->mNumAnimations; ++i) // for each aiAnimation
-		{ // load each animation into proprietary format.
-			KG::Animation_SmartPtr animation_sp(new KG::Animation(p_spMesh->GetEntityID()));
-			const aiAnimation * const ai_anim_ptr = m_pScene->mAnimations[i];
-			const double factor = (ai_anim_ptr->mTicksPerSecond > 0) ? ai_anim_ptr->mTicksPerSecond : 1.0;
-			for (unsigned a = 0; a < ai_anim_ptr->mNumChannels; ++a)
-			{ // iterate through each aiNode
-				KG::AnimationNode_SmartPtr anim_node_sp(new KG::AnimationNode(p_spMesh->GetEntityID()));
-				const aiNodeAnim * const ai_animnode_ptr = ai_anim_ptr->mChannels[a];
-
-				// compute index to array in Skeleton.
-				unsigned index(0);
-				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
-				anim_node_sp->SetName(bone_name);
-				for (const std::string & name : p_spMesh->m_spSkeleton->names)
-				{
-					if (bone_name == name)
-					{
-						anim_node_sp->m_SkeletonBoneIndex = index;
-						break;
-					}
-					else
-						++index;
-				}
-
-				// collect scaling keys
-				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumScalingKeys; ++node_index)
-				{
-					const aiVectorKey & ai_key = ai_animnode_ptr->mScalingKeys[node_index];
-					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
-					const KG::AnimationScaleKey key(time, vec);
-					anim_node_sp->m_ScaleKeys.push_back(key);
-				}
-
-				// collect translation offset keys
-				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumPositionKeys; ++node_index)
-				{
-					const aiVectorKey & ai_key = ai_animnode_ptr->mPositionKeys[node_index];
-					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
-					const KG::AnimationTranslationKey key(time, vec);
-					anim_node_sp->m_TranslationKeys.push_back(key);
-				}
-
-				// collect rotation keys.
-				for (unsigned node_index = 0; node_index < ai_animnode_ptr->mNumRotationKeys; ++node_index)
-				{
-					const aiQuatKey & ai_key = ai_animnode_ptr->mRotationKeys[node_index];
-					const glm::dquat quat(ai_key.mValue.w, ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
-					const KG::AnimationRotationKey key(time, quat);
-					anim_node_sp->m_RotationKeys.push_back(key);
-				}
-				animation_sp->m_Channels.push_back(anim_node_sp);
-			} // end for each channel.
-
-			p_spMesh->m_spSkeleton->m_Animations.push_back(animation_sp);
-		} // end for each aiAnimation.
-
-	}
-
-	const bool MeshLoader::InitMaterialTexture
-		(
-			Mesh_SmartPtr p_spMesh
-			, const aiMesh * const p_pAiMesh
-			, const aiScene * const p_pAiScene
-			, const std::string & p_Path
-		)
-	{
-		bool result(true);
-
-		// Extract the directory part from the file name
-		std::string::size_type slash_index = p_Path.find_last_of("/");
-		std::string dir;
-
-		if (slash_index == std::string::npos)
-			dir = ".";
-		else if (slash_index == 0) 
-			dir = "/";
-		else 
-			dir = p_Path.substr(0, slash_index);
-
-		const int material_index = p_pAiMesh->mMaterialIndex;
-		const aiMaterial * const material_ptr = p_pAiScene->mMaterials[material_index];
-		if (!material_ptr)
-			return false;
-
-		// load material texture. Only diffuse ATM.
-		if (material_ptr->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		if (p_pAiNode)
 		{
-			aiString Path;
-			if ( material_ptr->GetTexture(aiTextureType_DIFFUSE, 0, &Path, nullptr, nullptr, nullptr, nullptr, nullptr)
-					== AI_SUCCESS
-				)
-			{
-				const std::string FullPath = dir + "/" + Path.data;
-				KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, FullPath));
-				p_spMesh->SetTexture(texture);
-			}
-		}	
-
-		return result; // TODO
+			glm::dmat4 transform(this->AiMatToGLMMat(p_pAiNode->mTransformation));
+			p_Offset = p_Offset * transform; // note: we are traversing back to scene root node from a child. Therefore the multiplication order used.
+			return this->CalculateBoneOffset(p_pAiNode->mParent, p_Offset);
+		}
+		else // reached root node.
+			return glm::inverse(p_Offset); // calculate the inverse of the bind pose.
 	}
 
-	void MeshLoader::AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat, glm::dmat4 & p_rGLMMat)
+	const glm::dmat4 MeshLoader::AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat)
 	{
-		/*const glm::dvec4 col1(ai_mat.a1, ai_mat.a2, ai_mat.a3, ai_mat.a4);
-		const glm::dvec4 col2(ai_mat.b1, ai_mat.b2, ai_mat.b3, ai_mat.b4);
-		const glm::dvec4 col3(ai_mat.c1, ai_mat.c2, ai_mat.c3, ai_mat.c4);
-		const glm::dvec4 col4(ai_mat.d1, ai_mat.d2, ai_mat.d3, ai_mat.d4);*/
-		p_rGLMMat[0][0] = p_rAiMat.a1; p_rGLMMat[1][0] = p_rAiMat.a2; p_rGLMMat[2][0] = p_rAiMat.a3; p_rGLMMat[3][0] = p_rAiMat.a4;
-		p_rGLMMat[0][1] = p_rAiMat.b1; p_rGLMMat[1][1] = p_rAiMat.b2; p_rGLMMat[2][1] = p_rAiMat.b3; p_rGLMMat[3][1] = p_rAiMat.b4;
-		p_rGLMMat[0][2] = p_rAiMat.c1; p_rGLMMat[1][2] = p_rAiMat.c2; p_rGLMMat[2][2] = p_rAiMat.c3; p_rGLMMat[3][2] = p_rAiMat.c4;
-		p_rGLMMat[0][3] = p_rAiMat.d1; p_rGLMMat[1][3] = p_rAiMat.d2; p_rGLMMat[2][3] = p_rAiMat.d3; p_rGLMMat[3][3] = p_rAiMat.d4;
+		glm::dmat4 dmat4;
+		dmat4[0][0] = p_rAiMat.a1; dmat4[1][0] = p_rAiMat.a2; dmat4[2][0] = p_rAiMat.a3; dmat4[3][0] = p_rAiMat.a4;
+		dmat4[0][1] = p_rAiMat.b1; dmat4[1][1] = p_rAiMat.b2; dmat4[2][1] = p_rAiMat.b3; dmat4[3][1] = p_rAiMat.b4;
+		dmat4[0][2] = p_rAiMat.c1; dmat4[1][2] = p_rAiMat.c2; dmat4[2][2] = p_rAiMat.c3; dmat4[3][2] = p_rAiMat.c4;
+		dmat4[0][3] = p_rAiMat.d1; dmat4[1][3] = p_rAiMat.d2; dmat4[2][3] = p_rAiMat.d3; dmat4[3][3] = p_rAiMat.d4;
+		return dmat4;
 	}
 
 } // KG ns
