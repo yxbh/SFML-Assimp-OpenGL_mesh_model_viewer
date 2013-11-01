@@ -31,26 +31,18 @@ namespace KG
 		return !m_Animations.empty();
 	}
 
-	KG::SceneNodeList & Skeleton::GetChildren(void)
-	{
-		return m_ChildSceneNodeList;
-	}
-
-	void Skeleton::Reserve(const unsigned p_Size)
+	void Skeleton::ReserveForBones(const unsigned p_Size)
 	{
 		names.reserve(p_Size);
+		bone_transforms.reserve(p_Size);
 		bone_offsets.reserve(p_Size);
 		intermediate_transforms.reserve(p_Size);
 		final_transforms.reserve(p_Size);
 	}
 
-	void Skeleton::ReserveMemForIDs(const unsigned p_Size)
+	void Skeleton::ReserveForVertices(const unsigned p_Size)
 	{
 		IDs.reserve(p_Size);
-	}
-
-	void Skeleton::ReserveMemForWeights(const unsigned p_Size)
-	{
 		weights.reserve(p_Size);
 	}
 

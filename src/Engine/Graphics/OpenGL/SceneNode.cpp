@@ -109,24 +109,24 @@ namespace KG
 
 	bool SceneNode::RecursiveRemove(const KE::EntityID p_EntityID)
 	{
-		SceneNodeList::iterator it = m_ChildSceneNodeList.begin();
-		while (it != m_ChildSceneNodeList.end())
+		SceneNodeSPList::iterator children_it = m_ChildSceneNodeList.begin();
+		while (children_it != m_ChildSceneNodeList.end())
 		{
-			if (it->get()->GetEntityID() == p_EntityID)
+			if (children_it->get()->GetEntityID() == p_EntityID)
 			{
-				m_ChildSceneNodeList.erase(it);
+				m_ChildSceneNodeList.erase(children_it);
 				return true;
 			}
 			else
-				it->get()->RecursiveRemove(p_EntityID);
-			++it;
+				children_it->get()->RecursiveRemove(p_EntityID);
+			++children_it;
 		}
 		return false;
 	}
 
 	SceneNode * const SceneNode::GetChildNode(const KE::EntityID p_EntityID)
 	{
-		for (const SceneNode_SmartPtr & it : m_ChildSceneNodeList)
+		for (const SceneNode_SmartPtr it : m_ChildSceneNodeList)
 		{
 			const KE::EntityID id = it->GetEntityID();
 			if (id != KE::Invalid_EntityID && id == p_EntityID)
@@ -157,7 +157,7 @@ namespace KG
 		return m_RenderPass;
 	}
 
-	KG::SceneNodeList & SceneNode::GetChildSceneNodeList(void)
+	KG::SceneNodeSPList & SceneNode::GetChildSceneNodeList(void)
 	{
 		return m_ChildSceneNodeList;
 	}
@@ -167,7 +167,7 @@ namespace KG
 		return m_CurrentToWorldMatix;
 	}
 
-	void SceneNode::SetID(const KE::EntityID p_ID)
+	void SceneNode::SetEntityID(const KE::EntityID p_ID)
 	{
 		m_ID = p_ID;
 		KE::EntityIDGenerator::Remove(p_ID);

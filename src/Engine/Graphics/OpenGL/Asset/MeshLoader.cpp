@@ -295,7 +295,7 @@ namespace KG
 		
 		// convert Bone to Vertices relation to Vertex to bones relation.
 		const unsigned num_bones(p_pAiMesh->mNumBones);
-		skeleton_sp->Reserve(num_bones);
+		skeleton_sp->ReserveForBones(num_bones);
 
 		// resize Skeleton's intermediate and final transform arrays.
 		skeleton_sp->intermediate_transforms.resize(num_bones);

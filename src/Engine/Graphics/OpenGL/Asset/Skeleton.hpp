@@ -34,7 +34,12 @@ namespace KG
 
 	/*! \class Skeleton
 
-		Acts as root to all BoneNodes.
+		- Acts as root to all BoneNodes, and container for all animations belong to the skeleton.
+
+		- There are three types of data in a Skeleton. Per-bone data such as names, offsets, and the different transforms.
+		The other data is per-vertex data such as bone IDs and their weights. The last data type is the animation related
+		data.
+
 	*/
 	class Skeleton
 		: public KG::SceneNode
@@ -65,12 +70,11 @@ namespace KG
 		~Skeleton(void);
 
 		const bool HasAnimations(void) const;
-
-		KG::SceneNodeList & GetChildren(void);
-
-		void Reserve(const unsigned p_Size);
-		void ReserveMemForIDs(const unsigned p_Size);
-		void ReserveMemForWeights(const unsigned p_Size);
+		
+		/*! Reserve memory for per-bone data. */
+		void ReserveForBones(const unsigned p_Size);
+		/*! Reserve memory for per-vertex data. */
+		void ReserveForVertices(const unsigned p_Size);
 
 		/*! compute frame interpolation and etc. */
 		void ComputePose(const KE::Duration p_Elapsed);
