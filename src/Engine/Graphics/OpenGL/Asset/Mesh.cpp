@@ -18,7 +18,6 @@ namespace KG
 		, m_LightBackFace(true), m_LoadedToGPU(false), m_Loaded(false)
 		, m_RenderMode(RenderMode::Null), m_PrimitiveType(GL_TRIANGLES), m_IndexVarType(GL_UNSIGNED_INT)
 		, m_FirstIndex(0), m_IndexCount(0), m_ElementCount(0), m_IndexOffset(0)
-		, StrafeDistance(0.0), StrafeSpeed(0.0)
 	{}
 
 	Mesh::~Mesh(void)
@@ -375,36 +374,6 @@ namespace KG
 		
 		if (this->HasSkeleton())
 			m_spSkeleton->ComputePose(p_Elapsed);
-		
-		// TODO : remove after CITS project
-		static double current_distance(0.0);
-		static double direction(1.0); // positive forward, negative backward.
-		if (StrafeSpeed != 0.0)
-		{
-			if (direction > 0.0)
-			{
-				current_distance += this->StrafeSpeed * p_Elapsed.AsSeconds();
-				this->StrafeForward(this->StrafeSpeed * p_Elapsed.AsSeconds());
-				if (current_distance > this->StrafeDistance)
-				{
-					direction = -1.0;
-					const double over_strafed_delta(current_distance - this->StrafeDistance);
-					this->StrafeBackward(over_strafed_delta);
-				}
-			}
-			else if (direction < 0.0)
-			{
-				current_distance -= this->StrafeSpeed * p_Elapsed.AsSeconds();
-				this->StrafeBackward(this->StrafeSpeed * p_Elapsed.AsSeconds());
-				if (current_distance < (this->StrafeDistance * -1.0))
-				{
-					direction = 1.0;
-					const double over_strafed_delta( std::abs(current_distance) - this->StrafeDistance );
-					this->StrafeForward(over_strafed_delta);
-				}
-			}
-		}
-		// end TODO.
 
 	}
 

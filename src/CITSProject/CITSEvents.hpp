@@ -57,8 +57,6 @@ namespace CITS
 		SetObjectManMode				= 100013,
 		SetObjectMatMode				= 100014,
 		SetTexCoordMultiplier           = 100015,
-		SetMeshStrafeDistance			= 100016,
-		SetMeshStrafeSpeed				= 100017,
 	};
 
 
@@ -723,36 +721,6 @@ namespace CITS
 
 	public:
 		explicit SetTexCoordMutiplier_Event(const double p_Value) : CITS::Control_Event(p_Value) {}
-
-		virtual const KE::EventType GetType(void) const final
-		{
-			return sk_EventType;
-		}
-	};
-
-	class SetMeshStrafeDistance_Event
-		: public CITS::Control_Event
-	{
-	private:
-		static const KE::EventType sk_EventType = EventType::SetMeshStrafeDistance;
-
-	public:
-		explicit SetMeshStrafeDistance_Event(const double p_Delta) : Control_Event(p_Delta) {}
-
-		virtual const KE::EventType GetType(void) const final
-		{
-			return sk_EventType;
-		}
-	};
-
-	class SetMeshStrafeSpeed_Event
-		: public CITS::Control_Event
-	{
-	private:
-		static const KE::EventType sk_EventType = EventType::SetMeshStrafeSpeed;
-
-	public:
-		explicit SetMeshStrafeSpeed_Event(const double p_Delta) : Control_Event(p_Delta) {}
 
 		virtual const KE::EventType GetType(void) const final
 		{

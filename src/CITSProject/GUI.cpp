@@ -394,11 +394,11 @@ namespace CITS
 
 	void ControlPanelGUI::UpdateStrafeRadius(void)
 	{
-		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetMeshStrafeDistance_Event(m_StrafeRadiusAdj->GetValue())));
+		//KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetMeshStrafeDistance_Event(m_StrafeRadiusAdj->GetValue())));
 	}
 
 	void ControlPanelGUI::UpdateStrafeSpeed(void)
 	{
-		KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetMeshStrafeSpeed_Event(m_StrafeSpeedAdj->GetValue())));
+		//KE::Event::Get().QueueEvent(KE::Event_SmartPtr(new CITS::SetMeshStrafeSpeed_Event(m_StrafeSpeedAdj->GetValue())));
 	}
 }
