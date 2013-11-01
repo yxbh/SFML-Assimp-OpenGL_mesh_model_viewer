@@ -85,9 +85,10 @@ namespace KG
 	{
 		if (p_spSceneNode == nullptr)
 		{
-			KE::Debug::print(KE::Debug::DBG_ERROR, "SceneNode : Adding nullptr Child.");
+			KE::Debug::print(KE::Debug::DBG_ERROR, "SceneNode::AddChild : Adding nullptr Child.");
 			return false;
 		}
+		p_spSceneNode->SetParentNode(this);
 		m_ChildSceneNodeList.push_back(p_spSceneNode);
 		return true;
 	}
