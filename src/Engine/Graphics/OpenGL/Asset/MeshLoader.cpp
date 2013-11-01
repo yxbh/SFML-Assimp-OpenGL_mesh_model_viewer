@@ -433,15 +433,21 @@ namespace KG
 				unsigned index(0);
 				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
 				anim_node_sp->SetName(bone_name);
+				bool bone_found(false);
 				for (const std::string & name : p_spMesh->m_spSkeleton->names)
 				{
 					if (bone_name == name)
 					{
+						bone_found = true;
 						anim_node_sp->m_SkeletonBoneIndex = index;
 						break;
 					}
 					else
 						++index;
+				}
+				if (!bone_found)
+				{
+					KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitAnimations : cannot find matching bone from Skeleton for aiAnimNode.");
 				}
 
 				// collect scaling keys
