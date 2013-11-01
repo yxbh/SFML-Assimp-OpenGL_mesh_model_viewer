@@ -289,20 +289,25 @@ namespace KG
 
 		KE::Debug::print("MeshLoader::InitSkeleton : Init Skeleton.");
 		KG::Skeleton_SmartPtr skeleton_sp(new KG::Skeleton(p_spMesh->GetEntityID()));
+		
 		// get and set global inverse matrix
-		const aiMatrix4x4 & ai_mat(m_pScene->mRootNode->mTransformation); // TODO : correct?
-		glm::dmat4 inverse_global(this->AiMatToGLMMat(ai_mat));
-		skeleton_sp->global_inverse_transform = glm::inverse(inverse_global);
-
+		skeleton_sp->global_inverse_transform = glm::inverse(this->AiMatToGLMMat(m_pScene->mRootNode->mTransformation));
+		
 		// convert Bone to Vertices relation to Vertex to bones relation.
-		const unsigned num_bones = p_pAiMesh->mNumBones;
+		const unsigned num_bones(p_pAiMesh->mNumBones);
 		skeleton_sp->Reserve(num_bones);
-		// resize intermediate and final transform array.
+
+		// resize Skeleton's intermediate and final transform arrays.
 		skeleton_sp->intermediate_transforms.resize(num_bones);
 		skeleton_sp->final_transforms.resize(num_bones);
 
+		// create a map which will hold all the vertex to bone weights relationships:
+		std::map<unsigned, std::multimap<std::string, float>> vertex_to_bones_map; // <v_index, <bone_name, weight>>
+		// pre-fill map with empty entries first.
+		for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)
+			vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<std::string, float>()));
+
 		// collect name, offset, and weights of each bone:
-		std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
 		for (unsigned i = 0; i < num_bones; ++i)
 		{
 			const aiBone * const ai_bone_ptr(p_pAiMesh->mBones[i]);
@@ -312,39 +317,29 @@ namespace KG
 			skeleton_sp->names.push_back(bone_name);
 			
 			// collect offset transform for Skeleton (per-bone)
-			const aiMatrix4x4 & ai_mat(ai_bone_ptr->mOffsetMatrix);
-			glm::dmat4 offset(this->AiMatToGLMMat(ai_mat));
-			skeleton_sp->bone_offsets.push_back(offset);
+			skeleton_sp->bone_offsets.push_back(this->AiMatToGLMMat(ai_bone_ptr->mOffsetMatrix));
 
 			// collect bone transform relative to parent (per-bone/aiNode)
 			const aiNode * const ai_node_ptr(this->FindAiNodeByName(bone_name, m_pScene->mRootNode));
 			if (ai_node_ptr)
-			{
-				const aiMatrix4x4 & ai_mat(ai_node_ptr->mTransformation);
-				glm::dmat4 transform(this->AiMatToGLMMat(ai_mat));
-				skeleton_sp->bone_transforms.push_back(transform);
-			}
+				skeleton_sp->bone_transforms.push_back(this->AiMatToGLMMat(ai_node_ptr->mTransformation));
 			else
-				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitSkeleton : ?");
+				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitSkeleton : cannot find the corresponding aiNode to the given bone name.");
 
 			// insert bone weights into map. (per-vertex & per-weight)
 			for (unsigned weight_i = 0; weight_i < ai_bone_ptr->mNumWeights; ++weight_i)
 			{
-				const aiVertexWeight ai_vweight = ai_bone_ptr->mWeights[weight_i];
-				vertex_to_bones_map[ai_vweight.mVertexId]
-					.insert(std::make_pair(ai_vweight.mWeight, bone_name));
+				const aiVertexWeight & ai_vweight(ai_bone_ptr->mWeights[weight_i]);
+				vertex_to_bones_map[ai_vweight.mVertexId].insert(std::make_pair(bone_name, ai_vweight.mWeight));
 			}
 		}
-		for (unsigned vertex_index = 0; vertex_index < p_spMesh->m_PosVertices.size(); ++vertex_index)  // pre-fill map with empty entries first.
-		{
-			vertex_to_bones_map.insert(std::make_pair(vertex_index, std::multimap<float, std::string>()));
-		}
+
 		for (auto & pair_it  : vertex_to_bones_map) // needs map to be pre-filled to work properly.
 		{
 			while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
 				pair_it.second.erase(pair_it.second.begin());
 			while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
-				pair_it.second.insert(std::make_pair(0.0f, std::string(p_pAiMesh->mBones[0]->mName.data))); // use any bone name. It doesn't matter since weight is 0 anyway.
+				pair_it.second.insert(std::make_pair(p_pAiMesh->mBones[0]->mName.data, 0.0f)); // use any bone name. It doesn't matter since weight is 0 anyway.
 				// NOTE : weights are not automatically normalized to a total of 1 here.
 				//			Shouldn't matter if Assimp is already set to limit bones per vertex.
 		}
@@ -359,39 +354,39 @@ namespace KG
 			auto bone_weight_pair_it(vertex_to_names.second.begin()); //--bone_weight_pair_it;
 
 			// 1st weight
-			auto it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->second);
-			if (it == skeleton_sp->names.end())
+			auto bone_name_it(std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first));
+			if (bone_name_it == skeleton_sp->names.end())
 				assert(false); // should never fail.
-			unsigned bone_index = std::distance(skeleton_sp->names.begin(), it);
+			unsigned bone_index(std::distance(skeleton_sp->names.begin(), bone_name_it));
 			skeleton_sp->IDs[vertex_index].x = bone_index;
-			skeleton_sp->weights[vertex_index].x = bone_weight_pair_it->first;
+			skeleton_sp->weights[vertex_index].x = bone_weight_pair_it->second;
 
 			// 2nd weight
 			++bone_weight_pair_it;
-			it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->second);
-			if (it == skeleton_sp->names.end())
+			bone_name_it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first);
+			if (bone_name_it == skeleton_sp->names.end())
 				assert(false); // should never fail.
-			bone_index = std::distance(skeleton_sp->names.begin(), it);
+			bone_index = std::distance(skeleton_sp->names.begin(), bone_name_it);
 			skeleton_sp->IDs[vertex_index].y = bone_index;
-			skeleton_sp->weights[vertex_index].y = bone_weight_pair_it->first;
+			skeleton_sp->weights[vertex_index].y = bone_weight_pair_it->second;
 
 			// 3rd weight
 			++bone_weight_pair_it;
-			it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->second);
-			if (it == skeleton_sp->names.end())
+			bone_name_it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first);
+			if (bone_name_it == skeleton_sp->names.end())
 				assert(false); // should never fail.
-			bone_index = std::distance(skeleton_sp->names.begin(), it);
+			bone_index = std::distance(skeleton_sp->names.begin(), bone_name_it);
 			skeleton_sp->IDs[vertex_index].z = bone_index;
-			skeleton_sp->weights[vertex_index].z = bone_weight_pair_it->first;
+			skeleton_sp->weights[vertex_index].z = bone_weight_pair_it->second;
 
 			// 4th weight
 			++bone_weight_pair_it;
-			it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->second);
-			if (it == skeleton_sp->names.end())
+			bone_name_it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first);
+			if (bone_name_it == skeleton_sp->names.end())
 				assert(false); // should never fail.
-			bone_index = std::distance(skeleton_sp->names.begin(), it);
+			bone_index = std::distance(skeleton_sp->names.begin(), bone_name_it);
 			skeleton_sp->IDs[vertex_index].w = bone_index;
-			skeleton_sp->weights[vertex_index].w = bone_weight_pair_it->first;
+			skeleton_sp->weights[vertex_index].w = bone_weight_pair_it->second;
 
 			++vertex_index;
 		} // if has bones
@@ -488,53 +483,114 @@ namespace KG
 
 	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode)
 	{
-
 		/*
 			To reconstruct the bone tree. Build a bone depth map by going through each Bone name and search them in the scene.
 			For each bone. calculate the depth from the root. the one with the lowest depth would be the root bone.
 		*/
+
+		// get scene root node first (used later).
+		const aiNode * const scene_root_node(m_pScene->mRootNode);
+		if (!scene_root_node) // check root node first.
+		{
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::ConstructSkeleton : root node is null");
+			assert(false);
+		}
 
 		//construct a bone depth map
 		std::map<std::string, unsigned> bone_depth_map; // bones must have different names.
 		for ( auto & bone_name : p_spSkeleton->names )
 		{
 			unsigned depth(0); // depth starts from 1 at the root AiNode
-			const aiNode * const scene_root_node(m_pScene->mRootNode);
-			if (!scene_root_node) // check root node first.
-			{
-				KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::ConstructSkeleton : root node is null?");
-				return;
-			}
-			
 			if (this->FindBoneDepth(depth, scene_root_node, bone_name))
 				bone_depth_map.insert(std::make_pair(bone_name, depth));
 			else
 				assert(false);
 		}
 
-		// find root bones of skeleton.
-		// Note: there could be more than 1. (e.g. Blender's armture is a root but isn't technically a bone).
-		unsigned min_depth(9999); // just something bigger than the possible number of bones...
-		std::string root_bone_name("N/A");
-		for (auto & it : bone_depth_map)
+		// find the true root node/bone of the skeleton.
+		// NOTE :  This algorithm assumes that all aiNode with the common lowest depth have a common ancestor.
+		//			Which should be true at all times.
+		unsigned num_current_root(9999);
+		while (num_current_root > 1)
 		{
-			if (it.second < min_depth)
+			// calculate the top root depth level in the aiScene
+			unsigned min_depth(9999); // just something bigger than the possible number of bones...
+			for ( auto & it : bone_depth_map )
+				if (it.second < min_depth)
+					min_depth = it.second;
+
+			// count number of root.
+			num_current_root = 0;
+			for ( auto & it : bone_depth_map )
+				if (it.second == min_depth)
+					++num_current_root;
+
+			// get current root bone/s.
+			std::vector<std::string> root_bone_names;
+			for ( auto & it : bone_depth_map ) // get all root bone names.
+				if (it.second == min_depth)
+					root_bone_names.push_back(it.first);
+
+			// move up a level in the scene tree.
+			if (root_bone_names.size() > 1)
 			{
-				min_depth = it.second;
-				root_bone_name = it.first;
+				for (const std::string & bone_name : root_bone_names)
+				{
+					const aiNode * const ainode(this->FindAiNodeByName(bone_name, p_AiNode));
+					if (ainode && ainode->mParent)
+					{
+						const aiNode * const new_parent_ainode(ainode->mParent);
+						const std::string bone_name(new_parent_ainode->mName.data);
+						if ( std::find(p_spSkeleton->names.begin(), p_spSkeleton->names.end(), bone_name) != p_spSkeleton->names.end() )
+						{ // bone already in Skeleton.
+							KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::ConstructSkeleton : bone already in skeleton!");
+							continue;
+						}						
+						p_spSkeleton->names.push_back(bone_name);
+						p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(new_parent_ainode));
+						p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(new_parent_ainode->mTransformation));
+						p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
+						p_spSkeleton->final_transforms.push_back(glm::mat4());
+					}
+				}
+			}
+
+			// rebuild bone depth map
+			bone_depth_map.clear();
+			for ( auto & bone_name : p_spSkeleton->names )
+			{
+				unsigned depth(0); // depth starts from 1 at the root AiNode
+				if (this->FindBoneDepth(depth, scene_root_node, bone_name))
+					bone_depth_map.insert(std::make_pair(bone_name, depth));
+				else
+					assert(false);
 			}
 		}
+
+		// find the minimum depth (The level where the root bone/s reside).
+		unsigned min_depth(9999); // just something bigger than the possible number of bones...
+		for ( auto & it : bone_depth_map )
+		{
+			if (it.second < min_depth)
+				min_depth = it.second;
+		}
+		// find root bones of skeleton.
 		std::vector<std::string> root_bone_names;
-		for (auto & it : bone_depth_map) // get all root bone names.
+		for ( auto & it : bone_depth_map ) // get all root bone names.
 		{
 			if (it.second == min_depth)
 				root_bone_names.push_back(it.first);
 		}
 		
-		for (auto & name : root_bone_names)
+		if (root_bone_names.size() != 1) // there should only be one root bone at this stage.
 		{
-			this->GrowBoneTree(p_spSkeleton, nullptr, p_pAiMesh, this->FindAiNodeByName(name,  p_AiNode));
+			KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::ConstructSkeleton : still more than 1 root bones! ");
+			assert(false);
 		}
+		
+		// grow bone tree.
+		for ( auto & name : root_bone_names ) // there should be only 1.
+			this->GrowBoneTree(p_spSkeleton, nullptr, p_pAiMesh, this->FindAiNodeByName(name,  p_AiNode));
 
 	}
 
@@ -581,12 +637,10 @@ namespace KG
 	}
 
 	void MeshLoader::GrowBoneTree
-	(
-		KG::Skeleton_SmartPtr p_spSkeleton
-		, KG::BoneNode_SmartPtr p_spBoneNode
-		, const aiMesh * const p_pAiMesh
-		, const aiNode * const p_pAiNode
-	)
+		(
+			KG::Skeleton_SmartPtr p_spSkeleton, KG::BoneNode_SmartPtr p_spBoneNode
+			, const aiMesh * const p_pAiMesh, const aiNode * const p_pAiNode
+		)
 	{
 		if (!p_pAiNode) // check valid pointer.
 		{
@@ -621,14 +675,13 @@ namespace KG
 				break; // found
 			}
 		}
-		if (!bone_found)
+		if (!bone_found) // bone was not specified in aiMesh.
 		{
-			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::GrowBoneTree : unexpected error: bone not found in aiMesh!");
-			KE::Debug::print(KE::Debug::DBG_ERROR, "	- missing bone : " + bone_name);
-			//assert(false);
+			KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : recovering bone not found in aiMesh!");
+			KE::Debug::print(KE::Debug::DBG_WARNING, "	Does this bone have no weight influence? ");
+			KE::Debug::print(KE::Debug::DBG_WARNING, "	- bone name: " + bone_name);
 
 			// instead of crashing. we construct an incomplete bone for the skeleton.
-			// TODO : find that bone offset and complete the bone information!!
 			p_spSkeleton->names.push_back(bone_name);
 			p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(p_pAiNode->mTransformation));
 			p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(p_pAiNode));

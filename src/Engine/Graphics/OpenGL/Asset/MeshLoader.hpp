@@ -58,14 +58,14 @@ namespace KG
 		void InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! */
 		void InitAnimations(Mesh_SmartPtr p_spMesh);
-
+		/*! */
 		void ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode);
 		/*! recursively find a bone with specified name and compute it's depth. */
 		const bool FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName);
 		const aiNode * const FindAiNodeByName(const std::string & p_rNodeName, const aiNode * const p_pAiNode);
 		void GrowBoneTree(KG::Skeleton_SmartPtr p_spSkeleton, KG::BoneNode_SmartPtr p_spBoneNode, const aiMesh * const p_pAiMesh, const aiNode * const p_pAiNode);
 		
-		/*! Computes the inverse bind pose matrix recursively, given an aiNode that is also a bone node in the actual model heirachy. */
+		/*! Compute the inverse bind pose matrix recursively for a given aiNode, given the aiNode is also a bone node in the actual model heirachy. */
 		const glm::dmat4 CalculateBoneOffset(const aiNode * const p_pAiNode, glm::dmat4 p_Offset = glm::dmat4());
 		void AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat, glm::dmat4 & p_rGLMMat);
 		const glm::dmat4 AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat);

@@ -56,7 +56,7 @@ namespace KG
 
 	void Skeleton::ComputePose(const KE::Duration p_Elapsed)
 	{
-		if (m_Animations.empty())
+		if (/*true || */m_Animations.empty())
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Skeleton::ComputePose : no animations to compute pose!");
 
