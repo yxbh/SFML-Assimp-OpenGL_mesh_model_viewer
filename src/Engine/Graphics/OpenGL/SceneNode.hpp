@@ -20,7 +20,11 @@ namespace KG
 	typedef std::shared_ptr<KG::ShaderProgram> ShaderProgram_SmartPtr;
 
 	/*! \class SceneNode
+		
 		Not meant to be used directly.
+
+		Currently, each individual SceneNode and it's children should have a different and unique EntityID.
+
 	*/
 	class SceneNode
 		:public KG::Transform
@@ -36,10 +40,9 @@ namespace KG
 		KE::RenderComponent_WeakPtr			m_wpRenderComponent;
 		KG::SceneNode *						m_pParentSceneNode;
 		KG::SceneNodeList					m_ChildSceneNodeList;
+		glm::dmat4							m_CurrentToWorldMatix; // AKA model matrix. Object space -> world space.
 
 		KG::ShaderProgram_SmartPtr			m_spShaderProgram;
-		glm::dmat4							m_ModelMatrix;			// to_world matrix. object space -> world space
-		glm::dmat4							m_InverseModelMatrix;	// does the opposite to above.
 
 	public:
 		SceneNode(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Null);
@@ -65,20 +68,20 @@ namespace KG
 		bool RecursiveRemove(const KE::EntityID p_EntityID);
 
 		SceneNode * const GetChildNode(const KE::EntityID p_EntityID);
-		const glm::dmat4 GetModelMatrix(void) const;
 		virtual KG::SceneNode * const GetParentNode(void) const;
 		KG::ShaderProgram_SmartPtr GetShaderProgram(void);
 		const KE::EntityID GetEntityID(void) const;
 		const std::string & GetName(void) const;
 		const RenderPass GetRenderPass(void) const;
 		KG::SceneNodeList & GetChildSceneNodeList(void);
-
+		const glm::dmat4 & GetCurrentToWorldTransform(void);
 		void SetID(const KE::EntityID p_ID);
 		void SetName(const std::string & p_rName);
 		void SetRenderPass(const RenderPass & p_rRenderPass);
 		void SetParentNode(KG::SceneNode_SmartPtr p_spNewParentSceneNode);
 		void SetParentNode(KG::SceneNode * const p_pNewParentSceneNode);
-		void SetModelMatrix(const glm::dmat4 p_ModelMat4); // test std::move
+		/*! Sets the current model matrix. Used for immediate rendering purpose. Matrix should be updated every frame. */
+		void SetCurrentToWorldMatrix(const glm::dmat4 & p_rModelMat4);
 		void SetShaderProgram(KG::ShaderProgram_SmartPtr p_spShaderProgram);
 
 	}; // SceneNode class 

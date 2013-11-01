@@ -140,7 +140,7 @@ namespace KG
 			// mvp matrix
 			KG::Scene & scene_ref(KG::Graphics::Get().GetScene());
 			const glm::dmat4 camera_view_matrix(scene_ref.GetCamera().GetViewProjectionMatrixd());
-			const glm::dmat4 model_matrix(node_ptr->GetModelMatrix());
+			const glm::dmat4 & model_matrix(node_ptr->GetCurrentToWorldTransform());
 			auto shader_program_ptr = m_spShaderProgram;
 			shader_program_ptr->Use(); // already called in PreRender(). but will leave it here for now.
 			shader_program_ptr->SetParameter<glm::mat4>("mvpMatrix", glm::mat4(camera_view_matrix*model_matrix));

@@ -51,7 +51,7 @@ namespace KG
 		const glm::dmat4 new_mat(this->GetGLMMatd() * stack_ref.GetTop());
 		stack_ref.Push();
 		stack_ref.SetMatrix(new_mat);
-		this->SetModelMatrix(new_mat);
+		this->SetCurrentToWorldMatrix(new_mat);
 	}
 
 	void SceneNode::Render(KG::Scene & p_rScene)
@@ -135,11 +135,6 @@ namespace KG
 		return nullptr;
 	}
 
-	const glm::dmat4 SceneNode::GetModelMatrix(void) const
-	{
-		return m_ModelMatrix;
-	}
-
 	KG::SceneNode * const SceneNode::GetParentNode(void) const
 	{
 		return m_pParentSceneNode;
@@ -165,6 +160,11 @@ namespace KG
 	KG::SceneNodeList & SceneNode::GetChildSceneNodeList(void)
 	{
 		return m_ChildSceneNodeList;
+	}
+
+	const glm::dmat4 & SceneNode::GetCurrentToWorldTransform(void)
+	{
+		return m_CurrentToWorldMatix;
 	}
 
 	void SceneNode::SetID(const KE::EntityID p_ID)
@@ -193,9 +193,9 @@ namespace KG
 		m_pParentSceneNode = p_pNewParentSceneNode;
 	}
 
-	void SceneNode::SetModelMatrix(const glm::dmat4 p_ModelMat4)
+	void SceneNode::SetCurrentToWorldMatrix(const glm::dmat4 & p_rModelMat4)
 	{
-		m_ModelMatrix = std::move(p_ModelMat4);
+		m_CurrentToWorldMatix = p_rModelMat4;
 	}
 
 	void SceneNode::SetShaderProgram(KG::ShaderProgram_SmartPtr p_spShaderProgram)
