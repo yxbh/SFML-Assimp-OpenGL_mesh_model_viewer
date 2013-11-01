@@ -314,7 +314,7 @@ namespace KG
 			
 			// collect bone name for Skeleton (per-bone)
 			const std::string bone_name(ai_bone_ptr->mName.data);
-			skeleton_sp->names.push_back(bone_name);
+			skeleton_sp->bone_names.push_back(bone_name);
 			
 			// collect offset transform for Skeleton (per-bone)
 			skeleton_sp->bone_offsets.push_back(this->AiMatToGLMMat(ai_bone_ptr->mOffsetMatrix));
@@ -347,46 +347,46 @@ namespace KG
 		// fill in Skeleton's ID's and weights vectors for each vertex
 		//	also calculate indices for each weight for each vertex.
 		unsigned vertex_index(0);
-		skeleton_sp->IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
-		skeleton_sp->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
+		skeleton_sp->bone_IDs.resize(p_pAiMesh->mNumVertices);		// resize first and then iterate.
+		skeleton_sp->bone_weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
 		for (auto & vertex_to_names : vertex_to_bones_map)
 		{ // for vertex to 4 x Weights pair
 			auto bone_weight_pair_it(vertex_to_names.second.begin()); //--bone_weight_pair_it;
 
 			// 1st weight
-			auto bone_name_it(std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first));
-			if (bone_name_it == skeleton_sp->names.end())
+			auto bone_name_it(std::find(skeleton_sp->bone_names.begin(), skeleton_sp->bone_names.end(), bone_weight_pair_it->first));
+			if (bone_name_it == skeleton_sp->bone_names.end())
 				assert(false); // should never fail.
-			unsigned bone_index(std::distance(skeleton_sp->names.begin(), bone_name_it));
-			skeleton_sp->IDs[vertex_index].x = bone_index;
-			skeleton_sp->weights[vertex_index].x = bone_weight_pair_it->second;
+			unsigned bone_index(std::distance(skeleton_sp->bone_names.begin(), bone_name_it));
+			skeleton_sp->bone_IDs[vertex_index].x = bone_index;
+			skeleton_sp->bone_weights[vertex_index].x = bone_weight_pair_it->second;
 
 			// 2nd weight
 			++bone_weight_pair_it;
-			bone_name_it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first);
-			if (bone_name_it == skeleton_sp->names.end())
+			bone_name_it = std::find(skeleton_sp->bone_names.begin(), skeleton_sp->bone_names.end(), bone_weight_pair_it->first);
+			if (bone_name_it == skeleton_sp->bone_names.end())
 				assert(false); // should never fail.
-			bone_index = std::distance(skeleton_sp->names.begin(), bone_name_it);
-			skeleton_sp->IDs[vertex_index].y = bone_index;
-			skeleton_sp->weights[vertex_index].y = bone_weight_pair_it->second;
+			bone_index = std::distance(skeleton_sp->bone_names.begin(), bone_name_it);
+			skeleton_sp->bone_IDs[vertex_index].y = bone_index;
+			skeleton_sp->bone_weights[vertex_index].y = bone_weight_pair_it->second;
 
 			// 3rd weight
 			++bone_weight_pair_it;
-			bone_name_it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first);
-			if (bone_name_it == skeleton_sp->names.end())
+			bone_name_it = std::find(skeleton_sp->bone_names.begin(), skeleton_sp->bone_names.end(), bone_weight_pair_it->first);
+			if (bone_name_it == skeleton_sp->bone_names.end())
 				assert(false); // should never fail.
-			bone_index = std::distance(skeleton_sp->names.begin(), bone_name_it);
-			skeleton_sp->IDs[vertex_index].z = bone_index;
-			skeleton_sp->weights[vertex_index].z = bone_weight_pair_it->second;
+			bone_index = std::distance(skeleton_sp->bone_names.begin(), bone_name_it);
+			skeleton_sp->bone_IDs[vertex_index].z = bone_index;
+			skeleton_sp->bone_weights[vertex_index].z = bone_weight_pair_it->second;
 
 			// 4th weight
 			++bone_weight_pair_it;
-			bone_name_it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->first);
-			if (bone_name_it == skeleton_sp->names.end())
+			bone_name_it = std::find(skeleton_sp->bone_names.begin(), skeleton_sp->bone_names.end(), bone_weight_pair_it->first);
+			if (bone_name_it == skeleton_sp->bone_names.end())
 				assert(false); // should never fail.
-			bone_index = std::distance(skeleton_sp->names.begin(), bone_name_it);
-			skeleton_sp->IDs[vertex_index].w = bone_index;
-			skeleton_sp->weights[vertex_index].w = bone_weight_pair_it->second;
+			bone_index = std::distance(skeleton_sp->bone_names.begin(), bone_name_it);
+			skeleton_sp->bone_IDs[vertex_index].w = bone_index;
+			skeleton_sp->bone_weights[vertex_index].w = bone_weight_pair_it->second;
 
 			++vertex_index;
 		} // if has bones
@@ -434,7 +434,7 @@ namespace KG
 				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
 				anim_node_sp->SetName(bone_name);
 				bool bone_found(false);
-				for (const std::string & name : p_spMesh->m_spSkeleton->names)
+				for (const std::string & name : p_spMesh->m_spSkeleton->bone_names)
 				{
 					if (bone_name == name)
 					{
@@ -505,7 +505,7 @@ namespace KG
 
 		//construct a bone depth map
 		std::map<std::string, unsigned> bone_depth_map; // bones must have different names.
-		for ( auto & bone_name : p_spSkeleton->names )
+		for ( auto & bone_name : p_spSkeleton->bone_names )
 		{
 			unsigned depth(0); // depth starts from 1 at the root AiNode
 			if (this->FindBoneDepth(depth, scene_root_node, bone_name))
@@ -546,7 +546,7 @@ namespace KG
 				{
 					const aiNode * const new_parent_ainode(ainode->mParent);
 					const std::string bone_name(new_parent_ainode->mName.data);
-					if ( std::find(p_spSkeleton->names.begin(), p_spSkeleton->names.end(), bone_name) != p_spSkeleton->names.end() )
+					if ( std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name) != p_spSkeleton->bone_names.end() )
 					{ // bone already in Skeleton.
 						KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::ConstructSkeleton : bone already in skeleton!");
 						KE::Debug::print(KE::Debug::DBG_WARNING, "	bone name: " + bone_name);
@@ -554,7 +554,7 @@ namespace KG
 					}
 					else
 					{
-						p_spSkeleton->names.push_back(bone_name);
+						p_spSkeleton->bone_names.push_back(bone_name);
 						p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(new_parent_ainode));
 						p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(new_parent_ainode->mTransformation));
 						p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
@@ -565,7 +565,7 @@ namespace KG
 
 			// rebuild bone depth map
 			bone_depth_map.clear();
-			for ( auto & bone_name : p_spSkeleton->names )
+			for ( auto & bone_name : p_spSkeleton->bone_names )
 			{
 				unsigned depth(0); // depth starts from 1 at the root AiNode
 				if (this->FindBoneDepth(depth, scene_root_node, bone_name))
@@ -685,7 +685,7 @@ namespace KG
 
 				// compute index to array in Skeleton.
 				unsigned index(0);
-				for (const std::string & name : p_spSkeleton->names)
+				for (const std::string & name : p_spSkeleton->bone_names)
 				{
 					if (bone_name == name)
 					{
@@ -705,19 +705,19 @@ namespace KG
 			KE::Debug::print(KE::Debug::DBG_WARNING, "	This bone either does not have weight influence on any vertex or it's belonged to something else.");
 			KE::Debug::print(KE::Debug::DBG_WARNING, "	- bone name: " + bone_name);
 
-			if ( std::find(p_spSkeleton->names.begin(), p_spSkeleton->names.end(), bone_name) != p_spSkeleton->names.end() )
+			if ( std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name) != p_spSkeleton->bone_names.end() )
 			{ // bone already in Skeleton. Found in MeshLoader::ConstructSkeleton probably.
 				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : bone already in skeleton!");
 				KE::Debug::print(KE::Debug::DBG_WARNING, "	bone name: " + bone_name);
 			}
 			else
 			{ // Reconstruct a bone for the skeleton.
-				p_spSkeleton->names.push_back(bone_name);
+				p_spSkeleton->bone_names.push_back(bone_name);
 				p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(p_pAiNode->mTransformation));
 				p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(p_pAiNode));
 				p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
 				p_spSkeleton->final_transforms.push_back(glm::mat4());
-				bone_node_sp->skeleton_bone_index = p_spSkeleton->names.size() - 1;
+				bone_node_sp->skeleton_bone_index = p_spSkeleton->bone_names.size() - 1;
 			}			
 		}
 

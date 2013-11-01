@@ -330,8 +330,8 @@ namespace KG
 			glBufferData
 			(
 				GL_ARRAY_BUFFER
-				, sizeof(m_spSkeleton->IDs[0]) * m_spSkeleton->IDs.size()
-				, m_spSkeleton->IDs.data()
+				, sizeof(m_spSkeleton->bone_IDs[0]) * m_spSkeleton->bone_IDs.size()
+				, m_spSkeleton->bone_IDs.data()
 				, GL_STATIC_DRAW
 			);
 			glEnableVertexAttribArray(4);
@@ -343,8 +343,8 @@ namespace KG
 			glBufferData
 			(
 				GL_ARRAY_BUFFER
-				, sizeof(m_spSkeleton->weights[0]) * m_spSkeleton->weights.size()
-				, m_spSkeleton->weights.data()
+				, sizeof(m_spSkeleton->bone_weights[0]) * m_spSkeleton->bone_weights.size()
+				, m_spSkeleton->bone_weights.data()
 				, GL_STATIC_DRAW
 			);
 			glEnableVertexAttribArray(5);
