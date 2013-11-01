@@ -4,6 +4,7 @@
 
 namespace KG
 {
+
 	typedef std::unordered_map<std::string, GLuint>	GLSLVariableHashMap;
 
 	/** \class ShaderProgram

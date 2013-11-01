@@ -405,14 +405,15 @@ namespace ObjectManipulator
 
 		std::string model_tex_dir = "models-textures/";
 		KG::MeshLoader loader;
-		auto mesh_list = loader.Load(model_tex_dir+m_MeshName)->GetList();
-		if (mesh_list.size() == 0)
+		auto meshes = loader.Load(model_tex_dir+m_MeshName);
+		if (meshes->GetList().size() == 0)
 		{
 			KE::Debug::print("ObjectManipulator : nothing in mesh list.");
 			return false;
 		}
+		meshes->BufferAll();
 
-		KG::Mesh_SmartPtr mesh = mesh_list.at(0);
+		KG::Mesh_SmartPtr mesh = meshes->GetList().at(1);
 		assert(mesh);
 		if(mesh->Loaded())
 			mesh->BufferAll();
@@ -427,7 +428,7 @@ namespace ObjectManipulator
 		}
 
 		// add entity component, and scenenode into their managers.
-		KG::Graphics::Get().GetScene().AddSceneNode(mesh);
+		KG::Graphics::Get().GetScene().AddSceneNode(meshes);
 		KE::Entity_SmartPtr entity(new KE::Entity(mesh->GetEntityID()));
 		KE::RenderComponent_SmartPtr r_comp(new KE::RenderComponent(entity));
 		entity->AddComponent(r_comp);

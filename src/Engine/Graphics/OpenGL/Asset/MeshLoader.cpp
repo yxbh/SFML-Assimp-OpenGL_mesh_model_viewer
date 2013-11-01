@@ -76,7 +76,7 @@ namespace KG
 		{
 			// load and initialize mesh
 			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i], p_rPath));
-			mesh->SetID(meshes->GetEntityID());
+			//mesh->SetID(meshes->GetEntityID());
 			meshes->AddChild(mesh);
 		}
 
@@ -611,11 +611,11 @@ namespace KG
 				output_dump.append(" ");
 			output_dump.append(it.second);
 			KE::Debug::print(output_dump);
-		}*/
+		}
 		KE::Debug::print("");
 		for ( const std::string & bone_name : p_spSkeleton->names)
 			KE::Debug::print(bone_name);
-		KE::Debug::print("");
+		KE::Debug::print("");*/
 	}
 
 	const bool MeshLoader::FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName)
