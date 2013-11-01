@@ -448,6 +448,7 @@ namespace KG
 				if (!bone_found)
 				{
 					KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitAnimations : cannot find matching bone from Skeleton for aiAnimNode.");
+					KE::Debug::print(KE::Debug::DBG_ERROR, "	Missing bone name: " + bone_name);
 				}
 
 				// collect scaling keys
@@ -517,10 +518,10 @@ namespace KG
 		// NOTE :  This algorithm assumes that all aiNode with the common lowest depth have a common ancestor.
 		//			Which should be true at all times.
 		unsigned num_current_root(9999);
-		while (num_current_root > 1)
+		unsigned min_depth(9999); // just something bigger than the possible number of bones...
+		while ( (num_current_root > 1) || (min_depth > 1) )
 		{
 			// calculate the top root depth level in the aiScene
-			unsigned min_depth(9999); // just something bigger than the possible number of bones...
 			for ( auto & it : bone_depth_map )
 				if (it.second < min_depth)
 					min_depth = it.second;
@@ -538,26 +539,27 @@ namespace KG
 					root_bone_names.push_back(it.first);
 
 			// move up a level in the scene tree.
-			if (root_bone_names.size() > 1)
+			for (const std::string & bone_name : root_bone_names)
 			{
-				for (const std::string & bone_name : root_bone_names)
+				const aiNode * const ainode(this->FindAiNodeByName(bone_name, p_AiNode));
+				if (ainode && ainode->mParent)
 				{
-					const aiNode * const ainode(this->FindAiNodeByName(bone_name, p_AiNode));
-					if (ainode && ainode->mParent)
+					const aiNode * const new_parent_ainode(ainode->mParent);
+					const std::string bone_name(new_parent_ainode->mName.data);
+					if ( std::find(p_spSkeleton->names.begin(), p_spSkeleton->names.end(), bone_name) != p_spSkeleton->names.end() )
+					{ // bone already in Skeleton.
+						KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::ConstructSkeleton : bone already in skeleton!");
+						KE::Debug::print(KE::Debug::DBG_WARNING, "	bone name: " + bone_name);
+						continue;
+					}
+					else
 					{
-						const aiNode * const new_parent_ainode(ainode->mParent);
-						const std::string bone_name(new_parent_ainode->mName.data);
-						if ( std::find(p_spSkeleton->names.begin(), p_spSkeleton->names.end(), bone_name) != p_spSkeleton->names.end() )
-						{ // bone already in Skeleton.
-							KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::ConstructSkeleton : bone already in skeleton!");
-							continue;
-						}						
 						p_spSkeleton->names.push_back(bone_name);
 						p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(new_parent_ainode));
 						p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(new_parent_ainode->mTransformation));
 						p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
 						p_spSkeleton->final_transforms.push_back(glm::mat4());
-					}
+					}					
 				}
 			}
 
@@ -573,8 +575,8 @@ namespace KG
 			}
 		}
 
-		// find the minimum depth (The level where the root bone/s reside).
-		unsigned min_depth(9999); // just something bigger than the possible number of bones...
+		// compute and confirm the minimum depth (The level where the root bone/s reside).1
+		min_depth = 9999; // just something bigger than the possible number of bones...
 		for ( auto & it : bone_depth_map )
 		{
 			if (it.second < min_depth)
@@ -598,6 +600,22 @@ namespace KG
 		for ( auto & name : root_bone_names ) // there should be only 1.
 			this->GrowBoneTree(p_spSkeleton, nullptr, p_pAiMesh, this->FindAiNodeByName(name,  p_AiNode));
 
+		// DEBUG : dump bone heirachy
+		/*std::multimap<unsigned, std::string> skeleton_dump_map;
+		for ( auto & it : bone_depth_map )
+			skeleton_dump_map.insert(std::make_pair(it.second, it.first));
+		for ( auto & it : skeleton_dump_map )
+		{
+			std::string output_dump; output_dump.reserve(30);
+			for (unsigned i = 0; i < it.first; ++i)
+				output_dump.append(" ");
+			output_dump.append(it.second);
+			KE::Debug::print(output_dump);
+		}*/
+		KE::Debug::print("");
+		for ( const std::string & bone_name : p_spSkeleton->names)
+			KE::Debug::print(bone_name);
+		KE::Debug::print("");
 	}
 
 	const bool MeshLoader::FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName)
@@ -684,16 +702,23 @@ namespace KG
 		if (!bone_found) // bone was not specified in aiMesh.
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : recovering bone not found in aiMesh!");
-			KE::Debug::print(KE::Debug::DBG_WARNING, "	Does this bone have no weight influence? ");
+			KE::Debug::print(KE::Debug::DBG_WARNING, "	This bone either does not have weight influence on any vertex or it's belonged to something else.");
 			KE::Debug::print(KE::Debug::DBG_WARNING, "	- bone name: " + bone_name);
 
-			// instead of crashing. we construct an incomplete bone for the skeleton.
-			p_spSkeleton->names.push_back(bone_name);
-			p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(p_pAiNode->mTransformation));
-			p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(p_pAiNode));
-			p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
-			p_spSkeleton->final_transforms.push_back(glm::mat4());
-			bone_node_sp->skeleton_bone_index = p_spSkeleton->names.size() - 1;
+			if ( std::find(p_spSkeleton->names.begin(), p_spSkeleton->names.end(), bone_name) != p_spSkeleton->names.end() )
+			{ // bone already in Skeleton. Found in MeshLoader::ConstructSkeleton probably.
+				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : bone already in skeleton!");
+				KE::Debug::print(KE::Debug::DBG_WARNING, "	bone name: " + bone_name);
+			}
+			else
+			{ // Reconstruct a bone for the skeleton.
+				p_spSkeleton->names.push_back(bone_name);
+				p_spSkeleton->bone_transforms.push_back(this->AiMatToGLMMat(p_pAiNode->mTransformation));
+				p_spSkeleton->bone_offsets.push_back(this->CalculateBoneOffset(p_pAiNode));
+				p_spSkeleton->intermediate_transforms.push_back(glm::dmat4());
+				p_spSkeleton->final_transforms.push_back(glm::mat4());
+				bone_node_sp->skeleton_bone_index = p_spSkeleton->names.size() - 1;
+			}			
 		}
 
 		// attach to parent:

@@ -58,7 +58,7 @@ namespace KG
 		void InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! */
 		void InitAnimations(Mesh_SmartPtr p_spMesh);
-		/*! */
+		/*! Construct the Skeleton (bone tree) and recover any bones that are not specified in the AiMesh because it does not have vertex influences. */
 		void ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode);
 		/*! recursively find a bone with specified name and compute it's depth. */
 		const bool FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName);
