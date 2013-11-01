@@ -39,7 +39,7 @@ namespace KG
 
 		Meshes_SmartPtr LoadMeshes(const std::string & p_rPath);
 		Meshes_SmartPtr InitFromScene(const aiScene * p_pScene, const std::string & p_rPath);
-		Mesh_SmartPtr InitMesh(const aiMesh * const p_pAiMesh);
+		Mesh_SmartPtr InitMesh(const aiMesh * const p_pAiMesh, const std::string & p_rPath);
 		/*! initialize position vertices. */
 		void InitPositions(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! initialize vertex indices */

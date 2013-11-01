@@ -187,6 +187,7 @@ namespace KG
 				return true;
 			}
 		}
+		KE::Debug::print(KE::Debug::DBG_ERROR, "AnimationNode::FindScaleKeyFrameIndices : cannot find a key frame that has a smaller time stamp than the given!");
 		assert(false);
 		return false;
 	}

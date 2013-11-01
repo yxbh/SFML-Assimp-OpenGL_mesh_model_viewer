@@ -26,12 +26,12 @@ namespace KG
 
 	bool MeshLoader::LoadScene(const std::string & p_rPath)
 	{
-		std::size_t index = p_rPath.find_last_of('x');
-		std::size_t index2 = p_rPath.find_first_of("model");
+		const std::size_t index(p_rPath.find_last_of('x'));
+		const std::size_t index2(p_rPath.find_first_of("model"));
 		if (index != std::string::npos
-			&& index != 0 // not first character.
-			&& index2 == 0 // starts with "model"
-			&& p_rPath.at(index-1) == '.'
+				&& index != 0 // not first character.
+				&& index2 == 0 // starts with "model"
+				&& p_rPath.at(index-1) == '.'
 			)// flip winding for CITS .x file. (normally .x has CW winding, but the CITS ones have CCW.
 		{
 			m_pScene
@@ -42,7 +42,6 @@ namespace KG
 						|aiProcess_FlipWindingOrder
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
-						//&(~aiProcess_Debone)
 				);
 		}
 		else
@@ -54,7 +53,6 @@ namespace KG
 					, aiProcessPreset_TargetRealtime_MaxQuality
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
-						//&(~aiProcess_Debone)
 				);
 		}
 
@@ -76,19 +74,9 @@ namespace KG
 		// load all the meshes
 		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
 		{
-			// load mesh
-			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i]));
+			// load and initialize mesh
+			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i], p_rPath));
 			mesh->SetID(meshes->GetEntityID());
-
-			// load skeleton if there's any.
-			this->InitSkeleton(mesh, p_pScene->mMeshes[i]);
-
-			// load all animatins if there's any.
-			this->InitAnimations(mesh);
-
-			// load texture
-			this->InitMaterialTexture(mesh, p_pScene->mMeshes[i], m_pScene, p_rPath);
-
 			meshes->AddChild(mesh);
 		}
 
@@ -96,7 +84,7 @@ namespace KG
 		return meshes;
 	}
 
-	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_pAiMesh)
+	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_pAiMesh, const std::string & p_rPath)
 	{
 		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
 		assert(p_pAiMesh); // cannot be null
@@ -120,6 +108,15 @@ namespace KG
 
 		// texture coords
 		this->InitTexCoords(mesh, p_pAiMesh);
+
+		// load skeleton if there's any.
+		this->InitSkeleton(mesh, p_pAiMesh);
+
+		// load all animatins if there's any.
+		this->InitAnimations(mesh);
+
+		// load texture
+		this->InitMaterialTexture(mesh, p_pAiMesh, m_pScene, p_rPath);
 
 		mesh->m_Loaded = true;
 		return mesh;
@@ -253,7 +250,7 @@ namespace KG
 		bool result(true);
 
 		// Extract the directory part from the file name
-		std::string::size_type slash_index = p_Path.find_last_of("/");
+		const std::string::size_type slash_index(p_Path.find_last_of("/"));
 		std::string dir;
 
 		if (slash_index == std::string::npos)
@@ -263,8 +260,8 @@ namespace KG
 		else 
 			dir = p_Path.substr(0, slash_index);
 
-		const int material_index = p_pAiMesh->mMaterialIndex;
-		const aiMaterial * const material_ptr = p_pAiScene->mMaterials[material_index];
+		const int material_index(p_pAiMesh->mMaterialIndex);
+		const aiMaterial * const material_ptr(p_pAiScene->mMaterials[material_index]);
 		if (!material_ptr)
 			return false;
 
@@ -276,8 +273,8 @@ namespace KG
 					== AI_SUCCESS
 				)
 			{
-				const std::string FullPath = dir + "/" + Path.data;
-				KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, FullPath));
+				const std::string full_path(dir + "/" + Path.data);
+				KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, full_path));
 				p_spMesh->SetTexture(texture);
 			}
 		}	
@@ -308,7 +305,7 @@ namespace KG
 		std::map<unsigned, std::multimap<float, std::string>> vertex_to_bones_map; // <v_index, <weight, bone_name>>
 		for (unsigned i = 0; i < num_bones; ++i)
 		{
-			const aiBone * const ai_bone_ptr = p_pAiMesh->mBones[i];
+			const aiBone * const ai_bone_ptr(p_pAiMesh->mBones[i]);
 			
 			// collect bone name for Skeleton (per-bone)
 			const std::string bone_name(ai_bone_ptr->mName.data);
@@ -359,7 +356,7 @@ namespace KG
 		skeleton_sp->weights.resize(p_pAiMesh->mNumVertices);	// resize first and then iterate.
 		for (auto & vertex_to_names : vertex_to_bones_map)
 		{ // for vertex to 4 x Weights pair
-			auto bone_weight_pair_it = vertex_to_names.second.begin(); //--bone_weight_pair_it;
+			auto bone_weight_pair_it(vertex_to_names.second.begin()); //--bone_weight_pair_it;
 
 			// 1st weight
 			auto it = std::find(skeleton_sp->names.begin(), skeleton_sp->names.end(), bone_weight_pair_it->second);
@@ -418,7 +415,20 @@ namespace KG
 		{ // load each animation into proprietary format.
 			KG::Animation_SmartPtr animation_sp(new KG::Animation(p_spMesh->GetEntityID()));
 			const aiAnimation * const ai_anim_ptr(m_pScene->mAnimations[i]);
-			const double factor = (ai_anim_ptr->mTicksPerSecond > 0) ? ai_anim_ptr->mTicksPerSecond : 1.0;
+
+			// get animation frame rate:
+			double anim_fps; // ticks per second
+			if (ai_anim_ptr->mTicksPerSecond > 0)
+			{
+				anim_fps = ai_anim_ptr->mTicksPerSecond;
+				KE::Debug::print("MeshLoader::InitAnimations : animation ticks/sec = " + std::to_string(anim_fps));
+			}
+			else
+			{
+				anim_fps = 1.0;
+				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitAnimations : animation framerate not specified. Set to " + std::to_string(anim_fps));
+			}
+
 			for (unsigned a = 0; a < ai_anim_ptr->mNumChannels; ++a)
 			{ // iterate through each aiNode
 				KG::AnimationNode_SmartPtr anim_node_sp(new KG::AnimationNode(p_spMesh->GetEntityID()));
@@ -444,7 +454,7 @@ namespace KG
 				{
 					const aiVectorKey & ai_key(ai_animnode_ptr->mScalingKeys[node_index]);
 					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/anim_fps));
 					const KG::AnimationScaleKey key(time, vec);
 					anim_node_sp->m_ScaleKeys.push_back(key);
 				}
@@ -454,7 +464,7 @@ namespace KG
 				{
 					const aiVectorKey & ai_key(ai_animnode_ptr->mPositionKeys[node_index]);
 					const glm::dvec3 vec(ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/anim_fps));
 					const KG::AnimationTranslationKey key(time, vec);
 					anim_node_sp->m_TranslationKeys.push_back(key);
 				}
@@ -464,7 +474,7 @@ namespace KG
 				{
 					const aiQuatKey & ai_key(ai_animnode_ptr->mRotationKeys[node_index]);
 					const glm::dquat quat(ai_key.mValue.w, ai_key.mValue.x, ai_key.mValue.y, ai_key.mValue.z);
-					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/factor));
+					const KE::Duration time(KE::Duration::Seconds(ai_key.mTime/anim_fps));
 					const KG::AnimationRotationKey key(time, quat);
 					anim_node_sp->m_RotationKeys.push_back(key);
 				}
