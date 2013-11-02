@@ -5,9 +5,6 @@ namespace KG
 {
 	class Mesh;
 	typedef std::shared_ptr<KG::Mesh>	Mesh_SmartPtr;
-	class Meshes;
-	typedef std::shared_ptr<KG::Meshes> Meshes_SmartPtr;
-	typedef std::weak_ptr<KG::Meshes>	Meshes_WeakPtr;
 	class Texture;
 	typedef std::shared_ptr<KG::Texture>	Texture_SmartPtr;
 	class Skeleton;
@@ -25,21 +22,22 @@ namespace KG
 
 	private:
 		Assimp::Importer		m_Importer;
-		const aiScene	*		m_pScene;
+		const aiScene *			m_pScene;
+		std::string				m_ScenePath;
 
 		std::vector<KG::Texture_SmartPtr> m_Textures;
 
 	public:
 		SceneLoader(void);
 		/*! Return nullptr if loading fails. */
-		Meshes_SmartPtr Load(const std::string & p_rPath);
+		Mesh_SmartPtr Load(const std::string & p_rPath);
 
 	private:
-		bool LoadScene(const std::string & p_rPath);
+		const bool LoadAiScene(const std::string & p_rPath);
 
-		Meshes_SmartPtr LoadMeshes(const std::string & p_rPath);
-		Meshes_SmartPtr InitFromScene(const aiScene * p_pScene, const std::string & p_rPath);
-		Mesh_SmartPtr InitMesh(const aiMesh * const p_pAiMesh, const std::string & p_rPath);
+		Mesh_SmartPtr InitFromAiScene(const aiScene * p_pScene, const std::string & p_rPath);
+		void RecursiveInitScene(KG::Mesh_SmartPtr p_spParentMesh, KG::Skeleton_SmartPtr p_spSkeleton, const aiNode * const p_pAiNode);
+		Mesh_SmartPtr InitMesh(const aiMesh * const p_pAiMesh, const unsigned p_AiMaterialIndex);
 		/*! initialize position vertices. */
 		void InitPositions(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! initialize vertex indices */
@@ -51,7 +49,7 @@ namespace KG
 		/*! initialize color vertices. */
 		void InitColors(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
 		/*! initialize materials. */
-		void InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh);
+		void InitMaterials(KG::Mesh_SmartPtr p_spMesh, const unsigned p_MaterialIndex);
 		/*! */
 		const bool InitMaterialTexture(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh, const aiScene * const p_pAiScene, const std::string & p_Path);
 		/*! */

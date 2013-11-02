@@ -1,6 +1,5 @@
 #include "SceneLoader.hpp"
 #include "Mesh.hpp"
-#include "Meshes.hpp"
 #include "TextureLoader.hpp"
 #include "Texture.hpp"
 #include "Skeleton.hpp"
@@ -13,18 +12,19 @@ namespace KG
 		: m_pScene(nullptr)
 	{}
 
-	Meshes_SmartPtr SceneLoader::Load(const std::string & p_rPath)
+	Mesh_SmartPtr SceneLoader::Load(const std::string & p_rPath)
 	{
-		if (!this->LoadScene(p_rPath))
+		if (!this->LoadAiScene(p_rPath))
 		{
 			KE::Debug::print(KE::Debug::DBG_ERROR, "Mesh load failure.");
 			return nullptr;
 		}
 		assert(m_pScene != nullptr);
-		return InitFromScene(m_pScene, p_rPath);
+		m_ScenePath = p_rPath;
+		return InitFromAiScene(m_pScene, p_rPath);
 	}
 
-	bool SceneLoader::LoadScene(const std::string & p_rPath)
+	const bool SceneLoader::LoadAiScene(const std::string & p_rPath)
 	{
 		const std::size_t index(p_rPath.find_last_of('x'));
 		const std::size_t index2(p_rPath.find_first_of("model"));
@@ -68,22 +68,56 @@ namespace KG
 		return true;
 	}
 
-	Meshes_SmartPtr SceneLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
+	Mesh_SmartPtr SceneLoader::InitFromAiScene(const aiScene * p_pScene, const std::string & p_rPath)
 	{
-		Meshes_SmartPtr meshes(new KG::Meshes);
-		// load all the meshes
-		for (int i = 0; i < static_cast<int>(p_pScene->mNumMeshes); ++i)
-		{
-			// load and initialize mesh
-			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i], p_rPath));
-			meshes->AddChild(mesh);
-		}
+		KG::Mesh_SmartPtr master_mesh_sp(new KG::Mesh);
+		KG::Skeleton_SmartPtr skeleton_sp(new KG::Skeleton(master_mesh_sp->GetEntityID()));
+		this->RecursiveInitScene(master_mesh_sp, skeleton_sp, m_pScene->mRootNode);
 
-		m_Importer.FreeScene(); m_pScene = nullptr; // cleanup
-		return meshes;
+		// cleanup
+		m_Importer.FreeScene();
+		m_pScene = nullptr;
+		m_ScenePath = "";
+		return master_mesh_sp;
 	}
 
-	Mesh_SmartPtr SceneLoader::InitMesh(const aiMesh * const p_pAiMesh, const std::string & p_rPath)
+	void SceneLoader::RecursiveInitScene
+		(
+			KG::Mesh_SmartPtr p_spParentMesh
+			, KG::Skeleton_SmartPtr p_spSkeleton
+			, const aiNode * const p_pAiNode
+		)
+	{
+		// check null parent mesh and skeleton??
+		assert(p_pAiNode);
+		assert(p_spParentMesh);
+		assert(p_pAiNode);
+
+		// create/recover BoneNodes.
+
+
+		if (p_pAiNode->mNumMeshes > 0)
+		{
+			for (unsigned i = 0; i < p_pAiNode->mNumMeshes; ++i)
+			{
+				const unsigned aimesh_index(p_pAiNode->mMeshes[i]);
+				const unsigned aimaterial_index(m_pScene->mMeshes[aimesh_index]->mMaterialIndex);
+				KG::Mesh_SmartPtr new_mesh_sp(this->InitMesh(m_pScene->mMeshes[aimesh_index], aimaterial_index));
+				p_spParentMesh->AddChild(new_mesh_sp);
+				KG::Skeleton_SmartPtr skeleton_sp(new KG::Skeleton(KE::EntityIDGenerator::NewID()));
+				new_mesh_sp->SetSkeleton(skeleton_sp);
+				this->RecursiveInitScene(new_mesh_sp, skeleton_sp, p_pAiNode->mChildren[i]);
+			}			
+		}
+		else
+		{
+			for (unsigned i = 0; i < p_pAiNode->mNumChildren; ++i)
+				this->RecursiveInitScene(p_spParentMesh, p_spSkeleton, p_pAiNode->mChildren[i]);
+		}
+		
+	}
+
+	Mesh_SmartPtr SceneLoader::InitMesh(const aiMesh * const p_pAiMesh, const unsigned p_AiMaterialIndex)
 	{
 		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
 		assert(p_pAiMesh); // cannot be null
@@ -100,7 +134,7 @@ namespace KG
 		this->InitNormals(mesh_sp, p_pAiMesh);
 
 		// material
-		this->InitMaterials(mesh_sp, p_pAiMesh);
+		this->InitMaterials(mesh_sp, p_AiMaterialIndex);
 
 		// color vertex.
 		this->InitColors(mesh_sp, p_pAiMesh);
@@ -115,7 +149,7 @@ namespace KG
 		this->InitAnimations(mesh_sp);
 
 		// load texture
-		this->InitMaterialTexture(mesh_sp, p_pAiMesh, m_pScene, p_rPath);
+		this->InitMaterialTexture(mesh_sp, p_pAiMesh, m_pScene, m_ScenePath);
 
 		mesh_sp->m_Loaded = true;
 		return mesh_sp;
@@ -215,12 +249,12 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitColors : aiMesh has no vertex colors.");
 	}
 
-	void SceneLoader::InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitMaterials(KG::Mesh_SmartPtr p_spMesh, const unsigned p_MaterialIndex)
 	{
 		if (m_pScene->HasMaterials())
 		{
 			KE::Debug::print("MeshLoader::InitMaterials : Init texture coords.");
-			const aiMaterial * const material_ptr = m_pScene->mMaterials[p_pAiMesh->mMaterialIndex];
+			const aiMaterial * const material_ptr = m_pScene->mMaterials[p_MaterialIndex];
 			aiString name;
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_NAME, name))
 				p_spMesh->m_Material.Name = name.C_Str();
