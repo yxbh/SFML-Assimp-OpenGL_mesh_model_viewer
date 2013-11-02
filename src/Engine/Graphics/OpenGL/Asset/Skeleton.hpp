@@ -45,6 +45,7 @@ namespace KG
 		: public KG::SceneNode
 	{
 		friend class MeshLoader;
+		friend class SceneLoader;
 
 	public:
 		glm::dmat4							global_inverse_transform;

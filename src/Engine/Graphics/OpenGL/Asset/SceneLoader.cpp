@@ -1,4 +1,4 @@
-#include "MeshLoader.hpp"
+#include "SceneLoader.hpp"
 #include "Mesh.hpp"
 #include "Meshes.hpp"
 #include "TextureLoader.hpp"
@@ -9,11 +9,11 @@
 namespace KG
 {
 
-	MeshLoader::MeshLoader(void)
+	SceneLoader::SceneLoader(void)
 		: m_pScene(nullptr)
 	{}
 
-	Meshes_SmartPtr MeshLoader::Load(const std::string & p_rPath)
+	Meshes_SmartPtr SceneLoader::Load(const std::string & p_rPath)
 	{
 		if (!this->LoadScene(p_rPath))
 		{
@@ -24,7 +24,7 @@ namespace KG
 		return InitFromScene(m_pScene, p_rPath);
 	}
 
-	bool MeshLoader::LoadScene(const std::string & p_rPath)
+	bool SceneLoader::LoadScene(const std::string & p_rPath)
 	{
 		const std::size_t index(p_rPath.find_last_of('x'));
 		const std::size_t index2(p_rPath.find_first_of("model"));
@@ -68,7 +68,7 @@ namespace KG
 		return true;
 	}
 
-	Meshes_SmartPtr MeshLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
+	Meshes_SmartPtr SceneLoader::InitFromScene(const aiScene * p_pScene, const std::string & p_rPath)
 	{
 		Meshes_SmartPtr meshes(new KG::Meshes);
 		// load all the meshes
@@ -83,7 +83,7 @@ namespace KG
 		return meshes;
 	}
 
-	Mesh_SmartPtr MeshLoader::InitMesh(const aiMesh * const p_pAiMesh, const std::string & p_rPath)
+	Mesh_SmartPtr SceneLoader::InitMesh(const aiMesh * const p_pAiMesh, const std::string & p_rPath)
 	{
 		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
 		assert(p_pAiMesh); // cannot be null
@@ -121,7 +121,7 @@ namespace KG
 		return mesh_sp;
 	}
 
-	void MeshLoader::InitPositions(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitPositions(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (p_pAiMesh->HasPositions())
 		{
@@ -141,7 +141,7 @@ namespace KG
 		}
 	}
 
-	void MeshLoader::InitFaces(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitFaces(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (p_pAiMesh->HasFaces())
 		{
@@ -162,7 +162,7 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitNormals : aiMesh has no vertex indices.");
 	}
 
-	void MeshLoader::InitNormals(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitNormals(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (p_pAiMesh->HasNormals())
 		{
@@ -179,7 +179,7 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitNormals : aiMesh has no vertex normals.");
 	}
 
-	void MeshLoader::InitTexCoords(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitTexCoords(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		const unsigned texcoord_id = 0;
 		if (p_pAiMesh->HasTextureCoords(texcoord_id))
@@ -197,7 +197,7 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitTexCoords : aiMesh has no texture coordinates.");
 	}
 
-	void MeshLoader::InitColors(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitColors(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		const unsigned vc_id = 0; // TODO : ??
 		if (p_pAiMesh->HasVertexColors(vc_id))
@@ -215,7 +215,7 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitColors : aiMesh has no vertex colors.");
 	}
 
-	void MeshLoader::InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (m_pScene->HasMaterials())
 		{
@@ -241,7 +241,7 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitMaterials : aiScene has no materials.");
 	}
 
-	const bool MeshLoader::InitMaterialTexture
+	const bool SceneLoader::InitMaterialTexture
 		(
 			Mesh_SmartPtr p_spMesh
 			, const aiMesh * const p_pAiMesh
@@ -284,7 +284,7 @@ namespace KG
 		return result; // TODO
 	}
 
-	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
+	void SceneLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (!p_pAiMesh->HasBones())
 		{
@@ -400,7 +400,7 @@ namespace KG
 		p_spMesh->SetSkeleton(skeleton_sp);
 	}
 
-	void MeshLoader::InitAnimations(Mesh_SmartPtr p_spMesh)
+	void SceneLoader::InitAnimations(Mesh_SmartPtr p_spMesh)
 	{
 		assert(p_spMesh);
 		assert(m_pScene);
@@ -492,7 +492,7 @@ namespace KG
 
 	}
 
-	void MeshLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode)
+	void SceneLoader::ConstructSkeleton(KG::Skeleton_SmartPtr p_spSkeleton, const aiMesh * const p_pAiMesh, const aiNode * const p_AiNode)
 	{
 		/*
 			To reconstruct the bone tree. Build a bone depth map by going through each Bone name and search them in the scene.
@@ -622,7 +622,7 @@ namespace KG
 		KE::Debug::print("");
 	}
 
-	const bool MeshLoader::FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName)
+	const bool SceneLoader::FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName)
 	{
 		++p_Depth;
 		const std::string this_bone_name(p_pAiNode->mName.C_Str());
@@ -641,7 +641,7 @@ namespace KG
 		return false;
 	}
 
-	const aiNode * const MeshLoader::FindAiNodeByName(const std::string & p_rNodeName, const aiNode * const p_pAiNode)
+	const aiNode * const SceneLoader::FindAiNodeByName(const std::string & p_rNodeName, const aiNode * const p_pAiNode)
 	{
 		if (!p_pAiNode)
 		{
@@ -664,7 +664,7 @@ namespace KG
 		return nullptr;
 	}
 
-	void MeshLoader::GrowBoneTree
+	void SceneLoader::GrowBoneTree
 		(
 			KG::Skeleton_SmartPtr p_spSkeleton, KG::BoneNode_SmartPtr p_spBoneNode
 			, const aiMesh * const p_pAiMesh, const aiNode * const p_pAiNode
@@ -736,7 +736,7 @@ namespace KG
 			this->GrowBoneTree(p_spSkeleton, bone_node_sp, p_pAiMesh, p_pAiNode->mChildren[i]);
 	}
 
-	const glm::dmat4 MeshLoader::CalculateBoneOffset(const aiNode * const p_pAiNode, glm::dmat4 p_Offset)
+	const glm::dmat4 SceneLoader::CalculateBoneOffset(const aiNode * const p_pAiNode, glm::dmat4 p_Offset)
 	{
 		if (p_pAiNode)
 		{
@@ -748,7 +748,7 @@ namespace KG
 			return glm::inverse(p_Offset); // calculate the inverse of the bind pose.
 	}
 
-	const glm::dmat4 MeshLoader::AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat)
+	const glm::dmat4 SceneLoader::AiMatToGLMMat(const aiMatrix4x4 & p_rAiMat)
 	{
 		glm::dmat4 dmat4;
 		dmat4[0][0] = p_rAiMat.a1; dmat4[1][0] = p_rAiMat.a2; dmat4[2][0] = p_rAiMat.a3; dmat4[3][0] = p_rAiMat.a4;

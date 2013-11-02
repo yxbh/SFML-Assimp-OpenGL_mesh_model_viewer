@@ -21,8 +21,6 @@ namespace KG
 
 	private:
 		/*! animation related. */
-		KG::Skeleton_SmartPtr	m_spAnimSkeleton;		// animaition skeleton.
-		bool					m_HasSkeleton;
 
 	public:
 		Meshes(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::NotRendered);
@@ -40,9 +38,6 @@ namespace KG
 		void Clear(void);
 
 		virtual void SetTexture(KG::Texture_SmartPtr p_spTexture) override;
-		void SetSkeleton(KG::Skeleton_SmartPtr p_spSkeleton);
-
-		const bool HasSkeleton(void) const;
 
 	private:
 

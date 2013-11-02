@@ -23,6 +23,7 @@ namespace KG
 		: public KG::SceneNode
 	{
 		friend class MeshLoader;
+		friend class SceneLoader;
 
 	public:
 		enum class RenderMode

@@ -93,6 +93,7 @@ namespace KG
 		: public KG::SceneNode
 	{
 		friend class MeshLoader;
+		friend class SceneLoader;
 
 	private:
 		AnimationScaleKeyList				m_ScaleKeys;
@@ -163,6 +164,7 @@ namespace KG
 		: public KG::SceneNode
 	{
 		friend class MeshLoader;
+		friend class SceneLoader;
 
 	private:
 		AnimationChannels	m_Channels; // each channel has a single node corresponding to a BoneNode. Each AnimationNode animates a BoneNode.
