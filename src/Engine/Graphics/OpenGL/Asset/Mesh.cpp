@@ -179,144 +179,194 @@ namespace KG
 
 	const bool Mesh::Loaded(void) const
 	{
-		return m_Loaded;
+		if (!m_Loaded)
+			return false;
+		bool loaded(true);
+		for (KG::SceneNode_SmartPtr scenenode_sp : m_ChildSceneNodeList)
+		{
+			KG::Mesh_SmartPtr mesh_sp(std::static_pointer_cast<KG::Mesh>(scenenode_sp));
+			if (mesh_sp)
+				if (!mesh_sp->Loaded())
+					loaded = false;
+		}
+		return loaded;
 	}
 
 	const bool Mesh::BufferAll(void)
 	{
-		if (this->Buffered())
-		{
-			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : already buffered everything.");
-			return false;
-		}
 		if (!this->Loaded())
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : Nothing loaded. Ignore call. ");
-			return false;
+			return false; // immediately abort. The entire recursive operation will stop.
 		}
 
-		// gen and bind VAO.
-		GLuint vao, vbo;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-		this->SetVAO(vao);
-		KE::Debug::check_for_GL_error();
-
-		// buffer pos vertices.
-		if (this->HasVertices())
+		bool buffer_successful(true);
+		if (this->Buffered())
 		{
-			KE::Debug::print("Mesh::BufferAll : buffering position vertices.");
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			this->SetPosVBO(vbo);
-			glBufferData
-				(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->GetVertices().size(), this->GetVertices().data(), GL_STATIC_DRAW);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-			KE::Debug::check_for_GL_error();
+			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : already buffered everything.");
 		}
 		else
-			return false;
-
-		// buffer indices
-		if (this->HasVertexIndices())
 		{
-			KE::Debug::print("Mesh::BufferAll : buffering vertex indices.");
-			this->SetRenderMode(RenderMode::Indexed);
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-			this->SetIndexVBO(vbo);
-			glBufferData
-				(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*this->GetIndices().size(), this->GetIndices().data(), GL_STATIC_DRAW);
+			// gen and bind VAO.
+			GLuint vao, vbo;
+			glGenVertexArrays(1, &vao);
+			glBindVertexArray(vao);
+			this->SetVAO(vao);
 			KE::Debug::check_for_GL_error();
-		}
-		else
-			this->SetRenderMode(RenderMode::Arrays);
 
-		// normal
-		if (this->HasNormals())
-		{
-			KE::Debug::print("Mesh::BufferAll : buffering vertex normals.");
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			this->SetNormalVBO(vbo);
-			glBufferData
-				(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->GetNormals().size(), this->GetNormals().data(), GL_STATIC_DRAW);
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-			KE::Debug::check_for_GL_error();
-		}
+			// buffer pos vertices.
+			if (this->HasVertices())
+			{
+				KE::Debug::print("Mesh::BufferAll : buffering position vertices.");
+				glGenBuffers(1, &vbo);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				this->SetPosVBO(vbo);
+				glBufferData
+				(
+					GL_ARRAY_BUFFER
+					, sizeof(glm::vec3)*this->GetVertices().size()
+					, this->GetVertices().data()
+					, GL_STATIC_DRAW
+				);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
+				KE::Debug::check_for_GL_error();
+			}
+			else
+				return false;
 
-		// color vertices
-		if (this->HasVertexColors())
-		{
-			KE::Debug::print("Mesh::BufferAll : buffering vertex colors.");
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			this->SetColorVBO(vbo);
-			glBufferData
-				(GL_ARRAY_BUFFER, sizeof(glm::vec4)*this->GetColors().size(), this->GetColors().data(), GL_STATIC_DRAW);
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-			KE::Debug::check_for_GL_error();
-		}
+			// buffer indices
+			if (this->HasVertexIndices())
+			{
+				KE::Debug::print("Mesh::BufferAll : buffering vertex indices.");
+				this->SetRenderMode(RenderMode::Indexed);
+				glGenBuffers(1, &vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+				this->SetIndexVBO(vbo);
+				glBufferData
+				(
+					GL_ELEMENT_ARRAY_BUFFER
+					, sizeof(GLuint)*this->GetIndices().size()
+					, this->GetIndices().data()
+					, GL_STATIC_DRAW
+				);
+				KE::Debug::check_for_GL_error();
+			}
+			else
+				this->SetRenderMode(RenderMode::Arrays);
 
-		// texture coords
-		if (this->HasTextureCoords())
-		{
-			KE::Debug::print("Mesh::BufferAll : buffering vertex coordinates.");
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			this->SetTexCoordVBO(vbo);
-			glBufferData
-				(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->GetTexCoords().size(), this->GetTexCoords().data(), GL_STATIC_DRAW);
-			glEnableVertexAttribArray(3);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-			KE::Debug::check_for_GL_error();
-		}
+			// normal
+			if (this->HasNormals())
+			{
+				KE::Debug::print("Mesh::BufferAll : buffering vertex normals.");
+				glGenBuffers(1, &vbo);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				this->SetNormalVBO(vbo);
+				glBufferData
+				(
+					GL_ARRAY_BUFFER
+					, sizeof(glm::vec3)*this->GetNormals().size()
+					, this->GetNormals().data()
+					, GL_STATIC_DRAW
+				);
+				glEnableVertexAttribArray(2);
+				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
+				KE::Debug::check_for_GL_error();
+			}
 
-		// material m_BoneWeightVBO
+			// color vertices
+			if (this->HasVertexColors())
+			{
+				KE::Debug::print("Mesh::BufferAll : buffering vertex colors.");
+				glGenBuffers(1, &vbo);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				this->SetColorVBO(vbo);
+				glBufferData
+				(
+					GL_ARRAY_BUFFER
+					, sizeof(glm::vec4)*this->GetColors().size()
+					, this->GetColors().data()
+					, GL_STATIC_DRAW
+				);
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
+				KE::Debug::check_for_GL_error();
+			}
+
+			// texture coords
+			if (this->HasTextureCoords())
+			{
+				KE::Debug::print("Mesh::BufferAll : buffering vertex coordinates.");
+				glGenBuffers(1, &vbo);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				this->SetTexCoordVBO(vbo);
+				glBufferData
+				(
+					GL_ARRAY_BUFFER
+					, sizeof(glm::vec3)*this->GetTexCoords().size()
+					, this->GetTexCoords().data()
+					, GL_STATIC_DRAW
+				);
+				glEnableVertexAttribArray(3);
+				glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
+				KE::Debug::check_for_GL_error();
+			}
+
+			// material m_BoneWeightVBO
 		
-		// bone IDs
-		if (this->HasSkeleton())
-		{
-			KE::Debug::print("Mesh::BufferAll : buffering bone data.");
 			// bone IDs
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			this->SetBoneIDVBO(vbo);
-			glBufferData
-			(
-				GL_ARRAY_BUFFER
-				, sizeof(m_spSkeleton->bone_IDs[0]) * m_spSkeleton->bone_IDs.size()
-				, m_spSkeleton->bone_IDs.data()
-				, GL_STATIC_DRAW
-			);
-			glEnableVertexAttribArray(4);
-			glVertexAttribIPointer(4, 4, GL_INT, 0, (const GLvoid*)0);
+			if (this->HasSkeleton())
+			{
+				KE::Debug::print("Mesh::BufferAll : buffering bone data.");
+				// bone IDs
+				glGenBuffers(1, &vbo);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				this->SetBoneIDVBO(vbo);
+				glBufferData
+				(
+					GL_ARRAY_BUFFER
+					, sizeof(m_spSkeleton->bone_IDs[0]) * m_spSkeleton->bone_IDs.size()
+					, m_spSkeleton->bone_IDs.data()
+					, GL_STATIC_DRAW
+				);
+				glEnableVertexAttribArray(4);
+				glVertexAttribIPointer(4, 4, GL_INT, 0, (const GLvoid*)0);
+				KE::Debug::check_for_GL_error();
+				// bone weights
+				glGenBuffers(1, &m_BoneWeightVBO);
+				glBindBuffer(GL_ARRAY_BUFFER, m_BoneWeightVBO);
+				glBufferData
+				(
+					GL_ARRAY_BUFFER
+					, sizeof(m_spSkeleton->bone_weights[0]) * m_spSkeleton->bone_weights.size()
+					, m_spSkeleton->bone_weights.data()
+					, GL_STATIC_DRAW
+				);
+				glEnableVertexAttribArray(5);
+				glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
+				KE::Debug::check_for_GL_error();
+			}
+
+			// unbind buffers
+			glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER,0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 			KE::Debug::check_for_GL_error();
-			// bone weights
-			glGenBuffers(1, &m_BoneWeightVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, m_BoneWeightVBO);
-			glBufferData
-			(
-				GL_ARRAY_BUFFER
-				, sizeof(m_spSkeleton->bone_weights[0]) * m_spSkeleton->bone_weights.size()
-				, m_spSkeleton->bone_weights.data()
-				, GL_STATIC_DRAW
-			);
-			glEnableVertexAttribArray(5);
-			glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-			KE::Debug::check_for_GL_error();
+
+			m_LoadedToGPU = true;
+			buffer_successful = true;
 		}
 
-		// unbind buffers
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER,0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-		KE::Debug::check_for_GL_error();
+		// buffer all children if they're Mesh objects too.
+		for (KG::SceneNode_SmartPtr scenenode_sp : this->GetChildSceneNodeList())
+		{
+			KG::Mesh_SmartPtr mesh_sp(std::static_pointer_cast<KG::Mesh>(scenenode_sp));
+			if (mesh_sp)
+				if (!mesh_sp->BufferAll())
+					buffer_successful = false;
+		}
 
-		return m_LoadedToGPU = true;
+		return buffer_successful;
 	}
 
 	const bool Mesh::Buffered(void) const

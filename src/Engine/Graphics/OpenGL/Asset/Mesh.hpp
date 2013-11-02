@@ -15,6 +15,9 @@ namespace KG
 	typedef std::weak_ptr<KG::Skeleton>		Skeleton_WeakPtr;
 
 	/*! \class Mesh
+
+		- A Mesh could contain other Mesh's as children in a tree like structure.
+
 	*/
 	class Mesh
 		: public KG::SceneNode
