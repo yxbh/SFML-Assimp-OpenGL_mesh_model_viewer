@@ -177,34 +177,6 @@ namespace KG
 		m_Material = p_NewMaterial;
 	}
 
-	const GLuint Mesh::GetHandle(const Detail p_Detail) const
-	{
-		switch (p_Detail)
-		{
-		case Detail::VAO:			return m_VAO;
-		case Detail::VertexVBO:		return m_VertexVBO;
-		case Detail::IndexVBO:		return m_IndexVBO;
-		case Detail::NormalVBO:		return m_NormalVBO;
-		case Detail::TexCoordVBO:	return m_TexCoordVBO;
-		case Detail::ColorVBO:		return m_ColorVBO;
-		default:					return GLuint(0);
-		}
-	}
-
-	void Mesh::Set(const Detail p_Detail, const GLuint p_Value)
-	{
-		switch (p_Detail)
-		{
-		case Detail::VAO:			m_VAO = p_Value;
-		case Detail::VertexVBO:		m_VertexVBO = p_Value;
-		case Detail::IndexVBO:		m_IndexVBO = p_Value;
-		case Detail::NormalVBO:		m_NormalVBO = p_Value;
-		case Detail::TexCoordVBO:	m_TexCoordVBO = p_Value;
-		case Detail::ColorVBO:		m_ColorVBO = p_Value;
-		default:					assert(false);
-		}
-	}
-
 	const bool Mesh::Loaded(void) const
 	{
 		return m_Loaded;

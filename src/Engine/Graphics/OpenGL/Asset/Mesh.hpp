@@ -29,16 +29,6 @@ namespace KG
 			Indexed
 		};
 
-		enum class Detail
-		{
-			VAO,
-			VertexVBO,
-			IndexVBO,
-			NormalVBO,
-			TexCoordVBO,
-			ColorVBO,
-		};
-
 	private:
 		KG::Vec3fVector			m_PosVertices;
 		KG::Vec1uVector			m_Indices;
@@ -109,10 +99,6 @@ namespace KG
 		const bool IsBackFaceLit(void) const;
 
 		void SetMaterial(const KG::Material p_NewMaterial);
-
-		/*! return the requested internal handle. */
-		const GLuint GetHandle(const Detail p_Detail) const;
-		void Set(const Detail p_Detail, const GLuint p_Value);
 
 		/*! Check and see if this Mesh is empty. */
 		const bool Loaded(void) const;
