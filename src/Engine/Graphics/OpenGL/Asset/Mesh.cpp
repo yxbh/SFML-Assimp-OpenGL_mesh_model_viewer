@@ -8,13 +8,11 @@ namespace KG
 	Mesh::Mesh(const KE::EntityID p_EntityID, const RenderPass p_RenderPass)
 		: KG::SceneNode(p_EntityID, p_RenderPass)
 		, m_spSkeleton(nullptr)
-		, m_HasPosVertices(false), m_HasFaces(false), m_HasNormals(false), m_HasTexCoords(false), m_HasColors(false)
-		, m_HasMaterial(false), m_HasSkeleton(false)
 		, m_VAO(0)
 		, m_VertexVBO(0), m_IndexVBO(0), m_NormalVBO(0)
 		, m_TexCoordVBO(0), m_ColorVBO(0)
 		, m_BoneIDVBO(0), m_BoneWeightVBO(0)
-		, m_spTexture(nullptr), m_HasTexture(false)
+		, m_spTexture(nullptr)
 		, m_LightBackFace(true), m_LoadedToGPU(false), m_Loaded(false)
 		, m_RenderMode(RenderMode::Null), m_PrimitiveType(GL_TRIANGLES), m_IndexVarType(GL_UNSIGNED_INT)
 		, m_FirstIndex(0), m_IndexCount(0), m_ElementCount(0), m_IndexOffset(0)
@@ -23,15 +21,15 @@ namespace KG
 	Mesh::~Mesh(void)
 	{
 		glDeleteVertexArrays(1, &m_VAO);
-		if (this->Has(Property::PosVertices))
+		if (this->HasVertices())
 			glDeleteBuffers(1, &m_VertexVBO);
-		if (this->Has(Property::VertexIndices))
+		if (this->HasVertexIndices())
 			glDeleteBuffers(1, &m_IndexVBO);
-		if (this->Has(Property::Normals))
+		if (this->HasNormals())
 			glDeleteBuffers(1, &m_NormalVBO);
-		if (this->Has(Property::TexCoords))
+		if (this->HasTextureCoords())
 			glDeleteBuffers(1, &m_TexCoordVBO);
-		if (this->Has(Property::Colors))
+		if (this->HasVertexColors())
 			glDeleteBuffers(1, &m_ColorVBO);
 		// TODO : add check.
 		glDeleteBuffers(1, &m_BoneIDVBO);
@@ -129,66 +127,49 @@ namespace KG
 		return m_spSkeleton;
 	}
 
-	const bool Mesh::Has(const Property p_Property) const
+	const bool Mesh::HasVertices(void) const
 	{
-		switch (p_Property)
-		{
-		case Property::PosVertices:		return m_HasPosVertices;
-		case Property::Faces:			return m_HasFaces;
-		case Property::VertexIndices:	return m_HasFaces;
-		case Property::Normals:			return m_HasNormals;
-		case Property::Textures:		return m_HasTexture;
-		case Property::TexCoords:		return m_HasTexCoords;
-		case Property::Colors:			return m_HasTexCoords;
-		case Property::Material:		return m_HasMaterial;
-		case Property::LightBackFace:	return m_LightBackFace;
-		default:						return false;
-		}
+		return !m_PosVertices.empty();
 	}
 
-	const bool Mesh::HasVertex(void) const
+	const bool Mesh::HasVertexIndices(void) const
 	{
-		return m_HasPosVertices;
+		return !m_Indices.empty();
 	}
 
-	const bool Mesh::HasNormal(void) const
+	const bool Mesh::HasNormals(void) const
 	{
-		return m_HasNormals;
+		return !m_NormalVertices.empty();
 	}
 
-	const bool Mesh::HasColor(void) const
+	const bool Mesh::HasVertexColors(void) const
 	{
-		return m_HasColors;
+		return !m_ColorVertices.empty();
+	}
+
+	const bool Mesh::HasTextureCoords(void) const
+	{
+		return !m_TexCoordVertices.empty();
 	}
 
 	const bool Mesh::HasTexture(void) const
 	{
-		return m_HasTexture;
+		return m_spTexture != nullptr;
+	}
+
+	const bool Mesh::HasMaterial(void) const
+	{
+		return true;
 	}
 
 	const bool Mesh::HasSkeleton(void) const
 	{
-		return m_HasSkeleton;
+		return m_spSkeleton != nullptr;
 	}
 
-	void Mesh::SetHasVertex(const bool p_Have)
+	const bool Mesh::IsBackFaceLit(void) const
 	{
-		m_HasPosVertices = p_Have;
-	}
-
-	void Mesh::SetHasNormal(const bool p_Have)
-	{
-		m_HasNormals = p_Have;
-	}
-
-	void Mesh::SetHasColor(const bool p_Have)
-	{
-		m_HasColors = p_Have;
-	}
-
-	void Mesh::SetHasTexture(const bool p_Have)
-	{
-		m_HasTexture = p_Have;
+		return m_LightBackFace;
 	}
 
 	void Mesh::SetMaterial(const KG::Material p_NewMaterial)
@@ -250,8 +231,9 @@ namespace KG
 		KE::Debug::check_for_GL_error();
 
 		// buffer pos vertices.
-		if (this->m_HasPosVertices)
+		if (this->HasVertices())
 		{
+			KE::Debug::print("Mesh::BufferAll : buffering position vertices.");
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			this->SetPosVBO(vbo);
@@ -265,8 +247,9 @@ namespace KG
 			return false;
 
 		// buffer indices
-		if (this->m_HasFaces)
+		if (this->HasVertexIndices())
 		{
+			KE::Debug::print("Mesh::BufferAll : buffering vertex indices.");
 			this->SetRenderMode(RenderMode::Indexed);
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
@@ -279,9 +262,9 @@ namespace KG
 			this->SetRenderMode(RenderMode::Arrays);
 
 		// normal
-		if (this->m_HasNormals)
+		if (this->HasNormals())
 		{
-			KE::Debug::print("Mesh : Normal buffering.");
+			KE::Debug::print("Mesh::BufferAll : buffering vertex normals.");
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			this->SetNormalVBO(vbo);
@@ -293,8 +276,9 @@ namespace KG
 		}
 
 		// color vertices
-		if (this->m_HasColors)
+		if (this->HasVertexColors())
 		{
+			KE::Debug::print("Mesh::BufferAll : buffering vertex colors.");
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			this->SetColorVBO(vbo);
@@ -306,8 +290,9 @@ namespace KG
 		}
 
 		// texture coords
-		if (this->m_HasTexCoords)
+		if (this->HasTextureCoords())
 		{
+			KE::Debug::print("Mesh::BufferAll : buffering vertex coordinates.");
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			this->SetTexCoordVBO(vbo);
@@ -323,6 +308,7 @@ namespace KG
 		// bone IDs
 		if (this->HasSkeleton())
 		{
+			KE::Debug::print("Mesh::BufferAll : buffering bone data.");
 			// bone IDs
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -351,8 +337,6 @@ namespace KG
 			glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
 			KE::Debug::check_for_GL_error();
 		}
-
-		// TODO other bufferings.
 
 		// unbind buffers
 		glBindVertexArray(0);
@@ -457,23 +441,19 @@ namespace KG
 		if (p_spTexture == nullptr)
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : applying null Texture.");
-			m_HasTexture = false;
 			return;
 		}
 		else if (!p_spTexture->IsValid())
 		{
 			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh : invalid Texture.");
-			m_HasTexture = false;
 			return;
 		}
-		m_HasTexture = true;
 		m_spTexture = p_spTexture;
 	}
 
 	void Mesh::SetSkeleton(KG::Skeleton_SmartPtr p_spSkeleton)
 	{
 		m_spSkeleton = p_spSkeleton;
-		m_HasSkeleton = true;
 	}
 
 } // KG ns

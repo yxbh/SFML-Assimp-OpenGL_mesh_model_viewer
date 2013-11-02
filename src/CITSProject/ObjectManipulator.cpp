@@ -229,7 +229,7 @@ namespace ObjectManipulator
 				if (!eve)
 					return false;
 				if (eve->GetTextureFileName() == "NONE")
-					mesh_node->SetHasTexture(false);
+					mesh_node->SetTexture(nullptr);
 				else
 					mesh_node->SetTexture(KG::Texture_SmartPtr(new KG::Texture(KG::Texture::DType::Tex2D, "models-textures/" + eve->GetTextureFileName())));
 			}
@@ -381,7 +381,7 @@ namespace ObjectManipulator
 		}
 		meshes->BufferAll();
 
-		KG::Mesh_SmartPtr mesh = meshes->GetList().at(1);
+		KG::Mesh_SmartPtr mesh = meshes->GetList().at(0);
 		assert(mesh);
 		if(mesh->Loaded())
 			mesh->BufferAll();

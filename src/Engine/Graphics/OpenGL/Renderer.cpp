@@ -144,15 +144,9 @@ namespace KG
 			auto shader_program_ptr = m_spShaderProgram;
 			shader_program_ptr->Use(); // already called in PreRender(). but will leave it here for now.
 			shader_program_ptr->SetParameter<glm::mat4>("mvpMatrix", glm::mat4(camera_view_matrix*model_matrix));
-		
-			// setup vertex
-			if (mesh_ptr->HasNormal())
-				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_TRUE);
-			else
-				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_FALSE);
 
 			// setup color or texture
-			if (mesh_ptr->HasColor())
+			if (mesh_ptr->HasVertexColors())
 				shader_program_ptr->SetParameter<GLboolean>("HasColorVertices", GL_TRUE);
 			else if (mesh_ptr->HasTexture())
 			{
@@ -166,7 +160,7 @@ namespace KG
 			}
 
 			// texture
-			if (mesh_ptr->Has(KG::Mesh::Property::Textures))
+			if (mesh_ptr->HasTexture())
 			{
 				mesh_ptr->GetTexture()->Bind(GL_TEXTURE0);
 				shader_program_ptr->SetParameter<GLboolean>("HasTexCoord2D", GL_TRUE);
@@ -179,9 +173,8 @@ namespace KG
 
 			// material
 			const KG::Material & mat(mesh_ptr->GetMaterial());
-			if (mesh_ptr->Has(KG::Mesh::Property::Material))
+			if (mesh_ptr->HasMaterial()) // this is always true ATM (02/11/2013).
 			{
-				//shader_program_ptr->SetParameter<GLboolean>("HasMaterial", GL_TRUE);
 				shader_program_ptr->SetParameter<glm::vec3>("material.Emissive", mat.Emissive);
 				shader_program_ptr->SetParameter<glm::vec3>("material.Ambient", mat.Ambient);
 				shader_program_ptr->SetParameter<glm::vec3>("material.Diffuse", mat.Diffuse);
@@ -193,11 +186,11 @@ namespace KG
 			shader_program_ptr->SetParameter<glm::mat4>("modelMatrix", glm::mat4(model_matrix));
 			shader_program_ptr->SetParameter<glm::mat3>("ModelRotationMat3", glm::mat3(glm::dmat3(mesh_ptr->GetOrientationMat())));// glm::mat3(glm::transpose(glm::inverse(glm::dmat3(model_matrix)))));
 			// light
-			if (mesh_ptr->Has(KG::Mesh::Property::LightBackFace))
+			if (mesh_ptr->IsBackFaceLit())
 				shader_program_ptr->SetParameter<GLboolean>("LightBackFace", GL_TRUE);
 			else
 				shader_program_ptr->SetParameter<GLboolean>("LightBackFace", GL_FALSE);
-			if (mesh_ptr->Has(KG::Mesh::Property::Normals))
+			if (mesh_ptr->HasNormals())
 				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_TRUE);
 			else
 				shader_program_ptr->SetParameter<GLboolean>("HasNormals", GL_FALSE);
@@ -206,7 +199,6 @@ namespace KG
 			// animation
 			if (mesh_ptr->HasSkeleton())
 			{
-				//// TODO disabled for now.
 				shader_program_ptr->SetParameter<GLboolean>("HasBones", GL_TRUE);
 				shader_program_ptr->SetParameter("BoneTranforms[0]", mesh_ptr->GetSkeleton()->final_transforms);
 			}

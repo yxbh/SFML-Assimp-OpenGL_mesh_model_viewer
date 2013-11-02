@@ -29,19 +29,6 @@ namespace KG
 			Indexed
 		};
 
-		enum class Property
-		{
-			PosVertices,
-			Faces,
-			VertexIndices,
-			Normals,
-			Textures,
-			TexCoords,
-			Colors,
-			Material,
-			LightBackFace,
-		};
-
 		enum class Detail
 		{
 			VAO,
@@ -61,14 +48,6 @@ namespace KG
 		KG::Material			m_Material;
 		KG::Skeleton_SmartPtr	m_spSkeleton;
 		/* mesh properties. */
-		bool					m_HasPosVertices;
-		bool					m_HasFaces;			// vertex indices.
-		bool					m_HasNormals;
-		bool					m_HasTexCoords;
-		bool					m_HasColors;		// color vertices
-		bool					m_HasMaterial;
-		bool					m_HasSkeleton;
-		bool					m_LightBackFace;	// light with only ambient if false.
 		bool					m_LoadedToGPU;		// loaded into GPU memory.
 		bool					m_Loaded;			// loaded into RAM.
 		/* render specifics. VAO and VBO's */
@@ -82,7 +61,8 @@ namespace KG
 		GLuint					m_BoneWeightVBO;
 		/* texture related. */
 		KG::Texture_SmartPtr	m_spTexture;
-		bool					m_HasTexture;
+		/* light related. */
+		bool					m_LightBackFace;	// light with only ambient if false.
 		/* OpenGL draw call related. */
 		RenderMode				m_RenderMode;			// glDrawArrays or glDrawElements
 		GLenum					m_PrimitiveType;		// e.g. GL_TRIANGLES etc
@@ -117,16 +97,17 @@ namespace KG
 		const KG::Texture_SmartPtr GetTexture(void) const;
 		const KG::Skeleton_SmartPtr GetSkeleton(void) const;
 
-		const bool Has(const Property p_Property) const;
-		const bool HasVertex(void) const;
-		const bool HasNormal(void) const;
-		const bool HasColor(void) const;
+		const bool HasVertices(void) const;
+		const bool HasVertexIndices(void) const;
+		const bool HasNormals(void) const;
+		const bool HasVertexColors(void) const;
+		const bool HasTextureCoords(void) const;
 		const bool HasTexture(void) const;
+		const bool HasMaterial(void) const;
 		const bool HasSkeleton(void) const;
-		void SetHasVertex(const bool p_Have);
-		void SetHasNormal(const bool p_Have);
-		void SetHasColor(const bool p_Have);
-		void SetHasTexture(const bool p_Have);
+
+		const bool IsBackFaceLit(void) const;
+
 		void SetMaterial(const KG::Material p_NewMaterial);
 
 		/*! return the requested internal handle. */

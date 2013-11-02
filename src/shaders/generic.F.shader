@@ -30,7 +30,6 @@ smooth in 	vec4		fColor;
 smooth in 	vec2		fTexCoord2D;
 uniform		bool		HasColorVertices	= bool(false);
 uniform		bool 		HasTexCoord2D 		= bool(false);
-uniform		bool		HasMaterial			= bool(false);
 uniform 	sampler2D	Tex2D;
 uniform		float		TexCoordMultiplier	= 1.0f;
 

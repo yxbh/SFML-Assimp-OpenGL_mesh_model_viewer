@@ -76,7 +76,6 @@ namespace KG
 		{
 			// load and initialize mesh
 			KG::Mesh_SmartPtr mesh(this->InitMesh(p_pScene->mMeshes[i], p_rPath));
-			//mesh->SetID(meshes->GetEntityID());
 			meshes->AddChild(mesh);
 		}
 
@@ -89,7 +88,7 @@ namespace KG
 		KE::Debug::print("MeshLoader::InitMesh : New mesh.");
 		assert(p_pAiMesh); // cannot be null
 		KG::Mesh_SmartPtr mesh(new KG::Mesh());
-		mesh->SetName(p_pAiMesh->mName.data);
+		mesh->SetName(p_pAiMesh->mName.C_Str());
 
 		// pos vertex
 		this->InitPositions(mesh, p_pAiMesh);
@@ -127,7 +126,6 @@ namespace KG
 		if (p_pAiMesh->HasPositions())
 		{
 			KE::Debug::print("MeshLoader::InitPositions : Init positions.");
-			p_spMesh->m_HasPosVertices = true;
 			const unsigned num_pos(p_pAiMesh->mNumVertices);
 			p_spMesh->m_PosVertices.reserve(num_pos);
 			for (int i = 0; i < static_cast<int>(num_pos); ++i)
@@ -138,7 +136,7 @@ namespace KG
 		}
 		else
 		{
-			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitPositions : mesh has no position vertices!");
+			KE::Debug::print(KE::Debug::DBG_ERROR, "MeshLoader::InitPositions : aiMesh has no position vertices!");
 			assert(false);
 		}
 	}
@@ -148,7 +146,6 @@ namespace KG
 		if (p_pAiMesh->HasFaces())
 		{
 			KE::Debug::print("MeshLoader::InitFaces : Init indices.");
-			p_spMesh->m_HasFaces = true;
 			const unsigned num_faces(p_pAiMesh->mNumFaces);
 			p_spMesh->SetNumIndex(num_faces * 3);
 			p_spMesh->SetNumElement(num_faces * 3);
@@ -161,6 +158,8 @@ namespace KG
 					p_spMesh->m_Indices.push_back(face.mIndices[j]);
 			}
 		}
+		else
+			KE::Debug::print("MeshLoader::InitNormals : aiMesh has no vertex indices.");
 	}
 
 	void MeshLoader::InitNormals(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
@@ -168,7 +167,6 @@ namespace KG
 		if (p_pAiMesh->HasNormals())
 		{
 			KE::Debug::print("MeshLoader::InitNormals : Init normals.");
-			p_spMesh->m_HasNormals = true;
 			const unsigned num_normal(p_pAiMesh->mNumVertices);
 			p_spMesh->m_NormalVertices.reserve(num_normal);
 			for (int i = 0; i < static_cast<int>(num_normal); ++i)
@@ -177,6 +175,8 @@ namespace KG
 				p_spMesh->m_NormalVertices.push_back(glm::vec3(ai_normal.x, ai_normal.y, ai_normal.z));
 			}
 		}
+		else
+			KE::Debug::print("MeshLoader::InitNormals : aiMesh has no vertex normals.");
 	}
 
 	void MeshLoader::InitTexCoords(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
@@ -185,7 +185,6 @@ namespace KG
 		if (p_pAiMesh->HasTextureCoords(texcoord_id))
 		{
 			KE::Debug::print("MeshLoader::InitTexCoords : Init material.");
-			p_spMesh->m_HasTexCoords = true;
 			const unsigned num_tex_coord(p_spMesh->GetVertices().size());
 			p_spMesh->m_TexCoordVertices.reserve(num_tex_coord);
 			for (int i = 0; i < static_cast<int>(num_tex_coord); ++i)
@@ -194,6 +193,8 @@ namespace KG
 				p_spMesh->m_TexCoordVertices.push_back(glm::vec3(tex_coord.x, tex_coord.y, tex_coord.z));
 			}
 		}
+		else
+			KE::Debug::print("MeshLoader::InitTexCoords : aiMesh has no texture coordinates.");
 	}
 
 	void MeshLoader::InitColors(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
@@ -202,7 +203,6 @@ namespace KG
 		if (p_pAiMesh->HasVertexColors(vc_id))
 		{
 			KE::Debug::print("MeshLoader::InitColors : Init colors.");
-			p_spMesh->m_HasColors = true;
 			const unsigned num_colors(p_spMesh->GetVertices().size());
 			p_spMesh->m_ColorVertices.reserve(num_colors);
 			for (int i = 0; i < static_cast<int>(num_colors); ++i)
@@ -211,6 +211,8 @@ namespace KG
 				p_spMesh->m_ColorVertices.push_back(glm::vec4(color_vert.r, color_vert.g, color_vert.b, color_vert.a));
 			}
 		}
+		else
+			KE::Debug::print("MeshLoader::InitColors : aiMesh has no vertex colors.");
 	}
 
 	void MeshLoader::InitMaterials(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
@@ -218,13 +220,11 @@ namespace KG
 		if (m_pScene->HasMaterials())
 		{
 			KE::Debug::print("MeshLoader::InitMaterials : Init texture coords.");
-			p_spMesh->m_HasMaterial = true;
-			int material_id = p_pAiMesh->mMaterialIndex;
-			const aiMaterial * const material_ptr = m_pScene->mMaterials[material_id];
+			const aiMaterial * const material_ptr = m_pScene->mMaterials[p_pAiMesh->mMaterialIndex];
 			aiString name;
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_NAME, name))
 				p_spMesh->m_Material.Name = name.C_Str();
-			float shininess = 0.0f;
+			float shininess(0.0f);
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_SHININESS, shininess))
 				p_spMesh->m_Material.Shininess = shininess;
 			aiColor3D ai_vec3;
@@ -237,6 +237,8 @@ namespace KG
 			if (AI_SUCCESS == material_ptr->Get(AI_MATKEY_COLOR_EMISSIVE, ai_vec3)) // emissive
 				p_spMesh->m_Material.Emissive = glm::vec3(ai_vec3.r, ai_vec3.g, ai_vec3.b);
 		}
+		else
+			KE::Debug::print("MeshLoader::InitMaterials : aiScene has no materials.");
 	}
 
 	const bool MeshLoader::InitMaterialTexture
@@ -273,7 +275,7 @@ namespace KG
 					== AI_SUCCESS
 				)
 			{
-				const std::string full_path(dir + "/" + Path.data);
+				const std::string full_path(dir + "/" + Path.C_Str());
 				KG::Texture_SmartPtr texture(new KG::Texture(KG::Texture::DType::Tex2D, full_path));
 				p_spMesh->SetTexture(texture);
 			}
@@ -285,7 +287,10 @@ namespace KG
 	void MeshLoader::InitSkeleton(Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
 	{
 		if (!p_pAiMesh->HasBones())
+		{
+			KE::Debug::print("MeshLoader::InitSkeleton : aiMesh has no bones.");
 			return; // no bones, leave.
+		}
 
 		KE::Debug::print("MeshLoader::InitSkeleton : Init Skeleton.");
 		KG::Skeleton_SmartPtr skeleton_sp(new KG::Skeleton(p_spMesh->GetEntityID()));
@@ -313,7 +318,7 @@ namespace KG
 			const aiBone * const ai_bone_ptr(p_pAiMesh->mBones[i]);
 			
 			// collect bone name for Skeleton (per-bone)
-			const std::string bone_name(ai_bone_ptr->mName.data);
+			const std::string bone_name(ai_bone_ptr->mName.C_Str());
 			skeleton_sp->bone_names.push_back(bone_name);
 			
 			// collect offset transform for Skeleton (per-bone)
@@ -339,7 +344,7 @@ namespace KG
 			while (pair_it.second.size() > 4) // reduce num of bones for each vertex to 4.
 				pair_it.second.erase(pair_it.second.begin());
 			while (pair_it.second.size() != 4) // fill up with 0 weights if less than 4 actual bone influences.
-				pair_it.second.insert(std::make_pair(p_pAiMesh->mBones[0]->mName.data, 0.0f)); // use any bone name. It doesn't matter since weight is 0 anyway.
+				pair_it.second.insert(std::make_pair(p_pAiMesh->mBones[0]->mName.C_Str(), 0.0f)); // use any bone name. It doesn't matter since weight is 0 anyway.
 				// NOTE : weights are not automatically normalized to a total of 1 here.
 				//			Shouldn't matter if Assimp is already set to limit bones per vertex.
 		}
@@ -393,7 +398,6 @@ namespace KG
 
 		this->ConstructSkeleton(skeleton_sp, p_pAiMesh, m_pScene->mRootNode);
 		p_spMesh->SetSkeleton(skeleton_sp);
-		p_spMesh->m_HasSkeleton = true;
 	}
 
 	void MeshLoader::InitAnimations(Mesh_SmartPtr p_spMesh)
@@ -431,7 +435,7 @@ namespace KG
 
 				// compute index to array in Skeleton.
 				unsigned index(0);
-				const std::string bone_name(ai_animnode_ptr->mNodeName.data);
+				const std::string bone_name(ai_animnode_ptr->mNodeName.C_Str());
 				anim_node_sp->SetName(bone_name);
 				bool bone_found(false);
 				for (const std::string & name : p_spMesh->m_spSkeleton->bone_names)
@@ -545,7 +549,7 @@ namespace KG
 				if (ainode && ainode->mParent)
 				{
 					const aiNode * const new_parent_ainode(ainode->mParent);
-					const std::string bone_name(new_parent_ainode->mName.data);
+					const std::string bone_name(new_parent_ainode->mName.C_Str());
 					if ( std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name) != p_spSkeleton->bone_names.end() )
 					{ // bone already in Skeleton.
 						KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::ConstructSkeleton : bone already in skeleton!");
@@ -611,17 +615,17 @@ namespace KG
 				output_dump.append(" ");
 			output_dump.append(it.second);
 			KE::Debug::print(output_dump);
-		}
+		}*/
 		KE::Debug::print("");
-		for ( const std::string & bone_name : p_spSkeleton->names)
+		for ( const std::string & bone_name : p_spSkeleton->bone_names)
 			KE::Debug::print(bone_name);
-		KE::Debug::print("");*/
+		KE::Debug::print("");
 	}
 
 	const bool MeshLoader::FindBoneDepth(unsigned & p_Depth, const aiNode * const p_pAiNode, const std::string & p_BoneName)
 	{
 		++p_Depth;
-		const std::string this_bone_name(p_pAiNode->mName.data);
+		const std::string this_bone_name(p_pAiNode->mName.C_Str());
 		if (p_BoneName == this_bone_name) // FOUND!!!
 			return true;
 		else
@@ -645,7 +649,7 @@ namespace KG
 			assert(false);
 		}
 		
-		const std::string this_bone_name(p_pAiNode->mName.data);
+		const std::string this_bone_name(p_pAiNode->mName.C_Str());
 		if (p_rNodeName == this_bone_name) // FOUND!!!
 			return p_pAiNode;
 		else
@@ -674,12 +678,12 @@ namespace KG
 
 		// create and fill in bone node
 		KG::BoneNode_SmartPtr bone_node_sp(new KG::BoneNode(p_spSkeleton->GetEntityID(), KG::RenderPass::NotRendered));
-		const std::string bone_name(p_pAiNode->mName.data);
+		const std::string bone_name(p_pAiNode->mName.C_Str());
 		bone_node_sp->SetName(bone_name);
 		bool bone_found = false;
 		for (unsigned i = 0; i < p_pAiMesh->mNumBones; ++i)
 		{
-			if (bone_name == std::string(p_pAiMesh->mBones[i]->mName.data))
+			if (bone_name == std::string(p_pAiMesh->mBones[i]->mName.C_Str()))
 			{
 				bone_found = true;
 

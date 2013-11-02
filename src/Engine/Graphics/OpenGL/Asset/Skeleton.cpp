@@ -33,7 +33,7 @@ namespace KG
 
 	void Skeleton::ReserveForBones(const unsigned p_Size)
 	{
-		names.reserve(p_Size);
+		bone_names.reserve(p_Size);
 		bone_transforms.reserve(p_Size);
 		bone_offsets.reserve(p_Size);
 		intermediate_transforms.reserve(p_Size);
@@ -42,8 +42,8 @@ namespace KG
 
 	void Skeleton::ReserveForVertices(const unsigned p_Size)
 	{
-		IDs.reserve(p_Size);
-		weights.reserve(p_Size);
+		bone_IDs.reserve(p_Size);
+		bone_weights.reserve(p_Size);
 	}
 
 	void Skeleton::ComputePose(const KE::Duration p_Elapsed)

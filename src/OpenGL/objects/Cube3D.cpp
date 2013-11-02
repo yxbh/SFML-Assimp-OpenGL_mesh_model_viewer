@@ -71,7 +71,6 @@ namespace object
 		// config VertexAttrib
 		GLuint location2 = new_shader_program->GetAttributeLocation("vColor");
 		new_shader_program->Enable().SetParameter<GLboolean>("HasColorVertices", GL_TRUE);
-		this->SetHasColor(true);
 
 		glEnableVertexAttribArray(location2); 
 		glVertexAttribPointer(location2, 4, GL_FLOAT, GL_FALSE, 0, 0);
