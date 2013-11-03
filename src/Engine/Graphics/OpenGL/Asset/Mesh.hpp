@@ -16,6 +16,7 @@ namespace KG
 
 	enum class PrimitiveType
 	{
+		Invalid,
 		Points,
 		Lines,
 		LineStrip,
@@ -70,7 +71,7 @@ namespace KG
 		bool					m_LightBackFace;	// light with only ambient if false.
 		/* OpenGL draw call related. */
 		RenderMode				m_RenderMode;			// glDrawArrays or glDrawElements
-		GLenum					m_PrimitiveType;		// e.g. GL_TRIANGLES etc
+		KG::PrimitiveType		m_PrimitiveType;
 		GLenum					m_IndexVarType;			// for glDrawElements
 		GLuint					m_FirstIndex;
 		GLuint					m_ElementCount;			// number of 'indices' to draw
@@ -82,7 +83,8 @@ namespace KG
 		Mesh(const KE::EntityID p_EntityID = KE::EntityIDGenerator::NewID(), const KG::RenderPass p_RenderPass = KG::RenderPass::Dynamic);
 		virtual ~Mesh(void);
 
-		const GLenum GetPrimitiveType(void) const;
+		const KG::PrimitiveType GetPrimitiveType(void) const;
+		const GLenum GetGLPrimitiveType(void) const;
 		const GLuint GetVAO(void) const;
 		const GLuint GetVertexVBO(void) const;
 		const GLuint GetIndexVBO(void) const;
@@ -94,7 +96,9 @@ namespace KG
 		const Mesh::RenderMode GetRenderMode(void) const;
 		const GLenum GetIndexVarType(void) const;
 		const GLuint GetFirstIndex(void) const;
+		/*! Return the number of primitives. */
 		const GLuint GetNumIndex(void) const;
+		/*! Return the number of indices there if the Mesh uses IndexedDraw. */
 		const GLuint GetNumElement(void) const;
 		const GLuint GetIndexOffset(void) const;
 		const KG::Material & GetMaterial(void) const;

@@ -14,7 +14,7 @@ namespace KG
 		, m_BoneIDVBO(0), m_BoneWeightVBO(0)
 		, m_spTexture(nullptr)
 		, m_LightBackFace(true), m_LoadedToGPU(false), m_Loaded(false)
-		, m_RenderMode(RenderMode::Null), m_PrimitiveType(GL_TRIANGLES), m_IndexVarType(GL_UNSIGNED_INT)
+		, m_RenderMode(RenderMode::Null), m_PrimitiveType(KG::PrimitiveType::Invalid), m_IndexVarType(GL_UNSIGNED_INT)
 		, m_FirstIndex(0), m_ElementCount(0), m_IndexOffset(0)
 	{}
 
@@ -38,9 +38,31 @@ namespace KG
 		}
 	}
 
-	const GLenum Mesh::GetPrimitiveType(void) const
+	const KG::PrimitiveType Mesh::GetPrimitiveType(void) const
 	{
 		return m_PrimitiveType;
+	}
+
+	const GLenum Mesh::GetGLPrimitiveType(void) const
+	{
+		switch (m_PrimitiveType)
+		{
+		case KG::PrimitiveType::Points:
+			return GL_POINTS;
+		case KG::PrimitiveType::Lines:
+			return GL_LINES;
+		case KG::PrimitiveType::LineStrip:
+			return GL_LINE_STRIP;
+		case KG::PrimitiveType::Triangles:
+			return GL_TRIANGLES;
+		case KG::PrimitiveType::TriangleFan:
+			return GL_TRIANGLE_FAN;
+		case KG::PrimitiveType::TriangleStrip:
+			return GL_TRIANGLE_STRIP;
+		default:
+			KE::Debug::print(KE::Debug::DBG_WARNING, "Mesh::GetGLPrimitiveType : returning GL_INVALID_ENUM!");
+			return GL_INVALID_ENUM;
+		};
 	}
 
 	const GLuint Mesh::GetVAO(void) const
@@ -100,7 +122,7 @@ namespace KG
 
 	const GLuint Mesh::GetNumIndex(void) const
 	{
-		return m_Indices.size();
+		return m_PosVertices.size();
 	}
 
 	const GLuint Mesh::GetNumElement(void) const
@@ -426,27 +448,7 @@ namespace KG
 
 	void Mesh::SetPrimitiveType(const KG::PrimitiveType p_PrimitiveType)
 	{
-		switch (p_PrimitiveType)
-		{
-		case KG::PrimitiveType::Points:
-			m_PrimitiveType = GL_POINTS;
-			break;
-		case KG::PrimitiveType::Lines:
-			m_PrimitiveType = GL_LINES;
-			break;
-		case KG::PrimitiveType::LineStrip:
-			m_PrimitiveType = GL_LINE_STRIP;
-			break;
-		case KG::PrimitiveType::Triangles:
-			m_PrimitiveType = GL_TRIANGLES;
-			break;
-		case KG::PrimitiveType::TriangleFan:
-			m_PrimitiveType = GL_TRIANGLE_FAN;
-			break;
-		case KG::PrimitiveType::TriangleStrip:
-			m_PrimitiveType = GL_TRIANGLE_STRIP;
-			break;
-		};
+		m_PrimitiveType = p_PrimitiveType;
 	}
 
 	void Mesh::SetIndexType(const GLenum p_IndexType)

@@ -212,11 +212,11 @@ namespace KG
 				glBindVertexArray(mesh_ptr->GetVAO());
 				if (mesh_ptr->GetRenderMode() == KG::Mesh::RenderMode::Arrays)
 				{
-					glDrawArrays(mesh_ptr->GetPrimitiveType(), mesh_ptr->GetFirstIndex(), mesh_ptr->GetNumIndex());
+					glDrawArrays(mesh_ptr->GetGLPrimitiveType(), mesh_ptr->GetFirstIndex(), mesh_ptr->GetNumIndex());
 				}
 				else if (mesh_ptr->GetRenderMode() == KG::Mesh::RenderMode::Indexed)
 				{
-					glDrawElements(mesh_ptr->GetPrimitiveType(), mesh_ptr->GetNumElement()
+					glDrawElements(mesh_ptr->GetGLPrimitiveType(), mesh_ptr->GetNumElement()
 						, mesh_ptr->GetIndexVarType(), (const GLvoid*)(mesh_ptr->GetIndexOffset()));
 				}
 				else

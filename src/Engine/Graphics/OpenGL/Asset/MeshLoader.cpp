@@ -40,6 +40,7 @@ namespace KG
 					p_rPath.c_str()
 					, aiProcessPreset_TargetRealtime_MaxQuality
 						|aiProcess_Triangulate
+						|aiProcess_GenUVCoords
 						|aiProcess_FlipWindingOrder
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
@@ -53,6 +54,7 @@ namespace KG
 					p_rPath.c_str()
 					, aiProcessPreset_TargetRealtime_MaxQuality
 						|aiProcess_Triangulate
+						|aiProcess_GenUVCoords
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
 				);
@@ -62,8 +64,9 @@ namespace KG
 		{
 			KE::Debug::print
 			(
-				KE::Debug::DBG_ERROR, "Meshes LoadMeshes scene import failed. Importer error string = "
-				+ std::string(m_Importer.GetErrorString())
+				KE::Debug::DBG_ERROR
+				, "Meshes LoadMeshes scene import failed. Importer error string = "
+					+ std::string(m_Importer.GetErrorString())
 			);
 			return false;
 		}
@@ -150,26 +153,55 @@ namespace KG
 			KE::Debug::print("MeshLoader::InitFaces : Init face indices.");
 			switch (p_pAiMesh->mPrimitiveTypes)
 			{
+			case aiPrimitiveType_LINE:
+				KE::Debug::print("MeshLoader::InitPositions : mesh primitive type = Lines");
+				p_spMesh->SetPrimitiveType(KG::PrimitiveType::Lines);
+				break;
 			case aiPrimitiveType_POINT:
+				KE::Debug::print("MeshLoader::InitPositions : mesh primitive type = Points");
 				p_spMesh->SetPrimitiveType(KG::PrimitiveType::Points);
 				break;
 			case aiPrimitiveType_TRIANGLE:
+				KE::Debug::print("MeshLoader::InitPositions : mesh primitive type = Triangles");
 				p_spMesh->SetPrimitiveType(KG::PrimitiveType::Triangles);
 				break;
 			case aiPrimitiveType_POLYGON:
+				KE::Debug::print
+				(
+					KE::Debug::DBG_WARNING
+					, "MeshLoader::InitFaces : unsupported primitive type. will let the renderer try handle it anyway."
+				);
 				//p_spMesh->SetPrimitiveType(KG::PrimitiveType::);
+				break;
+			default:
+				KE::Debug::print
+				(
+					KE::Debug::DBG_WARNING
+					, "MeshLoader::InitFaces : unexpected primitive type from ASSIMP."
+				);
+				assert(false);
 				break;
 			};
 
 			const unsigned num_faces(p_pAiMesh->mNumFaces);
 			p_spMesh->m_Indices.reserve(num_faces * 3);
-			for (int i = 0; i < static_cast<int>(num_faces); ++i)
+			for (unsigned i = 0; i < num_faces; ++i)
 			{
 				const aiFace & face(p_pAiMesh->mFaces[i]);
 				//assert(face.mNumIndices == 3);
 				for (unsigned j = 0; j < face.mNumIndices; ++j)
 					p_spMesh->m_Indices.push_back(face.mIndices[j]);
 			}
+
+			if (p_spMesh->GetPrimitiveType() == KG::PrimitiveType::Triangles && p_pAiMesh->mFaces[0].mNumIndices != 3)
+			{
+				KE::Debug::print
+				(
+					KE::Debug::DBG_WARNING
+					, "MeshLoader::InitFaces : primitive type is supposed to be Triangles but number of indices is not 3!!!"
+				);
+			}
+
 		}
 		else
 			KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitNormals : aiMesh has no vertex indices.");
