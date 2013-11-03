@@ -709,10 +709,12 @@ namespace KG
 			KE::Debug::print(KE::Debug::DBG_WARNING, "	This bone either does not have weight influence on any vertex or it's belonged to something else.");
 			KE::Debug::print(KE::Debug::DBG_WARNING, "	- bone name: " + bone_name);
 
-			if ( std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name) != p_spSkeleton->bone_names.end() )
+			auto bone_names_it = std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name);
+			if ( bone_names_it != p_spSkeleton->bone_names.end() )
 			{ // bone already in Skeleton. Found in MeshLoader::ConstructSkeleton probably.
 				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : bone already in skeleton!");
 				KE::Debug::print(KE::Debug::DBG_WARNING, "	bone name: " + bone_name);
+				bone_node_sp->skeleton_bone_index = std::distance(p_spSkeleton->bone_names.begin(), bone_names_it);
 			}
 			else
 			{ // Reconstruct a bone for the skeleton.
