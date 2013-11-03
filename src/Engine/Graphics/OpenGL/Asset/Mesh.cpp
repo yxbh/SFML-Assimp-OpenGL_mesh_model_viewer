@@ -15,7 +15,7 @@ namespace KG
 		, m_spTexture(nullptr)
 		, m_LightBackFace(true), m_LoadedToGPU(false), m_Loaded(false)
 		, m_RenderMode(RenderMode::Null), m_PrimitiveType(GL_TRIANGLES), m_IndexVarType(GL_UNSIGNED_INT)
-		, m_FirstIndex(0), m_IndexCount(0), m_ElementCount(0), m_IndexOffset(0)
+		, m_FirstIndex(0), m_ElementCount(0), m_IndexOffset(0)
 	{}
 
 	Mesh::~Mesh(void)
@@ -31,10 +31,11 @@ namespace KG
 			glDeleteBuffers(1, &m_TexCoordVBO);
 		if (this->HasVertexColors())
 			glDeleteBuffers(1, &m_ColorVBO);
-		// TODO : add check.
-		glDeleteBuffers(1, &m_BoneIDVBO);
-		// TODO : add check.
-		glDeleteBuffers(1, &m_BoneWeightVBO);
+		if (this->HasSkeleton())
+		{
+			glDeleteBuffers(1, &m_BoneIDVBO);
+			glDeleteBuffers(1, &m_BoneWeightVBO);
+		}
 	}
 
 	const GLenum Mesh::GetPrimitiveType(void) const
@@ -99,12 +100,12 @@ namespace KG
 
 	const GLuint Mesh::GetNumIndex(void) const
 	{
-		return m_IndexCount;
+		return m_Indices.size();
 	}
 
 	const GLuint Mesh::GetNumElement(void) const
 	{
-		return m_ElementCount;
+		return m_Indices.size();
 	}
 
 	const GLuint Mesh::GetIndexOffset(void) const
@@ -423,9 +424,29 @@ namespace KG
 		m_RenderMode = p_RenderMode;
 	}
 
-	void Mesh::SetPrimitiveType(const GLenum p_PrimitiveType)
+	void Mesh::SetPrimitiveType(const KG::PrimitiveType p_PrimitiveType)
 	{
-		m_PrimitiveType = p_PrimitiveType;
+		switch (p_PrimitiveType)
+		{
+		case KG::PrimitiveType::Points:
+			m_PrimitiveType = GL_POINTS;
+			break;
+		case KG::PrimitiveType::Lines:
+			m_PrimitiveType = GL_LINES;
+			break;
+		case KG::PrimitiveType::LineStrip:
+			m_PrimitiveType = GL_LINE_STRIP;
+			break;
+		case KG::PrimitiveType::Triangles:
+			m_PrimitiveType = GL_TRIANGLES;
+			break;
+		case KG::PrimitiveType::TriangleFan:
+			m_PrimitiveType = GL_TRIANGLE_FAN;
+			break;
+		case KG::PrimitiveType::TriangleStrip:
+			m_PrimitiveType = GL_TRIANGLE_STRIP;
+			break;
+		};
 	}
 
 	void Mesh::SetIndexType(const GLenum p_IndexType)
@@ -436,16 +457,6 @@ namespace KG
 	void Mesh::SetFirstIndex(const GLuint p_FirstIndex)
 	{
 		m_FirstIndex = p_FirstIndex;
-	}
-
-	void Mesh::SetNumIndex(const GLuint p_IndexCount)
-	{
-		m_IndexCount = p_IndexCount;
-	}
-
-	void Mesh::SetNumElement(const GLuint p_ElementCount)
-	{
-		m_ElementCount = p_ElementCount;
 	}
 
 	void Mesh::SetIndexOffset(const GLuint p_IndexOffset)

@@ -39,6 +39,7 @@ namespace KG
 				(
 					p_rPath.c_str()
 					, aiProcessPreset_TargetRealtime_MaxQuality
+						|aiProcess_Triangulate
 						|aiProcess_FlipWindingOrder
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
@@ -51,6 +52,7 @@ namespace KG
 				(
 					p_rPath.c_str()
 					, aiProcessPreset_TargetRealtime_MaxQuality
+						|aiProcess_Triangulate
 						|aiProcess_FlipUVs
 						|aiProcess_LimitBoneWeights
 				);
@@ -145,21 +147,32 @@ namespace KG
 	{
 		if (p_pAiMesh->HasFaces())
 		{
-			KE::Debug::print("MeshLoader::InitFaces : Init indices.");
+			KE::Debug::print("MeshLoader::InitFaces : Init face indices.");
+			switch (p_pAiMesh->mPrimitiveTypes)
+			{
+			case aiPrimitiveType_POINT:
+				p_spMesh->SetPrimitiveType(KG::PrimitiveType::Points);
+				break;
+			case aiPrimitiveType_TRIANGLE:
+				p_spMesh->SetPrimitiveType(KG::PrimitiveType::Triangles);
+				break;
+			case aiPrimitiveType_POLYGON:
+				//p_spMesh->SetPrimitiveType(KG::PrimitiveType::);
+				break;
+			};
+
 			const unsigned num_faces(p_pAiMesh->mNumFaces);
-			p_spMesh->SetNumIndex(num_faces * 3);
-			p_spMesh->SetNumElement(num_faces * 3);
 			p_spMesh->m_Indices.reserve(num_faces * 3);
 			for (int i = 0; i < static_cast<int>(num_faces); ++i)
 			{
-				const aiFace & face = p_pAiMesh->mFaces[i];
-				assert(face.mNumIndices == 3);
-				for (int j = 0; j < 3; ++j)
+				const aiFace & face(p_pAiMesh->mFaces[i]);
+				//assert(face.mNumIndices == 3);
+				for (unsigned j = 0; j < face.mNumIndices; ++j)
 					p_spMesh->m_Indices.push_back(face.mIndices[j]);
 			}
 		}
 		else
-			KE::Debug::print("MeshLoader::InitNormals : aiMesh has no vertex indices.");
+			KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::InitNormals : aiMesh has no vertex indices.");
 	}
 
 	void MeshLoader::InitNormals(KG::Mesh_SmartPtr p_spMesh, const aiMesh * const p_pAiMesh)
@@ -680,7 +693,7 @@ namespace KG
 		KG::BoneNode_SmartPtr bone_node_sp(new KG::BoneNode(p_spSkeleton->GetEntityID(), KG::RenderPass::NotRendered));
 		const std::string bone_name(p_pAiNode->mName.C_Str());
 		bone_node_sp->SetName(bone_name);
-		bool bone_found = false;
+		bool bone_found(false);
 		for (unsigned i = 0; i < p_pAiMesh->mNumBones; ++i)
 		{
 			if (bone_name == std::string(p_pAiMesh->mBones[i]->mName.C_Str()))
@@ -688,17 +701,9 @@ namespace KG
 				bone_found = true;
 
 				// compute index to array in Skeleton.
-				unsigned index(0);
-				for (const std::string & name : p_spSkeleton->bone_names)
-				{
-					if (bone_name == name)
-					{
-						bone_node_sp->skeleton_bone_index = index;
-						break;
-					}
-					else
-						++index;
-				}
+				const auto result_it(std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name));
+				if (result_it != p_spSkeleton->bone_names.end())
+					bone_node_sp->skeleton_bone_index = std::distance(p_spSkeleton->bone_names.begin(), result_it);
 
 				break; // found
 			}
@@ -712,7 +717,7 @@ namespace KG
 			auto bone_names_it = std::find(p_spSkeleton->bone_names.begin(), p_spSkeleton->bone_names.end(), bone_name);
 			if ( bone_names_it != p_spSkeleton->bone_names.end() )
 			{ // bone already in Skeleton. Found in MeshLoader::ConstructSkeleton probably.
-				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : bone already in skeleton!");
+				KE::Debug::print(KE::Debug::DBG_WARNING, "MeshLoader::GrowBoneTree : bone already in arrays in the Skeleton!");
 				KE::Debug::print(KE::Debug::DBG_WARNING, "	bone name: " + bone_name);
 				bone_node_sp->skeleton_bone_index = std::distance(p_spSkeleton->bone_names.begin(), bone_names_it);
 			}

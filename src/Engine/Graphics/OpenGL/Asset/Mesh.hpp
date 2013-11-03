@@ -14,6 +14,17 @@ namespace KG
 	typedef std::shared_ptr<KG::Skeleton>	Skeleton_SmartPtr;
 	typedef std::weak_ptr<KG::Skeleton>		Skeleton_WeakPtr;
 
+	enum class PrimitiveType
+	{
+		Points,
+		Lines,
+		LineStrip,
+		Triangles,
+		TriangleStrip,
+		TriangleFan,
+	};
+
+
 	/*! \class Mesh
 
 		- A Mesh could contain other Mesh's as children in a tree like structure.
@@ -33,7 +44,7 @@ namespace KG
 			Indexed
 		};
 
-	private:
+	protected:
 		KG::Vec3fVector			m_PosVertices;
 		KG::Vec1uVector			m_Indices;
 		KG::Vec3fVector			m_NormalVertices;
@@ -62,8 +73,7 @@ namespace KG
 		GLenum					m_PrimitiveType;		// e.g. GL_TRIANGLES etc
 		GLenum					m_IndexVarType;			// for glDrawElements
 		GLuint					m_FirstIndex;
-		GLuint					m_IndexCount;			// 
-		GLuint					m_ElementCount;			// number of 'indexes' to draw
+		GLuint					m_ElementCount;			// number of 'indices' to draw
 		GLuint					m_IndexOffset;			// offset in bytes
 		// e.g. glDrawArrays(m_PrimitiveType, m_FirstIndex, m_IndexCount)
 		// e.g. glDrawElements(m_PrimitiveType, m_ElementCount, m_IndexVarType, m_IndexOffset)
@@ -122,11 +132,9 @@ namespace KG
 		void SetColorVBO(const GLuint p_VBO);
 		void SetBoneIDVBO(const GLuint p_VBO);
 		void SetRenderMode(const RenderMode p_RenderMode);
-		void SetPrimitiveType(const GLenum p_PrimitiveType);
+		void SetPrimitiveType(const KG::PrimitiveType p_PrimitiveType);
 		void SetIndexType(const GLenum p_IndexType);
 		void SetFirstIndex(const GLuint p_FirstIndex);
-		void SetNumIndex(const GLuint p_IndexCount);
-		void SetNumElement(const GLuint p_ElementCount);
 		void SetIndexOffset(const GLuint p_IndexOffset);
 		void SetLightBackFace(const bool p_LightBackFace);
 		virtual void SetTexture(KG::Texture_SmartPtr p_spTexture);

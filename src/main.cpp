@@ -1,5 +1,4 @@
 #include "Engine/Engine.hpp"
-#include "OpenGL/objects.hpp"
 #include "Engine/Graphics/OpenGL/Scene.hpp"
 #include "Engine/Graphics/OpenGL/OGLEntityRenderComponent.hpp"
 #include "Engine/Entity/Entity.hpp"
@@ -7,7 +6,6 @@
 
 #include "CITSProject/InputController.hpp"
 #include "CITSProject/Avatar.hpp"
-#include "CITSProject/Ground.hpp"
 #include "CITSProject/ObjectManipulator.hpp"
 #include "CITSProject/GUI.hpp"
 #include "CITSProject/CITSEvents.hpp"
@@ -118,34 +116,6 @@ static void AddGround(KE::Engine & p_rEngine)
 	KE::Debug::print("Added ground.");
 }
 
-static void AddTriangle(KE::Engine & p_rEngine)
-{
-	std::shared_ptr<object::Triangle> triangle(new object::Triangle());
-	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(triangle);
-	KE::Debug::print("Added triangle.");
-}
-
-static void AddTriangle2(KE::Engine & p_rEngine)
-{
-	std::shared_ptr<object::Triangle2D> triangle(new object::Triangle2D());
-	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(triangle);
-	KE::Debug::print("Added triangle.");
-}
-
-static void AddRectiangle2D(KE::Engine & p_rEngine)
-{
-	std::shared_ptr<object::Rectangle2D> rectangle(new object::Rectangle2D());
-	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(rectangle);
-	KE::Debug::print("Added 2D rectangle.");
-}
-
-static void AddCube(KE::Engine & p_rEngine)
-{
-	std::shared_ptr<object::Cube3D> cube3d(new object::Cube3D());
-	p_rEngine.GetRenderSystem().GetScene().AddSceneNode(cube3d);
-	KE::Debug::print("Added 3D cube.");
-}
-
 static void TestAsset(KE::Engine & p_rEngine)
 {
 	std::string model_tex_dir("models-textures/");
@@ -211,11 +181,6 @@ int main()
 		kengine.Init();
 		
 		TestAsset(kengine);
-
-		AddCube(kengine);
-		AddTriangle(kengine);
-		AddTriangle2(kengine);
-		AddRectiangle2D(kengine);
 		
 		AddGround(kengine);
 		AddController(kengine);

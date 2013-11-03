@@ -181,8 +181,8 @@ namespace KG
 		{
 			KE::Debug::print("MeshLoader::InitFaces : Init indices.");
 			const unsigned num_faces(p_pAiMesh->mNumFaces);
-			p_spMesh->SetNumIndex(num_faces * 3);
-			p_spMesh->SetNumElement(num_faces * 3);
+			//p_spMesh->SetNumIndex(num_faces * 3);
+			//p_spMesh->SetNumElement(num_faces * 3);
 			p_spMesh->m_Indices.reserve(num_faces * 3);
 			for (int i = 0; i < static_cast<int>(num_faces); ++i)
 			{
