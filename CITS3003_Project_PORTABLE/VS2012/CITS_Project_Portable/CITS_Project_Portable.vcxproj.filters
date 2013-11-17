@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{e5a444f4-6499-4d99-b241-71037248b1c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CITSProject">
+      <UniqueIdentifier>{4476e951-be70-40f2-a0dd-c3d079b3d70c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenGL">
+      <UniqueIdentifier>{7e03f1da-3d0c-4f03-8dc1-80739da32791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{2d8f2a15-bd56-4747-9aef-add1cd7bab29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{80989f5a-7de3-4323-a200-791d5474f38e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Core">
+      <UniqueIdentifier>{b055e3e0-f93f-4b1e-9fb0-bc983088dca6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Entity">
+      <UniqueIdentifier>{669eccc0-106b-4876-b5f1-88e6514da11b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Event">
+      <UniqueIdentifier>{d4b3f7dd-bfe7-4034-9fa0-7cd1afdf44da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics">
+      <UniqueIdentifier>{a56f384f-03c0-4528-ace7-9081b1ea4fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GUI">
+      <UniqueIdentifier>{2efd0008-0b93-4189-a244-900060526592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Input">
+      <UniqueIdentifier>{ee5e8dd2-7f17-4998-97a0-b0b22a90370e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Message">
+      <UniqueIdentifier>{785e8c61-cacf-4e62-8541-c18f10306b1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\SystenEvent">
+      <UniqueIdentifier>{eede6d95-442e-42b1-9323-f1503936cc98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\OpenGL">
+      <UniqueIdentifier>{693799fe-546a-4095-810d-d8817ae7395f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\SFML">
+      <UniqueIdentifier>{4aaa2dcd-6b1b-41c5-95aa-0d973afd420c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\OpenGL\Asset">
+      <UniqueIdentifier>{29bd28aa-058c-4c44-a80c-d95c16ea8aa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\OpenGL\Light">
+      <UniqueIdentifier>{f420cf52-8ed8-4ec7-8c78-d9f452e68f08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\OpenGL\Shader">
+      <UniqueIdentifier>{33e94981-0aca-4608-a7a0-e30b5e07e743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OpenGL\objects">
+      <UniqueIdentifier>{7f76beec-4916-4093-993c-c39f674efc4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility\Interface">
+      <UniqueIdentifier>{871c4138-e459-4093-b996-f6da0558e833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility\System">
+      <UniqueIdentifier>{249510ef-225e-4b3c-abc4-b1aa49e611a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\OpenGL\Pipeline">
+      <UniqueIdentifier>{56b627fd-0c5b-401f-a3ea-4815b5630ff0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\CITSProject\Avatar.cpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CITSProject\CITSEvents.cpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CITSProject\Ground.cpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CITSProject\GUI.cpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CITSProject\InputController.cpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CITSProject\ObjectManipulator.cpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\Entity.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\EntityFactory.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\EntityID.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\EntityManager.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\IEntity.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\IEntityComponent.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\InputComponent.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\PhysicsComponent.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Entity\RenderComponent.cpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Event\EventManager.cpp">
+      <Filter>Source Files\Engine\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Event\IEvent.cpp">
+      <Filter>Source Files\Engine\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Animation.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Mesh.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Meshes.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\MeshLoader.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Skeleton.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Texture.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\TextureLoader.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Light\Light.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Light\LightManager.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Light\Material.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderFactory.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderProgram.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\FrameBuffer.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\ShadowFBO.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Camera.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\MatrixStack.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\OGLEntityRenderComponent.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Renderer.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\RenderSystem.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Scene.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\SceneNode.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Transform.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\TransformStack.cpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Graphics\SFML\SFMLRenderComponent.cpp">
+      <Filter>Source Files\Engine\Graphics\SFML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\GUI\GUISystem.cpp">
+      <Filter>Source Files\Engine\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Input\InputManager.cpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Message\Message.cpp">
+      <Filter>Source Files\Engine\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Message\MessageManager.cpp">
+      <Filter>Source Files\Engine\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\SystemEvent\SystemEventManager.cpp">
+      <Filter>Source Files\Engine\SystenEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Engine\Engine.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OpenGL\objects\Cube3D.cpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OpenGL\objects\Rectangle2D.cpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OpenGL\objects\Triangle2D.cpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OpenGL\objects\Triangle2D2.cpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utility\dbg.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utility\ThreadPool.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utility\utility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utility\System\Duration.cpp">
+      <Filter>Source Files\Utility\System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\test_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\CITSProject\Avatar.hpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CITSProject\CITSEvents.hpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CITSProject\Ground.hpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CITSProject\GUI.hpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CITSProject\InputController.hpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CITSProject\ObjectManipulator.hpp">
+      <Filter>Source Files\CITSProject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Core\EngineComponent.hpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Core\Queues.hpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\Entity.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\EntityComponentID.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\EntityFactory.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\EntityID.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\EntityManager.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\IEntity.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\IEntityComponent.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\InputComponent.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\LogicComponent.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\PhysicsComponent.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Entity\RenderComponent.hpp">
+      <Filter>Source Files\Engine\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Event\EventManager.hpp">
+      <Filter>Source Files\Engine\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Event\EventQueue.hpp">
+      <Filter>Source Files\Engine\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Event\IEvent.hpp">
+      <Filter>Source Files\Engine\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Animation.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Mesh.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Meshes.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\MeshLoader.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Skeleton.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Texture.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\TextureLoader.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Light\Light.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Light\LightManager.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Light\Material.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderFactory.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderProgram.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\FrameBuffer.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\ShadowFBO.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Camera.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Drawable3D.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Events.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Maths.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\MatrixStack.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\OGLEntityRenderComponent.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Renderer.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\RenderPass.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\RenderState.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\RenderSystem.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Scene.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\SceneNode.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Transform.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\TransformStack.hpp">
+      <Filter>Source Files\Engine\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\SFML\SFMLRenderComponent.hpp">
+      <Filter>Source Files\Engine\Graphics\SFML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL_Graphics.hpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\GUI\GUISystem.hpp">
+      <Filter>Source Files\Engine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Input\InputManager.hpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Input\KeyboardEvents.hpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Input\MouseEvents.hpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Message\IMessageHandler.hpp">
+      <Filter>Source Files\Engine\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Message\Message.hpp">
+      <Filter>Source Files\Engine\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Message\MessageManager.hpp">
+      <Filter>Source Files\Engine\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Message\MessageQueue.hpp">
+      <Filter>Source Files\Engine\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\SystemEvent\ISystemEventHandler.hpp">
+      <Filter>Source Files\Engine\SystenEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\SystemEvent\SystemEventManager.hpp">
+      <Filter>Source Files\Engine\SystenEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\SystemEvent\SystemEventQueue.hpp">
+      <Filter>Source Files\Engine\SystenEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\common.hpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Engine.hpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Engine\Unit.hpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OpenGL\objects\Cube3D.hpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OpenGL\objects\Rectangle2D.hpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OpenGL\objects\Triangle2D.hpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OpenGL\objects\Triangle2D2.hpp">
+      <Filter>Source Files\OpenGL\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OpenGL\objects.hpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OpenGL\shaders.hpp">
+      <Filter>Source Files\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\dbg.hpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\ThreadPool.hpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\Time.hpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\utility.hpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\Interface\ITime.hpp">
+      <Filter>Source Files\Utility\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\System\Duration.hpp">
+      <Filter>Source Files\Utility\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\System\SFML2_Time.hpp">
+      <Filter>Source Files\Utility\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utility\System\std_Time.hpp">
+      <Filter>Source Files\Utility\System</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderProgram.inl">
+      <Filter>Source Files\Engine\Graphics\OpenGL\Shader</Filter>
+    </None>
+    <None Include="..\..\src\shaders\generic.F.shader">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\..\src\shaders\generic.V.shader">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\..\src\Utility\System\Duration.inl">
+      <Filter>Source Files\Utility\System</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\src\Engine\README.txt">
+      <Filter>Source Files\Engine</Filter>
+    </Text>
+    <Text Include="..\..\src\Utility\README.txt">
+      <Filter>Source Files\Utility</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

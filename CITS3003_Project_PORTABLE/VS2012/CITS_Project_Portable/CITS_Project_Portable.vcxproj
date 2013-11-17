@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\CITSProject\Avatar.cpp" />
+    <ClCompile Include="..\..\src\CITSProject\CITSEvents.cpp" />
+    <ClCompile Include="..\..\src\CITSProject\Ground.cpp" />
+    <ClCompile Include="..\..\src\CITSProject\GUI.cpp" />
+    <ClCompile Include="..\..\src\CITSProject\InputController.cpp" />
+    <ClCompile Include="..\..\src\CITSProject\ObjectManipulator.cpp" />
+    <ClCompile Include="..\..\src\Engine\Engine.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\Entity.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\EntityFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\EntityID.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\EntityManager.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\IEntity.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\IEntityComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\InputComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\PhysicsComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine\Entity\RenderComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine\Event\EventManager.cpp" />
+    <ClCompile Include="..\..\src\Engine\Event\IEvent.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Animation.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Mesh.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Meshes.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\MeshLoader.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Skeleton.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\Texture.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Asset\TextureLoader.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Camera.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Light\Light.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Light\LightManager.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Light\Material.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\MatrixStack.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\OGLEntityRenderComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\FrameBuffer.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\ShadowFBO.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Renderer.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\RenderSystem.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Scene.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\SceneNode.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderFactory.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderProgram.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\Transform.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\OpenGL\TransformStack.cpp" />
+    <ClCompile Include="..\..\src\Engine\Graphics\SFML\SFMLRenderComponent.cpp" />
+    <ClCompile Include="..\..\src\Engine\GUI\GUISystem.cpp" />
+    <ClCompile Include="..\..\src\Engine\Input\InputManager.cpp" />
+    <ClCompile Include="..\..\src\Engine\Message\Message.cpp" />
+    <ClCompile Include="..\..\src\Engine\Message\MessageManager.cpp" />
+    <ClCompile Include="..\..\src\Engine\SystemEvent\SystemEventManager.cpp" />
+    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\OpenGL\objects\Cube3D.cpp" />
+    <ClCompile Include="..\..\src\OpenGL\objects\Rectangle2D.cpp" />
+    <ClCompile Include="..\..\src\OpenGL\objects\Triangle2D.cpp" />
+    <ClCompile Include="..\..\src\OpenGL\objects\Triangle2D2.cpp" />
+    <ClCompile Include="..\..\src\test_main.cpp" />
+    <ClCompile Include="..\..\src\Utility\dbg.cpp" />
+    <ClCompile Include="..\..\src\Utility\System\Duration.cpp" />
+    <ClCompile Include="..\..\src\Utility\ThreadPool.cpp" />
+    <ClCompile Include="..\..\src\Utility\utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\CITSProject\Avatar.hpp" />
+    <ClInclude Include="..\..\src\CITSProject\CITSEvents.hpp" />
+    <ClInclude Include="..\..\src\CITSProject\Ground.hpp" />
+    <ClInclude Include="..\..\src\CITSProject\GUI.hpp" />
+    <ClInclude Include="..\..\src\CITSProject\InputController.hpp" />
+    <ClInclude Include="..\..\src\CITSProject\ObjectManipulator.hpp" />
+    <ClInclude Include="..\..\src\Engine\common.hpp" />
+    <ClInclude Include="..\..\src\Engine\Core\EngineComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Core\Queues.hpp" />
+    <ClInclude Include="..\..\src\Engine\Engine.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\Entity.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\EntityComponentID.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\EntityFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\EntityID.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\EntityManager.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\IEntity.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\IEntityComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\InputComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\LogicComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\PhysicsComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Entity\RenderComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Event\EventManager.hpp" />
+    <ClInclude Include="..\..\src\Engine\Event\EventQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine\Event\IEvent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Animation.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Mesh.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Meshes.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\MeshLoader.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Skeleton.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\Texture.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Asset\TextureLoader.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Camera.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Drawable3D.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Events.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Light\Light.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Light\LightManager.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Light\Material.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Maths.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\MatrixStack.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\OGLEntityRenderComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\FrameBuffer.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Pipeline\ShadowFBO.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Renderer.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\RenderPass.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\RenderState.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\RenderSystem.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Scene.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\SceneNode.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderFactory.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderProgram.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\Transform.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL\TransformStack.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\OpenGL_Graphics.hpp" />
+    <ClInclude Include="..\..\src\Engine\Graphics\SFML\SFMLRenderComponent.hpp" />
+    <ClInclude Include="..\..\src\Engine\GUI\GUISystem.hpp" />
+    <ClInclude Include="..\..\src\Engine\Input\InputManager.hpp" />
+    <ClInclude Include="..\..\src\Engine\Input\KeyboardEvents.hpp" />
+    <ClInclude Include="..\..\src\Engine\Input\MouseEvents.hpp" />
+    <ClInclude Include="..\..\src\Engine\Message\IMessageHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine\Message\Message.hpp" />
+    <ClInclude Include="..\..\src\Engine\Message\MessageManager.hpp" />
+    <ClInclude Include="..\..\src\Engine\Message\MessageQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine\SystemEvent\ISystemEventHandler.hpp" />
+    <ClInclude Include="..\..\src\Engine\SystemEvent\SystemEventManager.hpp" />
+    <ClInclude Include="..\..\src\Engine\SystemEvent\SystemEventQueue.hpp" />
+    <ClInclude Include="..\..\src\Engine\Unit.hpp" />
+    <ClInclude Include="..\..\src\OpenGL\objects.hpp" />
+    <ClInclude Include="..\..\src\OpenGL\objects\Cube3D.hpp" />
+    <ClInclude Include="..\..\src\OpenGL\objects\Rectangle2D.hpp" />
+    <ClInclude Include="..\..\src\OpenGL\objects\Triangle2D.hpp" />
+    <ClInclude Include="..\..\src\OpenGL\objects\Triangle2D2.hpp" />
+    <ClInclude Include="..\..\src\OpenGL\shaders.hpp" />
+    <ClInclude Include="..\..\src\Utility\dbg.hpp" />
+    <ClInclude Include="..\..\src\Utility\Interface\ITime.hpp" />
+    <ClInclude Include="..\..\src\Utility\System\Duration.hpp" />
+    <ClInclude Include="..\..\src\Utility\System\SFML2_Time.hpp" />
+    <ClInclude Include="..\..\src\Utility\System\std_Time.hpp" />
+    <ClInclude Include="..\..\src\Utility\ThreadPool.hpp" />
+    <ClInclude Include="..\..\src\Utility\Time.hpp" />
+    <ClInclude Include="..\..\src\Utility\utility.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\Engine\Graphics\OpenGL\Shader\ShaderProgram.inl" />
+    <None Include="..\..\src\shaders\generic.F.shader" />
+    <None Include="..\..\src\shaders\generic.V.shader" />
+    <None Include="..\..\src\Utility\System\Duration.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\src\Engine\README.txt" />
+    <Text Include="..\..\src\Utility\README.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{21BC797A-1EBF-4DF3-90B7-94A42FC1BEBC}</ProjectGuid>
+    <RootNamespace>CITS_Project_Portable</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\..\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\lib\assimp--3.0.1270-sdk\include;$(SolutionDir)\..\lib\glm-0.9.4.6\glm;$(SolutionDir)\..\lib\SFGUI-0.1.1-win-x86-vc11\include;$(SolutionDir)\..\lib\SFML-2.1-windows-vc11-32bits\SFML-2.1\include;$(SolutionDir)\..\lib\glew-1.10.0\include;$(SolutionDir)\..\lib\DevIL-SDK-x86-1.7.8\include</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\lib\assimp--3.0.1270-sdk\lib\assimp_debug-dll_win32;$(SolutionDir)\..\lib\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\..\lib\SFGUI-0.1.1-win-x86-vc11\lib;$(SolutionDir)\..\lib\SFML-2.1-windows-vc11-32bits\SFML-2.1\lib;$(SolutionDir)\..\lib\DevIL-SDK-x86-1.7.8\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;Glu32.lib;opengl32.lib;sfml-graphics-d.lib;sfml-system-d.lib;sfml-window-d.lib;sfgui-d.lib;assimp.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\lib\assimp--3.0.1270-sdk\include;$(SolutionDir)\..\lib\glm-0.9.4.6\glm;$(SolutionDir)\..\lib\SFGUI-0.1.1-win-x86-vc11\include;$(SolutionDir)\..\lib\SFML-2.1-windows-vc11-32bits\SFML-2.1\include;$(SolutionDir)\..\lib\glew-1.10.0\include;$(SolutionDir)\..\lib\DevIL-SDK-x86-1.7.8\include</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>KE_DEBUG; _MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\lib\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;$(SolutionDir)\..\lib\glew-1.10.0\lib\Release\Win32;$(SolutionDir)\..\lib\SFGUI-0.1.1-win-x86-vc11\lib;$(SolutionDir)\..\lib\SFML-2.1-windows-vc11-32bits\SFML-2.1\lib;$(SolutionDir)\..\lib\DevIL-SDK-x86-1.7.8\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-system.lib;sfml-window.lib;glew32.lib;opengl32.lib;sfgui.lib;assimp.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
