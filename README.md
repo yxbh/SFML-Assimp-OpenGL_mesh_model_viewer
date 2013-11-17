@@ -1,4 +1,4 @@
-SFML-OpenGL_mesh_viewer
+SFML-Assimp-OpenGL_mesh_viewer
 =======================
 
 A simple mesh model viewer written as part of a Graphics and Animations unit offered in UWA.
