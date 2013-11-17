@@ -33,6 +33,16 @@ Known Isues:
   - Surafce normal and winding order might be incorrect for .x files.
   - Camera::SetRoll() method does not work correct and therefore it's behaviour is undefined.
     If anyone figured out how to implement it correctly, please do let me know!
+  - Crashes caused by the GUI and SFGUI library.
+
+
+How-To:
+  Under root directrory there are 3 following folders:
+    - "CITS3003_Project_PORTABLE"
+    - "doc"
+    - "src"
+  The portable folder contains a VS2012 solution and the necessary binary and folder structure for both a DEBUG and RELEASE build. Build the application using the solution file and then copy your models and textures into the "model-textures" folder inside your binary folder. There is a ModelList.txt file and a TextureList.txt file. Put the list of model and texture file names into the respective text file. Execute the program and it should run.
+  NOTE: The portable folder actually has it's own version of the source codes for the project. At this point of time I simply cannot remember which one's the most up to date. You can play around with it at your leisure. Just beware there might be extra or missing source files.
 
 
 Contributors:
