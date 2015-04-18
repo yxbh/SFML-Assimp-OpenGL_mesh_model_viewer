@@ -47,8 +47,8 @@ This project also served as a testbed some of the engine components that I've de
 
 
 ## Contributors
-  - Ben Huang (me): entire framework and 99% of the codebase.
-  - John Fielding : GUI and his math and engineering knowledge.
+  - Benjamin YanXiang Huang: archictect/developer for engine, framework & viewer.
+  - John Fielding : GUI implementation, maths and engineering expertise.
 
 
 ## Credits
